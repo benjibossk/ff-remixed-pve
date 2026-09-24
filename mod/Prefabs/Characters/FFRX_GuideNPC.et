@@ -1,0 +1,41 @@
+SCR_ChimeraCharacter : "{5F45655033ECBFF7}Prefabs/Characters/Tutorial/Instructors/Main_Instructor.et" {
+ ID "6FFEC0DE6111DE00"
+ components {
+  SCR_NarrativeComponent "{614C8EA44D7CF5D1}" {
+   m_bProximityTalk 0
+   m_bProximityTalkOnlyOnce 0
+   m_iTalkVariants 3
+   m_bRandomTalkVariant 1
+   m_bStopTalkWhenOutOfProximity 0
+  }
+  SCR_TutorialInstructorComponent "{60B8B68C5E96DAB2}" {
+   Enabled 0
+  }
+  BaseLoadoutManagerComponent "{607AD04281E88B27}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{E978D6009CA66122}Prefabs/Characters/Uniforms/F3_Vest/F3_Vest_CE.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{ADBA42284222F1BA}Prefabs/Characters/Uniforms/F3_Pantalon/F3_Pantalon_CE.et"
+    }
+    LoadoutSlotInfo Boots {
+     Prefab "{253C75176D3BF9A4}Prefabs/Characters/Footwear/Haix_Sable_Base.et"
+    }
+    LoadoutSlotInfo Vest {
+    }
+    LoadoutSlotInfo Headgear {
+     Prefab "{7CA1DA7716161954}Prefabs/Characters/HeadGear/BERET/beret_Rouge.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{607AD04281F37980}" {
+   additionalActions {
+    FFRX_GuideBriefingAction "{6FFEC0DE6111DE11}" {
+    }
+   }
+  }
+ }
+}

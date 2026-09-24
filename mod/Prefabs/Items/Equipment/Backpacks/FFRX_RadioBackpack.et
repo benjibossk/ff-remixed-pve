@@ -1,0 +1,16 @@
+GenericEntity : "{B11BA9F90C3AAFD5}Prefabs/Characters/Backpack/TECPACK45L.et" {
+ ID "6FFEC0DE6AD10000"
+ components {
+  FFRX_RadioRelayComponent "{6FFEC0DE6AD10001}" {
+   m_fRangeMultiplier 1.54
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Sac radio longue portee"
+     Description "Poste de groupe, l'equivalent d'un ANPRC-77 : il porte environ une fois et demie plus loin qu'une radio de poitrine. La position de son porteur reste fraiche sur la carte, et ses balises transmettent de bien plus loin. Sans tour radio tenue, il ne sert a rien."
+    }
+   }
+  }
+ }
+}

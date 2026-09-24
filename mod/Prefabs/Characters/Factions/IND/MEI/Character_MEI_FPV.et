@@ -1,0 +1,35 @@
+SCR_ChimeraCharacter : "{F95AEA26749B12EC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman1.et" {
+ ID "6A3A80C13B41F001"
+ components {
+  NOVA_Drons "{6FFEC0DEDA000212}" {
+   m_eOperatorType FPV
+   m_sDronePrefab "{DACE636DC6AF366F}Prefabs/Drones/FPVBase/FPVRPG_AI.et"
+   m_iMaxDroneLaunches 4
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    Name "Drone Operator FPV"
+    IconSetName "EditableEntity_Character_Engineer"
+    m_aAuthoredLabels + {
+     ROLE_RIFLEMAN
+    }
+    m_aAutoLabels {
+     SIZE_M
+    }
+   }
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFB7}" {
+   WeaponTemplate ""
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFDC}" {
+   WeaponTemplate "{E2434ED1318D8476}Prefabs/Characters/Items/DroneController.et"
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Back {
+     Prefab "{41A9C55B61F375F0}Prefabs/Items/Equipment/Backpacks/Backpack_Kolobok.et"
+    }
+   }
+  }
+ }
+}

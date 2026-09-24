@@ -1,0 +1,98 @@
+FrameWidgetClass {
+ Name "FFRX_DeathRoot"
+ Color 1 1 1 1
+ {
+  OverlayWidgetClass {
+   Name "OnDeathInfoDisplay"
+   Slot FrameWidgetSlot {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+   }
+   {
+    ImageWidgetClass {
+     Name "Vignette0"
+     Slot OverlayWidgetSlot {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0 0 0 1
+     Texture "{6FE2C64CB67BA627}UI/Textures/Editor/Overlays/Vignette/Overlay_Vignette.edds"
+     Size 512 512
+    }
+    ImageWidgetClass {
+     Name "Vignette1"
+     Slot OverlayWidgetSlot {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0 0 0 1
+     Texture "{6FE2C64CB67BA627}UI/Textures/Editor/Overlays/Vignette/Overlay_Vignette.edds"
+     Size 512 512
+    }
+    ImageWidgetClass {
+     Name "Darken"
+     Slot OverlayWidgetSlot {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0 0 0 0.627
+     Size 512 512
+    }
+   }
+  }
+  VerticalLayoutWidgetClass {
+   Name "CenterCol"
+   Slot FrameWidgetSlot {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass {
+     Name "Icon"
+     Slot LayoutSlot {
+      HorizontalAlign 1
+      VerticalAlign 1
+     }
+     Color 0.947 0.056 0.056 1
+     Texture "{855625FE8D6A87A8}UI/Textures/DamageState/damageState-dead.edds"
+     Size 100 100
+    }
+    TextWidgetClass "{F0DEADFACE000001}" : "{6F198A46CBC549CE}UI/layouts/WidgetLibrary/TextWidgets/Text_Heading1.layout" {
+     Name "DeathMessage"
+     Slot LayoutSlot {
+      HorizontalAlign 1
+      VerticalAlign 1
+     }
+     Text "VOUS ETES MORT"
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+    }
+    TextWidgetClass "{F0DEADFACE000002}" : "{6F198A46CBC549CE}UI/layouts/WidgetLibrary/TextWidgets/Text_Heading1.layout" {
+     Name "TimeRemaining"
+     Slot LayoutSlot {
+      HorizontalAlign 1
+      VerticalAlign 1
+     }
+     Text ""
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+    }
+   }
+  }
+ }
+}

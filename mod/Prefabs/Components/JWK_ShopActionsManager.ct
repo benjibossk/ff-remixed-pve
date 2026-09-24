@@ -1,0 +1,37 @@
+ActionsManagerComponent {
+ // ⚠️ NE PAS SUPPRIMER CE BLOC.
+ //
+ // Ce fichier est un shadow-override du .ct de FF (meme GUID {25EF35F024CCECC6}) : il
+ // REMPLACE le fichier d'origine, il ne s'y ajoute pas. Or l'original de FF declare ce
+ // contexte "default", et TOUTES les actions ci-dessous -- la sienne comme les notres --
+ // portent `ParentContextList { "default" }`.
+ //
+ // Il avait disparu de notre version : nos actions referencaient donc un contexte
+ // inexistant. Valeurs reprises telles quelles de FF (offset 0 0.2 0, rayon 0.65) --
+ // ne pas "arrondir", c'est la zone d'interaction du batiment.
+ ActionContexts {
+  UserActionContext "{624927DB306AAE95}" {
+   ContextName "default"
+   Position PointInfo "{624927DB306AAE98}" {
+    Offset 0 0.2 0
+   }
+   Radius 0.65
+  }
+ }
+ additionalActions {
+  JWK_ShopAction "{624927DB306AAE87}" {
+   ParentContextList +{
+   }
+   UIInfo UIInfo "{624927DB306AAE81}" {
+    Name "#JWK-Action-Shop"
+   }
+  }
+
+  // Les actions de dotation FFRX (Prendre / Enregistrer / Rembourser) ont ete RETIREES
+  // d'ici le 2026-09-10. Elles vivent sur la caisse d'arsenal elle-meme
+  // (Prefabs/Props/Military/Compositions/FIA/ArsenalBox_FIA.et, posee en jeu via
+  // FFRX_ArsenalBox.et). Les avoir aux DEUX endroits affichait chaque dotation en
+  // double dans le menu d'action. Ce .ct ne sert plus qu'au shop FF -- ne pas y
+  // remettre d'action FFRX.
+ }
+}

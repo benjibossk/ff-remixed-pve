@@ -1,0 +1,201 @@
+JWK_CheckpointEntity masterCheckpoint52 : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ coords 5797.366 270.5 942.932
+ angles 0 167.661 0
+ m_iRange 50
+ m_fSpawnChance 1
+ {
+  $grp SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+   {
+    coords -8.322 -0.622 -5.16
+    angles 0 -96.08 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.622 0
+     }
+    }
+   }
+   {
+    coords 9.142 0.176 -6.121
+    angles 0 -91.587 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -0.176 0
+     }
+    }
+   }
+  }
+  SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+   coords 45.919 -1.259 -11.88
+   angles 0 -27.181 0
+   {
+    StaticModelEntity {
+     ID "62A693F2AC4FB612"
+     coords 0 1.083 0
+     angles -1.873 0 2.549
+    }
+   }
+  }
+ }
+}
+JWK_FactoryEntity JWK_FactoryController_68DCC4938E91E2D2 : "{644F3F0AD98280B4}Prefabs/Controllers/Loadtime/JWK_FactoryController.et" {
+ components {
+  JWK_AIGarrisonComponent "{659EFEC227B5CEDE}" {
+   m_iPatrolRange 40
+  }
+  JWK_NamedLocationComponent "{64E512EE3D735264}" {
+   m_sName "Warlord Villa"
+  }
+ }
+ coords 5825.776 270.499 906.248
+ {
+  GenericEntity Factory_ResourceStorage_68DCC4938C5A8261 : "{34EE59A28125F95F}Prefabs/Compositions/Factory_ResourceStorage.et" {
+   coords 0.215 0 0.196
+   {
+    GenericEntity Factory_Storage_68DCC4938C5A811F {
+     ID "64D5310E6D3945D6"
+    }
+   }
+  }
+  $grp PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+   {
+    components {
+     JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+      m_aTags {
+       POI_AREA
+       PLAYER_CONSTRUCTION
+       BLOCK_TRAFFIC
+      }
+     }
+    }
+    coords -0.777 0.894 0.683
+    Points {
+     ShapePoint "{68DCC493BAC3FCED}" {
+      Position -76.903 -1.455 70.55
+     }
+     ShapePoint "{68DCC493B93901FE}" {
+      Position -84.637 -0.893 28.615
+     }
+     ShapePoint "{68DCC493B9EF5786}" {
+      Position -91.119 -2.152 1.612
+     }
+     ShapePoint "{68DCC493B700830D}" {
+      Position -50.524 -0.894 -12.02
+     }
+     ShapePoint "{68DCC493B3CD99BA}" {
+      Position 5.679 -1.367 -62.25
+     }
+     ShapePoint "{68DCC493B2A3891E}" {
+      Position 12.49 -0.894 -54.54
+     }
+     ShapePoint "{68DCC493B1200CC6}" {
+      Position 15.891 -0.894 -57.599
+     }
+     ShapePoint "{68DCC493B01BB8F1}" {
+      Position 19.547 -0.894 -53.663
+     }
+     ShapePoint "{68DCC493AE4AA8D5}" {
+      Position 15.56 -0.893 -50.12
+     }
+     ShapePoint "{68DCC493AB11855C}" {
+      Position 41.833 -0.894 -21.031
+     }
+     ShapePoint "{68DCC493AA7AB669}" {
+      Position 45.787 -0.905 -24.45
+     }
+     ShapePoint "{68DCC493A96E0375}" {
+      Position 56.178 -0.797 -12.413
+     }
+     ShapePoint "{68DCC493A9950147}" {
+      Position 55.563 -0.189 -4.71
+     }
+     ShapePoint "{68DCC493A58583B8}" {
+      Position 18.278 -0.894 28.02
+     }
+     ShapePoint "{68DCC493A4F9CD32}" {
+      Position 21.518 -0.772 31.734
+     }
+     ShapePoint "{68DCC493A3BA9AB4}" {
+      Position 9.704 -0.894 42.162
+     }
+     ShapePoint "{68DCC493D777E5BE}" {
+      Position 6.357 -0.894 38.77
+     }
+     ShapePoint "{68DCC493D69C17E8}" {
+      Position 0.338 -0.894 44.414
+     }
+     ShapePoint "{68DCC493D1DFC815}" {
+      Position -25.35 -0.893 74.049
+     }
+     ShapePoint "{68DCC493D06C4E50}" {
+      Position -31.101 -0.894 77.288
+     }
+     ShapePoint "{68DCC493CF709A91}" {
+      Position -53.995 -0.894 74.061
+     }
+    }
+   }
+   {
+    components {
+     JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+      m_aTags {
+       BATTLE_AREA
+      }
+     }
+    }
+    coords 0.069 0.375 -0.128
+    Points {
+     ShapePoint "{68DCC493F8E3DE39}" {
+      Position 116.248 -21.176 -51.867
+     }
+     ShapePoint "{68DCC493F8998AAC}" {
+      Position 84.87 16.167 19.017
+     }
+     ShapePoint "{68DCC493F759283E}" {
+      Position 52.391 11.636 53.198
+     }
+     ShapePoint "{68DCC493F7162A9A}" {
+      Position 12.937 -2.611 87.478
+     }
+     ShapePoint "{68DCC493F7E9038D}" {
+      Position -9.634 -15.441 105.86
+     }
+     ShapePoint "{68DCC493F7A38EE5}" {
+      Position -56.249 -14.54 104.65
+     }
+     ShapePoint "{68DCC493F6756B1C}" {
+      Position -93.861 -7.5 87.021
+     }
+     ShapePoint "{68DCC493F64BEC72}" {
+      Position -118.434 -6.041 68.273
+     }
+     ShapePoint "{68DCC493F61465C6}" {
+      Position -136.083 -2.76 40.267
+     }
+     ShapePoint "{68DCC493F6CE55E4}" {
+      Position -117.042 -7.122 -0.608
+     }
+     ShapePoint "{68DCC493F56832FB}" {
+      Position -81.297 -18.471 -72.769
+     }
+     ShapePoint "{68DCC493F5397D0C}" {
+      Position -59.107 -16.61 -97.262
+     }
+     ShapePoint "{68DCC493F506097F}" {
+      Position -39.978 -16.945 -114.809
+     }
+     ShapePoint "{68DCC493F5D6E3EE}" {
+      Position -8.952 -18.785 -131.73
+     }
+     ShapePoint "{68DCC493F5AB689F}" {
+      Position 27.312 -25.648 -125.321
+     }
+     ShapePoint "{68DCC493F4425383}" {
+      Position 83.592 -37.539 -115.79
+     }
+    }
+   }
+  }
+ }
+}

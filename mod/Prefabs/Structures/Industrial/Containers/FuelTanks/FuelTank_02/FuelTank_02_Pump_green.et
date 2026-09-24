@@ -1,0 +1,8 @@
+SCR_DestructibleBuildingEntity : "{AB9840CD694B453E}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_02/FuelTank_02_Pump_Base.et" {
+ ID "51BA8ACAB4F3CE76"
+ {
+  JWK_FuelStationEntity : "{5F0EF636CDF91862}Prefabs/Controllers/Loadtime/JWK_FuelStationController.et" {
+   ID "68DCC49673010630"
+  }
+ }
+}

@@ -1,0 +1,47 @@
+SCR_AIGroup : "{AD9B7874DFFF2A9D}Prefabs/Groups/MEI/Group_MEI_Base.et" {
+ ID "0000000000000001"
+ components {
+  SCR_EditableGroupComponent "{6FFEC0DEDA000220}" {
+   m_UIInfo SCR_EditableGroupUIInfo "{6FFEC0DEDA000221}" {
+    Name "Equipe antichar lourd"
+    m_aAuthoredLabels + {
+     FACTION_MEI
+    }
+    m_aAutoLabels {
+     GROUPSIZE_SMALL
+    }
+    m_EntityBudgetCost {
+     SCR_EntityBudgetValue "{6FFEC0DEDA000222}" {
+      m_Value 225
+     }
+     SCR_EntityBudgetValue "{6FFEC0DEDA000223}" {
+      m_Value 3
+     }
+    }
+    m_EntityChildrenBudgetCost {
+     SCR_EntityBudgetValue "{6FFEC0DEDA000224}" {
+      m_BudgetType AI
+      m_Value 3
+     }
+    }
+    m_bUseUIInfoName 1
+    m_MilitarySymbol SCR_MilitarySymbol "{6FFEC0DEDA000225}" {
+     m_Identity INDFOR
+     m_Icons INFANTRY
+     m_Amplifier TEAM
+    }
+   }
+  }
+  SCR_GroupIdentityComponent "{6FFEC0DEDA000226}" {
+   m_MilitarySymbol SCR_MilitarySymbol "{6FFEC0DEDA000227}" {
+    m_Identity INDFOR
+    m_Icons INFANTRY
+    m_Amplifier TEAM
+   }
+  }
+ }
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{6FFEC0DEDA000206}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Javelin.et" "{F95AEA26749B12EC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman1.et" "{950EDEC6C85F9DC2}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman2.et"
+ }
+}

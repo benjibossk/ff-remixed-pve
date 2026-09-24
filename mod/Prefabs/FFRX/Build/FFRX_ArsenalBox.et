@@ -1,0 +1,75 @@
+GenericEntity : "{686BCD2CB1DBD85A}Prefabs/FFRX/Build/FFRX_Preview_ArsenalBox.et" {
+ ID "6FFEC0DEB111C120"
+ components {
+  EPF_PersistenceComponent "{6FFEC0DEB111C121}" {
+   m_bUpdateNavmesh 1
+   m_pSaveData JWK_BuildItemSaveDataClass "{6FFEC0DEB111C122}" {
+    m_bTrackChildren 1
+   }
+  }
+  JWK_BuildAreaItemComponent "{6FFEC0DEB111C123}" {
+  }
+  JWK_StaticMapIconComponent "{6FFEC0DEB111C124}" {
+   m_sImageset "{3EA91214A3CABFCC}UI/Imagesets/MapIcons.imageset"
+   m_sIconName "supplies"
+  }
+  RigidBody "{6FFEC0DEB111C125}" {
+   Geometries {
+    PhysicsBoxGeometry UserAction {
+     LayerPreset "Interaction"
+     Extents 3 1 3
+    }
+   }
+  }
+  // ⚠️ GUID D'INSTANCE DU PARENT -- NE PAS EN METTRE UN NEUF.
+  // CompositionBase (herite via FFRX_Preview_ArsenalBox) declare deja son propre
+  // ActionsManagerComponent sous {5D66ED1096104FD8}. Avec un GUID different on n'en
+  // SURCHARGE pas un, on en AJOUTE un second -- et le moteur refuse :
+  //   ENTITY (E): component ActionsManagerComponent cannot be combined with ...
+  // L'entite est alors construite de travers, SANS RplComponent, et FF n'arrive plus
+  // a l'enregistrer :
+  //   [JWK][BuildAreaControllerComponent] Cannot link build item, no Rpl
+  // Consequence observee : la caisse construite n'etait JAMAIS persistee.
+  // (Diagnostic etabli en comparant avec le Depot FR, qui reutilisait bien ce GUID et
+  //  fonctionnait ; ce prefab a depuis ete supprime, la regle reste vraie.)
+  ActionsManagerComponent "{5D66ED1096104FD8}" {
+   ActionContexts {
+    UserActionContext "{6FFEC0DEB111C127}" {
+     "Display UI At Reference Point" 1
+    }
+   }
+   additionalActions {
+    JWK_DisassemblyConstructionAction "{6FFEC0DEB111C128}" {
+     ParentContextList {
+      "Disassembly"
+     }
+     UIInfo SCR_ActionUIInfo "{6FFEC0DEB111C129}" {
+      Name "#JWK-Action-Disassembly"
+     }
+     VisibilityRange 10
+     Duration 20
+    }
+   }
+  }
+ 
+ }
+ {
+  // Enfant declare ICI, et pas seulement herite du prefab de previsualisation.
+  //
+  // POURQUOI. EPF a bien sauvegarde la caisse (fichier BuildItems ... m_rPrefab
+  // 9498ED9663810020) mais avec "m_aChildEntities": 0, alors que les depots
+  // construits en ont 1 -- et eux revenaient apres un redemarrage. Seule
+  // difference entre les deux prefabs : le Depot FR (depuis supprime) declarait son
+  // enfant dans le prefab CONSTRUIT, la caisse se contentait de l'heriter du preview. Sans
+  // enfant sauvegarde, la composition revient vide : la racine n'a pas de
+  // geometrie, donc en jeu "la caisse a disparu".
+  //
+  // ⚠️ ON REUTILISE L'ID DE L'ENFANT HERITE (6FFEC0DEB111C114, cf.
+  // FFRX_Preview_ArsenalBox). Un ID neuf n'ecraserait pas l'enfant du parent, il
+  // en AJOUTERAIT un second -- deux caisses l'une dans l'autre.
+  GenericEntity : "{B53B98CEA2D72735}Prefabs/Props/Military/Compositions/FIA/ArsenalBox_FIA.et" {
+   ID "6FFEC0DEB111C114"
+   coords 0 0 0
+  }
+ }
+}

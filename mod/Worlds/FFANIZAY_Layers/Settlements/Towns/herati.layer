@@ -1,0 +1,147 @@
+$grp JWK_CheckpointEntity : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ JWK_CheckpointController_68DCC49280B6AE2 {
+  coords 8931.475 126.369 9312.192
+  {
+   SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    coords 15.355 1.577 9.861
+    angles 0 -167.201 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -1.3 0
+      angles -1.786 0 1.088
+     }
+    }
+   }
+   $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    {
+     coords -7.124 -1.053 -3.965
+     angles 0 -159.745 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.267 0
+       angles 1.956 0 -7.33
+      }
+     }
+    }
+    {
+     coords 10.539 0.553 -6.094
+     angles 0 -165.93 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 -0.063 0
+       angles 6.446 0 -3.168
+      }
+     }
+    }
+   }
+  }
+ }
+ JWK_CheckpointController_68DCC49280B6AE3 {
+  coords 9000.124 119.177 9490.078
+  {
+   SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    coords 15.356 -0.804 9.861
+    angles 0 15.235 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.233 0
+      angles 5.101 0 5.944
+     }
+    }
+   }
+   $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    {
+     coords -9.547 0.174 -3.44
+     angles 0 12.236 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.168 0
+       angles 8.87 0 2.01
+      }
+     }
+    }
+    {
+     coords 10.539 0.333 -6.094
+     angles 0 11.858 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 -0.033 0
+       angles 0.047 0 0.427
+      }
+     }
+    }
+   }
+  }
+ }
+}
+JWK_TownEntity JWK_TownController_68DCC4997CA7C658 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Herati"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 8977.481 125.323 9406.242
+ {
+  PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+   components {
+    JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+     m_aTags {
+      BATTLE_AREA
+     }
+     m_bApplyFactionToParkingSpots 0
+    }
+   }
+   coords -0.211 -0.007 0.295
+   Points {
+    ShapePoint "{68DCC4996C35A4C3}" {
+     Position -49.788 -7.454 116.979
+    }
+    ShapePoint "{68DCC4996CD34D83}" {
+     Position 52.753 -6.734 113.032
+    }
+    ShapePoint "{68DCC4996CAC5EFC}" {
+     Position 102.963 -3.656 92.522
+    }
+    ShapePoint "{68DCC4996B62EEC8}" {
+     Position 134.941 -4.537 43.897
+    }
+    ShapePoint "{68DCC4996B4DFDB3}" {
+     Position 122.376 -3.172 -16.064
+    }
+    ShapePoint "{68DCC4996B196017}" {
+     Position 78.484 1.236 -87.701
+    }
+    ShapePoint "{68DCC4996BE88BB4}" {
+     Position 46.032 3.375 -111.906
+    }
+    ShapePoint "{68DCC4996BBF716A}" {
+     Position -11.387 1.729 -106.212
+    }
+    ShapePoint "{68DCC4996B8D2EFB}" {
+     Position -62.002 -0.15 -80.14
+    }
+    ShapePoint "{68DCC4996A5E88C9}" {
+     Position -98.15 0.82 -53.046
+    }
+    ShapePoint "{68DCC4996A174BD7}" {
+     Position -106.635 2.699 -7.456
+    }
+    ShapePoint "{68DCC4996AE7169D}" {
+     Position -103.741 1.821 35.396
+    }
+    ShapePoint "{68DCC4996AB621FE}" {
+     Position -91.565 0.543 71.839
+    }
+   }
+  }
+ }
+}

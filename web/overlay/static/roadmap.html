@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadmap — Intranet Tactique</title>
+    <meta name="description" content="Où en est le scénario : fait, en cours, à faire.">
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
+        /* Vue d'ensemble */
+        .ov{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin-bottom:22px;}
+        .ov-stat{display:flex;flex-direction:column;line-height:1.1;}
+        .ov-num{font-family:"Oswald";font-size:2rem;font-weight:600;}
+        .ov-lbl{font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
+        .ov-bar{flex:1;min-width:220px;height:14px;display:flex;border:1px solid var(--line);overflow:hidden;}
+        .ov-bar span{display:block;height:100%;}
+        .c-fait{color:var(--green);} .bg-fait{background:var(--green);}
+        .c-encours{color:var(--amber);} .bg-encours{background:var(--amber);}
+        .c-afaire{color:#7aa3c4;} .bg-afaire{background:#3a4a5a;}
+        /* Filtres */
+        .filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;}
+        .filt{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.76rem;}
+        /* Piliers */
+        .pil{background:var(--panel);border:1px solid var(--line);margin-bottom:14px;}
+        .pil-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;user-select:none;}
+        .pil-head:hover{background:rgba(61,139,255,.05);}
+        .pil-title{font-family:"Oswald";text-transform:uppercase;letter-spacing:.04em;font-size:1.02rem;color:var(--hi);flex:1;}
+        .pil-mini{height:8px;width:120px;display:flex;border:1px solid var(--line);overflow:hidden;flex:0 0 auto;}
+        .pil-mini span{display:block;height:100%;}
+        .pil-frac{font-family:"IBM Plex Mono";font-size:11px;color:var(--dim);white-space:nowrap;}
+        .pil-chev{font-size:.8rem;color:var(--dim);transition:transform .15s;}
+        .pil-chev.open{transform:rotate(90deg);}
+        .pil-body{border-top:1px solid var(--line);padding:6px 16px 12px;display:none;}
+        .pil.open .pil-body{display:block;}
+        /* Lignes d'items */
+        .it{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid rgba(122,163,196,.08);}
+        .it:last-child{border-bottom:none;}
+        .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:5px;}
+        .it-txt{flex:1;font-size:.9rem;color:var(--txt);}
+        .it.done .it-txt{color:var(--dim);}
+        .badge-st{font-family:"Oswald";text-transform:uppercase;font-size:9px;letter-spacing:.05em;padding:1px 6px;border:1px solid;white-space:nowrap;flex:0 0 auto;margin-top:2px;}
+        .pri{font-family:"Oswald";font-size:9px;font-weight:600;padding:1px 6px;white-space:nowrap;flex:0 0 auto;margin-top:2px;letter-spacing:.03em;}
+        .pri.P1{color:var(--red);border:1px solid var(--red);}
+        .pri.P2{color:var(--amber);border:1px solid var(--amber);}
+        .pri.P3{color:#7aa3c4;border:1px solid #3a4a5a;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="fx-grid"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            <span class="fw-bold">Roadmap</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/design" class="btn btn-outline-light btn-sm"><i class="bi bi-file-text me-1"></i>Doc</a>
+            <a href="/tests" class="btn btn-outline-light btn-sm"><i class="bi bi-clipboard-check me-1"></i>Tests</a>
+            <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-house"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="container" style="padding-top:90px;padding-bottom:60px;">
+    <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
+    <h1 class="display-6 fw-bold mb-1">Où en est le scénario</h1>
+    <p class="text-muted mb-4" style="max-width:640px">L'avancement de <b>FF - REMIXED - PVE</b>, pilier par pilier. Clique un pilier pour le détail. <a href="/design?doc=ff-remixed-roadmap" class="link-info">Version texte &amp; commentaires →</a></p>
+
+    <!-- Vue d'ensemble -->
+    <div class="ov">
+        <div class="ov-stat"><span class="ov-num c-fait" id="n-fait">0</span><span class="ov-lbl">Fait</span></div>
+        <div class="ov-stat"><span class="ov-num c-encours" id="n-encours">0</span><span class="ov-lbl">En cours</span></div>
+        <div class="ov-stat"><span class="ov-num c-afaire" id="n-afaire">0</span><span class="ov-lbl">À faire</span></div>
+        <div class="ov-bar" id="ov-bar" title="Progression globale"></div>
+    </div>
+
+    <div class="filters" id="filters"></div>
+    <div id="pillars"></div>
+</main>
+
+<footer class="footer mt-5 py-4">
+    <div class="container text-center credit-foot">
+        <span>Moteur carte · <a href="https://reforger.armaplatform.com/workshop/65E90CB6053F2791" target="_blank" rel="noopener">GTG LiveMap</a></span>
+    </div>
+</footer>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    // ===== DONNÉES ROADMAP (à maintenir — miroir de ROADMAP.md) =====
+    // s = fait | encours | afaire. p = P1|P2|P3 (uniquement pour afaire).
+    const ROADMAP = [
+      { pillar:"1 — Structure de campagne", items:[
+        { t:"Socle campagne (victoire/défaite FF natif, escalade Réoccupation)", s:"fait" },
+        { t:"Polish + tests ; anti-suicide camps/tickets", s:"encours" },
+        { t:"Phases de campagne explicites (débloque le matériel par palier)", s:"afaire", p:"P1" },
+        { t:"Campagnes tournantes (wipe + bascule chaque trimestre)", s:"afaire", p:"P3" },
+        { t:"Conflit inconnu au départ (POIs cachés révélés par l'intel)", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"2 — Renseignement & Fog of War", items:[
+        { t:"Carte vide pour les non-admins", s:"fait" },
+        { t:"Boucle intel + dialogue civil (ex-MCD intégré)", s:"fait" },
+        { t:"Révélation en coordonnées grille (plus de POI)", s:"fait" },
+        { t:"Papier d'intel = camp à nettoyer (2 sources : don civil + cadavre)", s:"fait" },
+        { t:"Missions DARC branchées sur l'intel (icônes cachées)", s:"fait" },
+        { t:"Notifs DARC/Réoccupation coupées + HUD de bataille masqué", s:"fait" },
+        { t:"Fiabilité/périssabilité (fausses pistes, camps 20 min, HVT)", s:"fait" },
+        { t:"Nettoyer les résidus base-game sur la carte vide", s:"encours" },
+        { t:"Forcer la recon : rien sur la carte sans intel (finir le fog)", s:"afaire", p:"P1" },
+        { t:"Système radio/signal (portée joueurs, fog par signal, antennes FOB, capture de tours)", s:"afaire", p:"P2" },
+        { t:"Infiltration / recon déguisée (disguise + détection)", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"3 — Économie de guerre & Logistique", items:[
+        { t:"Ravitaillement marine (caisse flottante à ramener)", s:"fait" },
+        { t:"Pillage de convois DARC (butin physique)", s:"fait" },
+        { t:"Usines FF actives (économie en continu, timeskip OFF)", s:"fait" },
+        { t:"Logistique vulnérable (contre-attaques Réoccupation)", s:"fait" },
+        { t:"Marine : modèle 3D navire + déblocage progressif ; klaxon bateau", s:"encours" },
+        { t:"État des lieux des bâtiments constructibles (prérequis Génie)", s:"afaire", p:"P1" },
+        { t:"Nouveaux bâtiments (défenses, dépôts, tours, PC, HESCO, AA)", s:"afaire", p:"P2" },
+        { t:"Construction progressive « à la pelle » (chantier monté par étapes)", s:"afaire", p:"P2" },
+        { t:"Gating par outil/véhicule + construire depuis un véhicule", s:"afaire", p:"P2" },
+        { t:"Déblocage progressif de matériel au fil de la campagne", s:"afaire", p:"P2" },
+        { t:"Véhicules génie plus rapides ; routes au sol ; porte-char/remorque", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"4 — Civils & population", items:[
+        { t:"Identités civiles stables + confiance persistante (JSON)", s:"fait" },
+        { t:"Dialogues civils pilotés par la confiance", s:"fait" },
+        { t:"Frisk + option de dialogue « Fouiller »", s:"fait" },
+        { t:"Lien espion + contre-espionnage", s:"fait" },
+        { t:"Guerre asymétrique : mines ACE, voitures piégées, kamikazes, espions", s:"fait" },
+        { t:"Guerre asym : persistance, kamikaze qui marche vers le joueur, sleeper cell", s:"encours" },
+        { t:"Missions liées aux civils (soins, ravito, déminage, extraction)", s:"afaire", p:"P2" },
+      ]},
+      { pillar:"5 — Spawn, onboarding & vie serveur", items:[
+        { t:"FOB de départ auto + 0 supporter partout", s:"fait" },
+        { t:"Respawn FOB gratuit (jamais de lockout)", s:"fait" },
+        { t:"Auto-spawn sans map + hiérarchie MOB>FOB>Ville", s:"fait" },
+        { t:"Écran de mort custom", s:"fait" },
+        { t:"Cinématique d'intro (sautée si XP ≥ 500)", s:"fait" },
+        { t:"Textes d'accueil REMIXED (FR+EN)", s:"fait" },
+        { t:"Field Manual chapitre REMIXED (9 entrées + masquage 7 pages FF)", s:"fait" },
+        { t:"Groupes/escouades RP (11) + DÉPÔT + whitelist live", s:"fait" },
+        { t:"Radio au spawn (Thales ER328)", s:"fait" },
+        { t:"Réglages FF étendus", s:"fait" },
+        { t:"Commande admin #placefob : replacer la FOB de départ à sa position", s:"fait" },
+        { t:"Ville de départ setup-only : reconfig runtime ; départ depuis l'eau", s:"encours" },
+        { t:"Admin choisit le point de spawn sans redémarrer", s:"afaire", p:"P2" },
+        { t:"PNJ « guide » dans la tente de commandement", s:"afaire", p:"P2" },
+        { t:"Accueil nouveaux/quartiers escouade ; zone training ; inconscience à la déco", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"6 — Aérien, anti-aérien & drones", items:[
+        { t:"Hélico ennemi ravitailleur (Mi8)", s:"fait" },
+        { t:"IA anti-hélico Stingers (validé) + fix mod", s:"fait" },
+        { t:"Drones ennemis (Mavic recon + FPV) + doctrine recon-first", s:"fait" },
+        { t:"Jammers (joueur, soldat, véhicule ennemi, situationnel + batterie)", s:"fait" },
+        { t:"Drones joueur dans l'arsenal + slot lunettes FPV", s:"fait" },
+        { t:"Hélico ravito : épave pillable ; jammer destructible (attend collider)", s:"encours" },
+        { t:"Brique D : jammer installable sur véhicule joueur", s:"afaire", p:"P2" },
+        { t:"Fumigènes défensifs IA sur véhicules ennemis (réaction AT)", s:"afaire", p:"P2" },
+        { t:"Anti-farm drone ; hélico vs hélico (REAPER) ; DCA à casser ; sling load", s:"afaire", p:"P3" },
+        { t:"Flux drone longue-portée QG → télémétrie livemap (pas de vidéo, mur moteur)", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"7 — IA & comportements", items:[
+        { t:"Difficulté IA réglable en live par force (5 sliders)", s:"fait" },
+        { t:"Attaque de convois débloquée par l'intel ; anti-camping", s:"afaire", p:"P2" },
+        { t:"Renforts IA multi-vecteurs ; améliorer l'IA véhicule", s:"afaire", p:"P2" },
+        { t:"Patrouilles sur la ligne de front (vérifier si FF/Réoccupation le fait déjà)", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"8 — Véhicules, ennemi moderne & AMF", items:[
+        { t:"Reskin USSR → TacticalFlava (ennemi moderne)", s:"fait" },
+        { t:"Véhicules ennemis TF (Tigr/Grad/2B9)", s:"fait" },
+        { t:"Réalisme : buissons, sway ADS, arme étrangère", s:"fait" },
+        { t:"Re-bake de tous les prefabs (fix crash dédié)", s:"fait" },
+        { t:"Clé de véhicule (procuré verrouillé au demandeur)", s:"fait" },
+        { t:"Verrou véhicules ennemis vides (Phase 1)", s:"fait" },
+        { t:"Reskin FIA → Armée française AMF (persos, véhicules, spawn, faction)", s:"fait" },
+        { t:"Tri de l'arsenal par catégorie + sacs limités aux 3 TECPACK + batteries", s:"fait" },
+        { t:"AMF : valider mags, repositionner caisses, tenues FIA ; tri arsenal (style)", s:"encours" },
+        { t:"Véhicules ennemis vides Phase 2 : remorquer + vendre", s:"afaire", p:"P2" },
+        { t:"Usure par type ; partage manuel de clé + gating par tier", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"9 — État-major & terminaux", items:[
+        { t:"Procurement véhicule validé par l'état-major (#demandes)", s:"fait" },
+        { t:"Terminaux/PC physiques (sous-missions, achats) + pont web", s:"afaire", p:"P2" },
+        { t:"Radio tactique (portée, carte tactique, retransmission caméra)", s:"afaire", p:"P3" },
+      ]},
+      { pillar:"Transverse", items:[
+        { t:"Grades/XP Fleet (temps de jeu, plafond au grade)", s:"fait" },
+        { t:"Économie de respawn (prix 1, anti-suicide)", s:"fait" },
+        { t:"Garage repensé", s:"fait" },
+        { t:"Outils admin (#setsupply, #build, #demandes)", s:"fait" },
+        { t:"Trancher les dépendances externes (ACE, drones, sling load, REAPER)", s:"afaire", p:"P1" },
+        { t:"Arsenal : corriger armory, loadouts préconfigurés, coût supplies FOB, contrôle site", s:"afaire", p:"P2" },
+        { t:"Persistance XP inter-session (prestige)", s:"afaire", p:"P2" },
+        { t:"Réputation/moral ; médical/évac ; Discord ; météo & jour-nuit tactiques", s:"afaire", p:"P3" },
+      ]},
+    ];
+
+    const ST = { fait:{lbl:"Fait",cls:"fait",dot:"var(--green)"}, encours:{lbl:"En cours",cls:"encours",dot:"var(--amber)"}, afaire:{lbl:"À faire",cls:"afaire",dot:"#3a4a5a"} };
+    let filter = 'all';
+
+    function counts(items){ const c={fait:0,encours:0,afaire:0}; items.forEach(i=>c[i.s]++); return c; }
+
+    function renderOverview() {
+        const all = ROADMAP.flatMap(p=>p.items); const c = counts(all); const tot = all.length;
+        document.getElementById('n-fait').textContent = c.fait;
+        document.getElementById('n-encours').textContent = c.encours;
+        document.getElementById('n-afaire').textContent = c.afaire;
+        const pct = s => (c[s]/tot*100).toFixed(1)+'%';
+        document.getElementById('ov-bar').innerHTML =
+            `<span class="bg-fait" style="width:${pct('fait')}"></span>`+
+            `<span class="bg-encours" style="width:${pct('encours')}"></span>`+
+            `<span class="bg-afaire" style="width:${pct('afaire')}"></span>`;
+        document.getElementById('ov-bar').title = `${c.fait} fait / ${c.encours} en cours / ${c.afaire} à faire (${tot} au total)`;
+    }
+
+    function renderFilters() {
+        const defs = [['all','Tout'],['fait','Fait'],['encours','En cours'],['afaire','À faire'],['P1','Priorité 1'],['P2','Priorité 2'],['P3','Priorité 3']];
+        document.getElementById('filters').innerHTML = defs.map(([k,l]) =>
+            `<button class="btn btn-outline-light filt ${k===filter?'active':''}" data-f="${k}">${l}</button>`).join('');
+        document.querySelectorAll('#filters button').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.f;renderFilters();renderPillars();}));
+    }
+
+    function match(it) {
+        if (filter==='all') return true;
+        if (filter==='fait'||filter==='encours'||filter==='afaire') return it.s===filter;
+        return it.s==='afaire' && it.p===filter; // P1/P2/P3
+    }
+
+    function renderPillars() {
+        const host = document.getElementById('pillars');
+        host.innerHTML = ROADMAP.map((p, idx) => {
+            const shown = p.items.filter(match);
+            if (!shown.length) return '';
+            const c = counts(p.items); const tot = p.items.length;
+            const pct = s => (c[s]/tot*100).toFixed(1)+'%';
+            const rows = shown.map(it => {
+                const st = ST[it.s];
+                const pri = (it.s==='afaire' && it.p) ? `<span class="pri ${it.p}">${it.p}</span>` : '';
+                return `<div class="it ${it.s==='fait'?'done':''}">
+                    <span class="dot" style="background:${st.dot}"></span>
+                    <span class="it-txt">${esc(it.t)}</span>
+                    ${pri}
+                    <span class="badge-st c-${st.cls}" style="border-color:${st.dot}">${st.lbl}</span>
+                </div>`;
+            }).join('');
+            return `<div class="pil ${filter!=='all'?'open':''}" data-i="${idx}">
+                <div class="pil-head">
+                    <i class="bi bi-chevron-right pil-chev ${filter!=='all'?'open':''}"></i>
+                    <span class="pil-title">Pilier ${esc(p.pillar)}</span>
+                    <span class="pil-frac">${c.fait}/${tot}</span>
+                    <span class="pil-mini" title="${c.fait} fait / ${c.encours} en cours / ${c.afaire} à faire">
+                        <span class="bg-fait" style="width:${pct('fait')}"></span>
+                        <span class="bg-encours" style="width:${pct('encours')}"></span>
+                        <span class="bg-afaire" style="width:${pct('afaire')}"></span>
+                    </span>
+                </div>
+                <div class="pil-body">${rows}</div>
+            </div>`;
+        }).join('');
+        host.querySelectorAll('.pil-head').forEach(h=>h.addEventListener('click',()=>{
+            const pil=h.closest('.pil'); const open=pil.classList.toggle('open');
+            h.querySelector('.pil-chev').classList.toggle('open',open);
+        }));
+    }
+
+    renderOverview(); renderFilters(); renderPillars();
+});
+</script>
+</body>
+</html>

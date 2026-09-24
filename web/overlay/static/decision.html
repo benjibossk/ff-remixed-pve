@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Décisions — Système de construction</title>
+    <meta name="description" content="Comparatif visuel des options pour le système de construction / génie.">
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
+
+        /* ---- Acquis : des pastilles, pas un pavé ---- */
+        .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px;margin-bottom:30px;}
+        .fact{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--green);padding:11px 13px;}
+        .fact i{color:var(--green);font-size:1.15rem;}
+        .fact b{display:block;font-family:"Oswald";text-transform:uppercase;letter-spacing:.04em;font-size:.82rem;color:var(--txt);margin:5px 0 3px;}
+        .fact span{font-size:.79rem;color:var(--dim);line-height:1.35;}
+
+        /* ---- Décision ---- */
+        .dec{background:var(--panel);border:1px solid var(--line);margin-bottom:20px;}
+        .dec-head{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+        .dec-num{font-family:"IBM Plex Mono";font-size:10px;color:var(--blue);border:1px solid var(--blue);padding:1px 6px;}
+        .dec-q{font-family:"Oswald";text-transform:uppercase;letter-spacing:.04em;font-size:1.02rem;color:var(--hi);margin:0;}
+        .dec-why{flex-basis:100%;font-size:.79rem;color:var(--dim);margin:0;}
+
+        .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px;padding:15px;}
+        .opt{border:1px solid var(--line);background:rgba(0,0,0,.22);padding:12px;cursor:pointer;transition:.12s;position:relative;display:flex;flex-direction:column;gap:9px;}
+        .opt:hover{border-color:var(--blue);}
+        .opt.sel{border-color:var(--blue);background:rgba(61,139,255,.12);}
+        .opt.sel .pick{border-color:var(--blue);background:var(--blue);color:#06101f;}
+        .opt-t{font-family:"Oswald";text-transform:uppercase;letter-spacing:.03em;font-size:.88rem;color:var(--txt);display:flex;align-items:center;gap:7px;}
+        .pick{width:17px;height:17px;min-width:17px;border:1px solid var(--dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;}
+        .reco{font-family:"Oswald";text-transform:uppercase;letter-spacing:.04em;font-size:8.5px;border:1px solid var(--green);color:var(--green);padding:1px 5px;margin-left:auto;}
+        .opt-d{font-size:.8rem;color:var(--dim);line-height:1.35;}
+
+        /* ---- Le schéma : c'est lui qu'on lit en premier ---- */
+        .flow{display:flex;align-items:stretch;gap:0;background:rgba(0,0,0,.3);border:1px solid var(--line);}
+        .stp{flex:1;padding:7px 3px;text-align:center;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;}
+        .stp:last-child{border-right:0;}
+        .stp i{font-size:1.05rem;color:var(--dim);}
+        .stp span{font-family:"IBM Plex Mono";font-size:8.5px;color:var(--dim);line-height:1.15;word-break:break-word;}
+        .stp.hot{background:rgba(226,165,58,.13);}
+        .stp.hot i,.stp.hot span{color:var(--amber);}
+        .stp.on{background:rgba(63,185,80,.13);}
+        .stp.on i,.stp.on span{color:var(--green);}
+        .flow-key{font-family:"IBM Plex Mono";font-size:8.5px;color:var(--dim);margin-top:-4px;}
+
+        /* ---- Jauges : effort / richesse ---- */
+        .gauges{display:flex;gap:10px;}
+        .g{flex:1;}
+        .g-l{font-family:"IBM Plex Mono";font-size:8.5px;color:var(--dim);display:flex;justify-content:space-between;margin-bottom:2px;}
+        .g-bar{height:4px;background:rgba(255,255,255,.08);}
+        .g-fill{height:100%;}
+        .g-fill.eff{background:var(--amber);}
+        .g-fill.val{background:var(--green);}
+
+        .dec-foot{border-top:1px solid var(--line);padding:10px 16px;}
+        .thread{margin-top:10px;}
+        .fb{border-left:2px solid var(--line);padding:4px 0 4px 12px;margin:8px 0;}
+        .fb-meta{font-family:"IBM Plex Mono";font-size:10px;color:var(--dim);margin-bottom:2px;display:flex;gap:8px;align-items:center;}
+        .fb-author{color:var(--blue);}
+        .fb-body{font-size:.86rem;color:var(--txt);white-space:pre-wrap;word-break:break-word;}
+        .fb-empty{font-size:.82rem;color:var(--dim);font-style:italic;}
+        .fb-del{cursor:pointer;color:var(--red);opacity:.6;font-size:.75rem;margin-left:auto;}
+
+        /* ---- Récap : DANS LE FLUX, plus en superposition ---- */
+        .recap{background:#0a1220;border:1px solid var(--blue);padding:16px;margin-top:8px;}
+        .recap h2{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.95rem;color:var(--blue);margin-bottom:12px;}
+        .rl{display:flex;gap:9px;align-items:baseline;font-size:.82rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+        .rl b{font-family:"IBM Plex Mono";font-size:10px;color:var(--blue);min-width:20px;}
+        .rl u{text-decoration:none;color:var(--dim);flex:1;}
+        .rl em{font-style:normal;color:var(--txt);font-weight:600;text-align:right;}
+        .rl em.none{color:#4a5666;font-weight:400;}
+
+        /* Compteur flottant : petit, ne masque rien. */
+        .float-n{position:fixed;right:16px;bottom:16px;z-index:40;background:#0a1220;border:1px solid var(--blue);
+            color:var(--blue);font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.76rem;
+            padding:7px 13px;cursor:pointer;text-decoration:none;}
+        .float-n:hover{background:var(--blue);color:#06101f;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="fx-grid"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            <span class="fw-bold">Décisions</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-house"></i></a>
+            <div id="user-display"></div>
+        </div>
+    </div>
+</nav>
+
+<main class="container" style="padding-top:88px;padding-bottom:50px;max-width:1150px">
+    <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
+    <h1 class="display-6 fw-bold mb-1">Système de construction</h1>
+    <p class="text-muted mb-4" style="max-width:660px">
+        Mettre en avant <b>la logistique et le génie</b> — sans bâtiments qui apparaissent d'un coup,
+        sans corvée qui lasse. <b>Une option par question</b>, le bilan est en bas.
+    </p>
+
+    <div id="guest-note" class="alert alert-warning py-2 d-none" role="alert">
+        <i class="bi bi-lock me-1"></i> Connecte-toi via Discord pour commenter.
+        <a href="/auth/discord/login" class="alert-link">S'engager</a>.
+    </div>
+
+    <div class="facts">
+        <div class="fact"><i class="bi bi-hammer"></i><b>Le chantier est gratuit</b><span>Prefab, action « Construire », progression et réseau : tout existe déjà dans le jeu de base.</span></div>
+        <div class="fact"><i class="bi bi-people"></i><b>L'effort est collectif</b><span>Chaque coup de pelle ajoute la valeur de l'outil. À plusieurs, un chantier va plus vite — nativement.</span></div>
+        <div class="fact"><i class="bi bi-plug"></i><b>Rien n'est lié à Conflict</b><span>Le composant réseau est sur le contrôleur joueur standard, dont FF hérite.</span></div>
+        <div class="fact"><i class="bi bi-x-octagon"></i><b>Kodii ≠ logistique</b><span>Relecture complète : aucun coût en matériaux. C'est un modèle de geste, pas d'économie.</span></div>
+        <div class="fact"><i class="bi bi-cash-stack"></i><b>Le coût est déplaçable</b><span>Les supplies sont prélevées par l'appelant : les mettre à 0 suffit pour passer aux matériaux.</span></div>
+    </div>
+
+    <div id="decisions"></div>
+    <div class="recap" id="recap"></div>
+</main>
+
+<a href="#recap" class="float-n" id="float-n">0/5 tranché</a>
+
+<footer class="footer mt-5 py-4">
+    <div class="container text-center credit-foot">
+        <span>Moteur carte · <a href="https://reforger.armaplatform.com/workshop/65E90CB6053F2791" target="_blank" rel="noopener">GTG LiveMap</a></span>
+        <div class="mt-2"><a href="/privacy.html" class="mx-2">Confidentialité</a></div>
+    </div>
+</footer>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const API = '/api/v1';
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+    let me = null;
+
+    // ======================================================================================
+    //  LES DÉCISIONS
+    //
+    //  `key` = identifiant STABLE : il relie les commentaires déjà écrits. NE JAMAIS le changer
+    //  (on peut reformuler `q` librement). Les fils réutilisent l'API générique des
+    //  commentaires (/tests/:key/comments) : aucune table ni route nouvelle côté serveur.
+    //
+    //  `flow`  = la chaîne de gestes du joueur : [icône, libellé, style].
+    //            style 'hot' = c'est là que se situe l'effort ; 'on' = le résultat.
+    //            C'EST LE COEUR DE LA PAGE : on doit pouvoir comparer sans lire.
+    //  `eff`   = charge de développement (0-100), `val` = apport de jeu (0-100).
+    //  `d`     = UNE phrase. Si ça dépasse deux lignes, c'est que ça va dans le fil de discussion.
+    // ======================================================================================
+    const DECISIONS = [
+    {
+      key:'decision-portee-v1', q:"Jusqu'où va la première version ?",
+      why:"Chaque palier est testable en jeu avant d'engager le suivant.",
+      options:[
+        { id:'chantier-seul', t:"Chantier seul", reco:true, eff:15, val:55,
+          flow:[['ui-checks-grid','Menu J',''],['geo-alt','Poser',''],['hammer','Pelleter','hot'],['house-check','Bâtiment','on']],
+          d:"Coûts actuels inchangés : on remplace juste l'apparition instantanée par un chantier à monter." },
+        { id:'chantier-materiaux', t:"Chantier + matériaux", eff:55, val:85,
+          flow:[['cart','Acheter','hot'],['truck','Convoyer','hot'],['geo-alt','Poser',''],['hammer','Pelleter','hot'],['house-check','Bâtiment','on']],
+          d:"Des caisses à acheter au dépôt et à transporter : c'est là que naît vraiment la logistique." },
+        { id:'complet', t:"Complet, usines typées", eff:90, val:95,
+          flow:[['flag','Capturer','hot'],['cart','Acheter','hot'],['truck','Convoyer','hot'],['hammer','Pelleter','hot'],['house-check','Bâtiment','on']],
+          d:"Scierie, cimenterie, ferme : ce qu'on tient décide de ce qu'on bâtit. À valider sur Anizay d'abord." },
+      ]},
+    {
+      key:'decision-geste', q:"Quel geste pour construire ?",
+      why:"C'est ce que le joueur fait réellement. Le reste n'est que règles.",
+      options:[
+        { id:'pelle-chantier', t:"Pelle sur chantier", reco:true, eff:10, val:75,
+          flow:[['geo-alt','Chantier',''],['hand-index','Maintenir','hot'],['bar-chart-steps','Progression',''],['house-check','Fini','on']],
+          d:"Le système natif tel quel : interruptible, reprenable, plus rapide à plusieurs." },
+        { id:'modulaire', t:"Pose modulaire (Kodii)", eff:95, val:60,
+          flow:[['box','Fondation','hot'],['bricks','Mur','hot'],['door-closed','Porte','hot'],['border-top','Toit','hot']],
+          d:"Pièce par pièce. Très libre, très long à produire, incompatible avec les zones et budgets FF." },
+        { id:'instantane', t:"Garder l'instantané", eff:0, val:10,
+          flow:[['ui-checks-grid','Menu J',''],['cash','Payer',''],['magic','Apparaît','hot']],
+          d:"On ne change rien — mais le génie n'a alors aucun métier propre." },
+      ]},
+    {
+      key:'decision-cout', q:"Matériaux à la place des supplies, ou en plus ?",
+      why:"Question d'équilibre : elle décide si construire devient plus cher qu'aujourd'hui.",
+      options:[
+        { id:'remplacent', t:"À la place", reco:true, eff:20, val:70,
+          flow:[['cash-coin','Supplies : 0',''],['boxes','Matériaux','hot'],['house-check','Bâtiment','on']],
+          d:"Le prix ne monte pas, il change de nature : on paie en transport plutôt qu'en points." },
+        { id:'sajoutent', t:"En plus", eff:20, val:40,
+          flow:[['cash-coin','Supplies','hot'],['boxes','Matériaux','hot'],['house-check','Bâtiment','on']],
+          d:"Chaque bâtiment devient précieux, mais la progression peut se figer complètement." },
+        { id:'mixte', t:"Selon la taille", eff:35, val:80,
+          flow:[['bricks','Petit : supplies',''],['boxes','Gros : matériaux','hot'],['house-check','Bâtiment','on']],
+          d:"Fortifications en supplies, bâtiments en matériaux. Plus juste, une règle de plus à expliquer." },
+      ]},
+    {
+      key:'decision-qui', q:"Qui a le droit de construire ?",
+      why:"Aujourd'hui : le Génie seul. À confirmer maintenant que construire prendra du temps.",
+      options:[
+        { id:'genie-plus', t:"Génie pose, tous aident", reco:true, eff:15, val:85,
+          flow:[['person-badge','Génie pose','hot'],['people','Tous pelletent','on'],['house-check','Fini','on']],
+          d:"Le génie garde la décision, l'effort devient collectif. Jamais bloquant, et le génie reste indispensable." },
+        { id:'genie-seul', t:"Le Génie seul", eff:0, val:50,
+          flow:[['person-badge','Génie pose','hot'],['person-badge','Génie pellette','hot'],['house-check','Fini','on']],
+          d:"État actuel. Fort identitairement, mais sans un génie connecté la base n'évolue pas de la soirée." },
+        { id:'tous', t:"Tout le monde", eff:5, val:25,
+          flow:[['people','N\'importe qui','hot'],['house-check','Fini','on']],
+          d:"Zéro friction, mais l'escouade spécialisée perd son sens." },
+      ]},
+    {
+      key:'decision-duree', q:"Combien de temps pour monter un ouvrage ?",
+      why:"Le vrai risque de lassitude est ici : maintenir une touche sans que rien ne bouge à l'écran.",
+      options:[
+        { id:'court', t:"Court — l'effort est le trajet", reco:true, eff:10, val:80,
+          flow:[['truck','Convoi : long','hot'],['stopwatch','Pelleter : 30 s',''],['house-check','Fini','on']],
+          d:"Sacs de sable : quelques secondes. Bunker : une minute. FOB : un convoi." },
+        { id:'long', t:"Long — le chantier est l'épreuve", eff:10, val:45,
+          flow:[['truck','Convoi : court',''],['stopwatch','Pelleter : 5 min +','hot'],['house-check','Fini','on']],
+          d:"Chaque construction devient mémorable — et une punition pour le joueur isolé." },
+        { id:'progressif', t:"Proportionnel au bâtiment", eff:30, val:85,
+          flow:[['bricks','Petit : 10 s',''],['house','Moyen : 1 min','hot'],['buildings','Lourd : 5 min','hot']],
+          d:"Le plus satisfaisant, mais demande une passe de réglage après les premiers tests." },
+      ]},
+    ];
+
+    const picks = {};
+
+    const flowHtml = f => '<div class="flow">' + f.map(([ico, lbl, k]) =>
+        `<div class="stp ${k}"><i class="bi bi-${ico}"></i><span>${esc(lbl)}</span></div>`).join('') + '</div>';
+
+    const gauges = o => `
+        <div class="gauges">
+          <div class="g"><div class="g-l"><span>Charge de dev</span><span>${o.eff}%</span></div>
+            <div class="g-bar"><div class="g-fill eff" style="width:${o.eff}%"></div></div></div>
+          <div class="g"><div class="g-l"><span>Apport de jeu</span><span>${o.val}%</span></div>
+            <div class="g-bar"><div class="g-fill val" style="width:${o.val}%"></div></div></div>
+        </div>`;
+
+    function render(){
+        document.getElementById('decisions').innerHTML = DECISIONS.map((d, n) => `
+            <div class="dec">
+                <div class="dec-head">
+                    <span class="dec-num">D${n + 1}</span>
+                    <h2 class="dec-q">${esc(d.q)}</h2>
+                    <p class="dec-why">${esc(d.why)}</p>
+                </div>
+                <div class="opts">
+                    ${d.options.map(o => `
+                        <div class="opt" data-key="${esc(d.key)}" data-opt="${esc(o.id)}">
+                            <div class="opt-t"><span class="pick"><i class="bi bi-check-lg"></i></span>${esc(o.t)}${o.reco ? '<span class="reco">Recommandé</span>' : ''}</div>
+                            ${flowHtml(o.flow)}
+                            <div class="opt-d">${esc(o.d)}</div>
+                            ${gauges(o)}
+                        </div>`).join('')}
+                </div>
+                <div class="dec-foot">
+                    <button class="btn btn-outline-light btn-sm toggle-thread" data-key="${esc(d.key)}">
+                        <i class="bi bi-chat-left-text me-1"></i>Discussion
+                    </button>
+                    <div class="thread d-none" id="th-${esc(d.key)}"></div>
+                </div>
+            </div>`).join('')
+            + `<div class="flow-key mb-3"><span style="color:var(--amber)">■</span> là où se situe l'effort &nbsp;·&nbsp; <span style="color:var(--green)">■</span> le résultat</div>`;
+
+        document.querySelectorAll('.opt').forEach(el => el.addEventListener('click', () => {
+            const k = el.dataset.key;
+            if (picks[k] === el.dataset.opt) delete picks[k]; else picks[k] = el.dataset.opt;
+            document.querySelectorAll(`.opt[data-key="${k}"]`).forEach(o =>
+                o.classList.toggle('sel', picks[k] === o.dataset.opt));
+            renderRecap();
+        }));
+
+        document.querySelectorAll('.toggle-thread').forEach(b => b.addEventListener('click', () => {
+            const box = document.getElementById('th-' + b.dataset.key);
+            box.classList.toggle('d-none');
+            if (!box.classList.contains('d-none')) loadThread(b.dataset.key);
+        }));
+
+        renderRecap();
+    }
+
+    function renderRecap(){
+        const done = Object.keys(picks).length;
+        document.getElementById('float-n').textContent = `${done}/${DECISIONS.length} tranché`;
+        document.getElementById('recap').innerHTML = `
+            <h2><i class="bi bi-clipboard-check me-1"></i>Notre choix (${done}/${DECISIONS.length})</h2>
+            ${DECISIONS.map((d, n) => {
+                const o = d.options.find(x => x.id === picks[d.key]);
+                return `<div class="rl"><b>D${n + 1}</b><u>${esc(d.q)}</u>
+                    <em class="${o ? '' : 'none'}">${o ? esc(o.t) : '—'}</em></div>`;
+            }).join('')}
+            <button class="btn btn-primary btn-sm mt-3" id="save-pick" ${done ? '' : 'disabled'}>
+                <i class="bi bi-send me-1"></i>Enregistrer dans la discussion
+            </button>
+            <div class="small text-muted mt-2">Publié comme message signé sous chaque question. Recliquer une option l'annule.</div>`;
+        const btn = document.getElementById('save-pick');
+        if (btn) btn.addEventListener('click', savePicks);
+    }
+
+    async function savePicks(){
+        const btn = document.getElementById('save-pick');
+        btn.disabled = true; btn.textContent = 'Enregistrement…';
+        for (const d of DECISIONS){
+            const o = d.options.find(x => x.id === picks[d.key]);
+            if (!o) continue;
+            try {
+                await fetch(`${API}/tests/${encodeURIComponent(d.key)}/comments`, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ body: 'CHOIX : ' + o.t })
+                });
+            } catch(_) {}
+        }
+        btn.innerHTML = '<i class="bi bi-check2 me-1"></i>Enregistré';
+        document.querySelectorAll('.thread:not(.d-none)').forEach(t => loadThread(t.id.slice(3)));
+        setTimeout(renderRecap, 1600);
+    }
+
+    async function loadThread(key){
+        const box = document.getElementById('th-' + key);
+        let items = [];
+        try { items = await (await fetch(`${API}/tests/${encodeURIComponent(key)}/comments`)).json() || []; } catch(_) {}
+
+        const list = items.length ? items.map(c => `
+            <div class="fb">
+                <div class="fb-meta">
+                    <span class="fb-author">${esc(c.author_name || 'Anonyme')}</span>
+                    <span>${c.created_at ? new Date(c.created_at).toLocaleString('fr-FR') : ''}</span>
+                    ${me && (me.is_admin || me.id === c.user_id) ? `<span class="fb-del" data-id="${c.id}"><i class="bi bi-trash"></i></span>` : ''}
+                </div>
+                <div class="fb-body">${esc(c.body)}</div>
+            </div>`).join('') : '<div class="fb-empty">Aucun message.</div>';
+
+        const form = me ? `
+            <div class="input-group input-group-sm mt-2">
+                <textarea class="form-control" rows="2" id="ta-${esc(key)}" placeholder="Ton avis, tes réserves…"></textarea>
+                <button class="btn btn-outline-primary post-msg" data-key="${esc(key)}">Publier</button>
+            </div>` : '';
+
+        box.innerHTML = list + form;
+        box.querySelectorAll('.post-msg').forEach(b => b.addEventListener('click', () => postMsg(b.dataset.key)));
+        box.querySelectorAll('.fb-del').forEach(b => b.addEventListener('click', async () => {
+            if (!confirm('Supprimer ce message ?')) return;
+            try { await fetch(`${API}/comments/${b.dataset.id}`, { method:'DELETE' }); } catch(_) {}
+            loadThread(key);
+        }));
+    }
+
+    async function postMsg(key){
+        const ta = document.getElementById('ta-' + key);
+        const body = (ta.value || '').trim();
+        if (!body) return;
+        ta.disabled = true;
+        try {
+            const r = await fetch(`${API}/tests/${encodeURIComponent(key)}/comments`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ body })
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            ta.value = '';
+        } catch(e) { alert('Erreur : ' + e.message); }
+        ta.disabled = false;
+        loadThread(key);
+    }
+
+    (async () => {
+        try { const r = await fetch(`${API}/users/me`); if (r.ok) me = await r.json(); } catch(_) {}
+        if (!me) document.getElementById('guest-note').classList.remove('d-none');
+        render();
+    })();
+});
+</script>
+</body>
+</html>

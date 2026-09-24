@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal du serveur — Intranet Tactique</title>
+    <meta name="description" content="Qui s'est connecté, qui a tiré sur qui, ce qui s'est dit : le journal de bord du serveur.">
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
+        .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px;}
+        .bar .form-control,.bar .form-select{max-width:210px;background:var(--panel);border-color:var(--line);color:var(--txt);}
+        .chip{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.76rem;}
+        .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:20px;}
+        .kpi{background:var(--panel);padding:12px 14px;display:flex;flex-direction:column;gap:2px;}
+        .kpi .v{font-family:"Oswald";font-size:1.5rem;color:var(--hi);line-height:1;}
+        .kpi .l{font-family:"IBM Plex Mono";font-size:10px;color:var(--dim);text-transform:uppercase;}
+        table.j{width:100%;border-collapse:collapse;font-size:.87rem;}
+        table.j th{font-family:"Oswald";text-transform:uppercase;letter-spacing:.04em;font-size:.76rem;color:var(--dim);
+            text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+        table.j td{padding:7px 10px;border-bottom:1px solid rgba(122,163,196,.09);vertical-align:top;}
+        table.j tr:hover td{background:rgba(61,139,255,.05);}
+        .t-time{font-family:"IBM Plex Mono";font-size:11px;color:var(--dim);white-space:nowrap;}
+        .tag{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:9px;padding:2px 7px;white-space:nowrap;border:1px solid;}
+        .tag.CONNECT{border-color:var(--green);color:var(--green);}
+        .tag.DISCONNECT{border-color:var(--dim);color:var(--dim);}
+        .tag.KILL{border-color:var(--red);color:var(--red);}
+        .tag.CHAT{border-color:var(--blue);color:var(--blue);}
+        .tag.ADMIN{border-color:var(--amber);color:var(--amber);}
+        .tag.GAME{border-color:#39c2d1;color:#39c2d1;}
+        .who{color:var(--hi);font-weight:600;}
+        /* Un pseudo cliquable doit se voir SANS crier : soulignement discret au survol.
+           Souligner en permanence rendrait le journal illisible (il y a un pseudo par ligne). */
+        a.who-link{text-decoration:none;cursor:pointer;border-bottom:1px dotted rgba(255,255,255,.28);}
+        a.who-link:hover{color:#fff;border-bottom-color:currentColor;}
+        .plat{font-family:"IBM Plex Mono";font-size:10px;color:var(--dim);border:1px solid var(--line);padding:0 5px;margin-left:6px;}
+        .plat.console{color:var(--amber);border-color:rgba(226,165,58,.45);}
+        .msg{color:var(--dim);padding:26px 0;text-align:center;}
+        .ff{color:var(--red);font-family:"Oswald";font-size:.75rem;letter-spacing:.05em;margin-left:6px;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="fx-grid"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            <span class="fw-bold">Journal du serveur</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-house"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="container" style="padding-top:90px;padding-bottom:60px;">
+    <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
+    <h1 class="display-6 fw-bold mb-1">Journal de bord</h1>
+    <p class="text-muted" style="max-width:660px">Ce qui s'est passé sur le serveur : connexions, départs, combats.
+        Utile pour reconstituer une session, vérifier qu'un joueur arrive bien à entrer, ou instruire un litige.</p>
+
+    <div class="bar">
+        <select class="form-select form-select-sm" id="f-hours">
+            <option value="6">6 dernières heures</option>
+            <option value="24" selected>24 dernières heures</option>
+            <option value="72">3 jours</option>
+            <option value="168">7 jours</option>
+            <option value="720">30 jours</option>
+        </select>
+        <input class="form-control form-control-sm" id="f-player" placeholder="Filtrer par joueur…">
+        <div class="btn-group btn-group-sm" role="group" id="f-types"></div>
+        <button class="btn btn-sm btn-outline-light" id="f-reload"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+
+    <div class="bar" style="margin-bottom:20px">
+        <input class="form-control form-control-sm" id="say-text" style="max-width:520px"
+               placeholder="Message à afficher à tous les joueurs en jeu…" maxlength="200">
+        <button class="btn btn-sm btn-primary" id="say-send"><i class="bi bi-megaphone me-1"></i>Diffuser</button>
+        <span id="say-status" style="font-family:'IBM Plex Mono';font-size:11px;color:var(--dim)"></span>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+    <div id="body"></div>
+</main>
+
+<footer class="footer mt-5 py-4">
+    <div class="container text-center credit-foot">
+        <span>Moteur carte · <a href="https://reforger.armaplatform.com/workshop/65E90CB6053F2791" target="_blank" rel="noopener">GTG LiveMap</a></span>
+        <div class="mt-2"><a href="/privacy.html" class="mx-2">Confidentialité</a></div>
+    </div>
+</footer>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+const API = '/api/v1';
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const TYPES = [
+    { key:'CONNECT',    label:'Connexions' },
+    { key:'DISCONNECT', label:'Départs' },
+    { key:'KILL',       label:'Combats' },
+    { key:'CHAT',       label:'Chat' },
+    { key:'ADMIN',      label:'Admin' },
+];
+let active = new Set();      // vide = tout
+let curHours = 24;
+
+const api = async (path) => {
+    const r = await fetch(`${API}/${path}`);
+    if (!r.ok) throw new Error(`API ${r.status}`);
+    return r.status === 204 ? null : r.json();
+};
+
+// "platform-xbl" / "platform-psn" -> console (mis en avant : c'est ce qui permet de
+// verifier qu'un testeur console arrive bien a se connecter).
+function platBadge(p){
+    if (!p) return '';
+    const short = p.replace('platform-','');
+    const isConsole = /xbl|psn|xbox|playstation/i.test(p);
+    return `<span class="plat ${isConsole?'console':''}">${esc(short)}</span>`;
+}
+
+function timeCell(iso){
+    const d = new Date(iso);
+    const day = d.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit' });
+    const hm  = d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    return `${day}<br>${hm}`;
+}
+
+// ----------------------------------------------------------------------------------
+//  Pseudos cliquables -> fiche soldat
+//
+//  `who()` remplace l'ancien <span class="who">. Un pseudo ne devient un lien QUE si on
+//  connaît son GUID : sans identifiant, le lien mènerait à une fiche vide ou fausse (deux
+//  joueurs peuvent porter le même pseudo, et un pseudo se change).
+//
+//  Les IA sont exclues : leur identifiant ne désigne aucun joueur réel.
+//
+//  L'id du serveur voyage dans l'URL parce que la fiche d'un autre joueur est servie au
+//  périmètre du serveur — exactement les mêmes droits que ce journal.
+// ----------------------------------------------------------------------------------
+let CUR_SID = null;
+
+function who(name, uid, isAi){
+    const label = esc(name || '?');
+    if (!uid || isAi || !CUR_SID) return `<span class="who">${label}</span>`;
+    const href = `/soldier?uid=${encodeURIComponent(uid)}&server=${encodeURIComponent(CUR_SID)}`;
+    return `<a class="who who-link" href="${href}" title="Voir la fiche soldat de ${label}">${label}</a>`;
+}
+
+function describe(e){
+    switch (e.type){
+        case 'CONNECT':    return `${who(e.player, e.playerUid)}${platBadge(e.platform)} s'est connecté`;
+        case 'DISCONNECT': return `${who(e.player, e.playerUid)}${platBadge(e.platform)} a quitté le serveur`
+                                  + (e.message ? ` <span class="text-muted">(${esc(e.message)})</span>` : '');
+        case 'CHAT':       return `${who(e.player, e.playerUid)} : ${esc(e.message)}`;
+        case 'KILL': {
+            const w = e.weapon ? ` <span class="text-muted">(${esc(e.weapon)}${e.distance ? ', ' + Math.round(e.distance) + ' m' : ''})</span>` : '';
+            const ff = e.message === 'TIR AMI' ? '<span class="ff">TIR AMI</span>' : '';
+            const ai = e.isAi ? ' <span class="text-muted">[IA]</span>' : '';
+            return `${who(e.player, e.playerUid)} a tué ${who(e.target, e.targetUid, e.isAi)}${w}${ai}${ff}`;
+        }
+        default:
+            return `${who(e.player, e.playerUid)} ${esc(e.message || e.type)}`;
+    }
+}
+
+function renderTypes(){
+    document.getElementById('f-types').innerHTML = TYPES.map(t =>
+        `<button type="button" class="btn btn-sm chip ${active.has(t.key)?'btn-primary':'btn-outline-light'}" data-t="${t.key}">${t.label}</button>`
+    ).join('');
+    document.querySelectorAll('#f-types button').forEach(b => b.onclick = () => {
+        const k = b.dataset.t;
+        if (active.has(k)) active.delete(k); else active.add(k);
+        renderTypes(); load();
+    });
+}
+
+function renderKpis(rows){
+    const n = t => rows.filter(r => r.type === t).length;
+    const players = new Set(rows.filter(r => r.player).map(r => r.player)).size;
+    const consoles = new Set(rows.filter(r => /xbl|psn/i.test(r.platform || '')).map(r => r.player)).size;
+    document.getElementById('kpis').innerHTML = `
+        <div class="kpi"><span class="v">${rows.length}</span><span class="l">Évènements</span></div>
+        <div class="kpi"><span class="v">${players}</span><span class="l">Joueurs vus</span></div>
+        <div class="kpi"><span class="v">${n('CONNECT')}</span><span class="l">Connexions</span></div>
+        <div class="kpi"><span class="v">${n('KILL')}</span><span class="l">Éliminations</span></div>
+        <div class="kpi"><span class="v">${consoles}</span><span class="l">Sur console</span></div>`;
+}
+
+async function load(){
+    const body = document.getElementById('body');
+    body.innerHTML = `<div class="msg">Chargement…</div>`;
+
+    let sid = null;
+    try {
+        const act = await api('public/active-server');
+        if (act && act.id) sid = act.id;
+    } catch (_) {}
+    if (!sid){ body.innerHTML = `<div class="msg">Aucun serveur actif.</div>`; return; }
+    CUR_SID = sid;   // lu par who() pour construire les liens vers les fiches soldat
+
+    const qs = new URLSearchParams({ hours: String(curHours), limit: '800' });
+    const p = document.getElementById('f-player').value.trim();
+    if (p) qs.set('player', p);
+    if (active.size) qs.set('type', [...active].join(','));
+
+    let data;
+    try {
+        data = await api(`servers/${sid}/journal?${qs}`);
+    } catch (e) {
+        body.innerHTML = `<div class="msg">Accès refusé — cette page demande d'être connecté
+            avec un compte autorisé sur le serveur.<br><a href="/" class="link-info">Retour à l'accueil</a></div>`;
+        return;
+    }
+
+    const rows = (data && data.events) || [];
+    renderKpis(rows);
+
+    if (!rows.length){
+        body.innerHTML = `<div class="msg">Aucun évènement sur la période.<br>
+            <span style="font-size:.85rem">Si le journal reste vide alors que des joueurs se connectent,
+            c'est que le plugin Fleet n'envoie pas encore les évènements.</span></div>`;
+        return;
+    }
+
+    body.innerHTML = `<div style="overflow-x:auto"><table class="j">
+        <thead><tr><th>Quand</th><th>Type</th><th>Évènement</th></tr></thead>
+        <tbody>${rows.map(e => `
+            <tr>
+                <td class="t-time">${timeCell(e.timestamp)}</td>
+                <td><span class="tag ${esc(e.type)}">${esc(e.type)}</span></td>
+                <td>${describe(e)}</td>
+            </tr>`).join('')}</tbody></table></div>`;
+}
+
+// Diffuser un message aux joueurs : on empile un ordre "say" dans la file /commands,
+// que le plugin Fleet vient chercher et execute en jeu (popup). Pas de RCON : le port
+// d'administration reste ferme sur la machine du serveur.
+async function sendSay(){
+    const input = document.getElementById('say-text');
+    const status = document.getElementById('say-status');
+    const text = input.value.trim();
+    if (!text) return;
+
+    status.textContent = 'Envoi…';
+    let sid = null;
+    try {
+        const act = await api('public/active-server');
+        if (act && act.id) sid = act.id;
+    } catch (_) {}
+    if (!sid){ status.textContent = 'Aucun serveur actif.'; return; }
+
+    try {
+        const res = await fetch(`${API}/command`, {
+            method:'POST', credentials:'include', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ server_id: sid, type:'say', text })
+        });
+        if (!res.ok){
+            const d = await res.json().catch(()=>({}));
+            status.textContent = 'Échec : ' + (d.error || ('HTTP ' + res.status));
+            return;
+        }
+        input.value = '';
+        status.textContent = 'Diffusé — les joueurs le verront d\'ici quelques secondes.';
+        setTimeout(() => { status.textContent = ''; load(); }, 3000);
+    } catch(e){
+        status.textContent = 'Échec : ' + e.message;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderTypes();
+    document.getElementById('say-send').onclick = sendSay;
+    document.getElementById('say-text').addEventListener('keydown', e => { if (e.key === 'Enter') sendSay(); });
+    document.getElementById('f-hours').onchange = e => { curHours = +e.target.value; load(); };
+    document.getElementById('f-reload').onclick = load;
+    let t = null;
+    document.getElementById('f-player').oninput = () => { clearTimeout(t); t = setTimeout(load, 400); };
+    load();
+});
+</script>
+</body>
+</html>

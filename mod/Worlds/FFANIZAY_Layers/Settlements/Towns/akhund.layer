@@ -1,0 +1,100 @@
+JWK_TownEntity JWK_TownController_68DEC111431C4832 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_BattleSubjectComponent "{64B72BB65D41DFD9}" {
+   m_fEnemyMultiplier 1.38
+   m_bAllowEnemyArtillery 1
+  }
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Akhund"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 1986.698 152.186 2201.652
+ m_iTownRange 350
+ m_iPopulation 128
+ m_iTownType TOWN
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 1987.168 152.089 2199.44
+ Points {
+  ShapePoint "{68DEC111EDA6BA7C}" {
+   Position 234.014 7.052 376.645
+  }
+  ShapePoint "{68DEC111EC3070F6}" {
+   Position 384.788 8.799 135.189
+  }
+  ShapePoint "{68DEC111ECE4729F}" {
+   Position 421.615 -2.73 -44.68
+  }
+  ShapePoint "{68DEC111ECA6A228}" {
+   Position 325.316 6.769 -95.719
+  }
+  ShapePoint "{68DEC111EB673476}" {
+   Position 323.509 14.853 -282.597
+  }
+  ShapePoint "{68DEC111EB2EE067}" {
+   Position 321.571 17.146 -363.238
+  }
+  ShapePoint "{68DEC111EBD4DF74}" {
+   Position 320.557 21.63 -420.163
+  }
+  ShapePoint "{68DEC111EA36C80A}" {
+   Position 167.745 15.795 -371.42
+  }
+  ShapePoint "{68DEC111EAD7D2EB}" {
+   Position 76.971 14.254 -363.722
+  }
+  ShapePoint "{68DEC111EA962338}" {
+   Position -0.035 14.723 -396.67
+  }
+  ShapePoint "{68DEC111E945B92A}" {
+   Position -70.367 12.857 -420.697
+  }
+  ShapePoint "{68DEC111E902B03C}" {
+   Position -140.214 8.011 -448.679
+  }
+  ShapePoint "{68DEC111E9C17D3D}" {
+   Position -196.222 1.136 -463.042
+  }
+  ShapePoint "{68DEC111E984F757}" {
+   Position -251.864 -16.746 -442.422
+  }
+  ShapePoint "{68DEC111E835C435}" {
+   Position -271.083 -16.265 -311.494
+  }
+  ShapePoint "{68DEC111E8E47B26}" {
+   Position -264.223 -17.72 -135.993
+  }
+  ShapePoint "{68DEC111E899044A}" {
+   Position -275.89 -19.586 -20.418
+  }
+  ShapePoint "{68DEC111E75C4A16}" {
+   Position -309.966 -17.188 129.705
+  }
+  ShapePoint "{68DEC111E7114000}" {
+   Position -352.172 -15.619 238.448
+  }
+  ShapePoint "{68DEC111E7D198D5}" {
+   Position -362.615 -18.586 332.553
+  }
+  ShapePoint "{68DEC111E7940039}" {
+   Position -316.541 -9.964 406.616
+  }
+  ShapePoint "{68DEC111E6408BEC}" {
+   Position -55.497 -3.748 497.011
+  }
+  ShapePoint "{68DEC111E6080D6F}" {
+   Position 165.421 -2.638 491.836
+  }
+ }
+}

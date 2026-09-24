@@ -1,0 +1,13 @@
+JWK_GameMode : "{64B2F8D8059C8B1B}Prefabs/GameMode/FreedomFighters_Base.et" {
+ ID "6A447449AEAD8B24"
+ components {
+  JWK_PersistenceManagerComponent "{5D7009B844876186}" {
+   m_JWK_DatabaseBaseSubdir "/FFRX_Anizay"
+  }
+  JWK_WorldSettingsComponent "{647AF28EDBAC9BE6}" {
+   m_vMapOffset -175.833 -100 -200.383
+   m_vMapSize 10640.878 699.742 10546.158
+   m_sPlaceName "Anizay"
+  }
+ }
+}

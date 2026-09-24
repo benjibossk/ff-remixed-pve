@@ -1,0 +1,13 @@
+GenericEntity : "{87D337D54A418CFF}Prefabs/Structures/Infrastructure/Roads/Runway/RunwayDecal_Base.et" {
+ ID "6486577D08CE5C94"
+ components {
+  MeshObject "{51B2A74AA8E024AD}" {
+   Object "{A15AFACEB357F571}source/props/tem_heli_decal.xob"
+  }
+ 
+    JWK_AmbientParkingSpotComponent "{66FAC9AD1E052C0E}" {
+     m_fSpawnChanceOverride 0.5
+    }
+ }
+ coords 8474.981 111.531 6704.183
+}

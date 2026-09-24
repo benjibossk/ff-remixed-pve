@@ -1,0 +1,498 @@
+SCR_ChimeraCharacter MEIFIX_24_HeliCrew : "{013E137EEB9F000F}Prefabs/Characters/Factions/IND/MEI/Character_MEI_HeliCrew.et" {
+ coords 81.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter SF_Medic_S : "{029FF8F84148012E}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Suppressed/Character_USSR_SF_Medic_S.et" {
+ coords 82.936 1 100.783
+}
+SCR_ChimeraCharacter MEIFIX_18_Sapper : "{0482D36FE842BB41}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Sapper.et" {
+ coords 72.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter SF_LMG : "{0B8AC0C3C447F90E}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_LMG.et" {
+ coords 64.936 1 100.783
+}
+SCR_ChimeraCharacter NAVAL_PL : "{0BC506AD47804A53}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_PL.et" {
+ coords 92.936 1 95.783
+}
+SCR_ChimeraCharacter REG_Scout_RTO : "{0DC67B4DFFD7A361}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Scout_RTO.et" {
+ coords 84.936 1 85.783
+}
+SCR_ChimeraCharacter NAVAL_RTO : "{0E4D9E3249328533}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_RTO.et" {
+ coords 80.936 1 95.783
+}
+SCR_ChimeraCharacter MEIFIX_03_AR3 : "{0F4660898150BCA3}Prefabs/Characters/Factions/IND/MEI/Character_MEI_AR3.et" {
+ coords 49.686 1 114.783
+ angles 0 180 0
+}
+Vehicle FFRX_TIGR_KORD1 : "{107F34E25D045FE9}Prefabs/Vehicles/EnemyTF/FFRX_TIGR_KORD.et" {
+ coords 151.58 1 137.915
+}
+SCR_ChimeraCharacter MEIFIX_07_CC : "{1451CFEED16DB58C}Prefabs/Characters/Factions/IND/MEI/Character_MEI_CC.et" {
+ coords 55.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter KLMK_Rifleman : "{145DBC42B19FC4D6}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_Rifleman_KLMK.et" {
+ coords 60.936 1 90.783
+}
+SCR_ChimeraCharacter SF_RTO_S : "{1523C468AAF90312}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Suppressed/Character_USSR_SF_RTO_S.et" {
+ coords 84.936 1 100.783
+}
+SCR_ChimeraCharacter MEIFIX_08_GL : "{157C8AAF4C30BBDA}Prefabs/Characters/Factions/IND/MEI/Character_MEI_GL.et" {
+ coords 57.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_09_Leader : "{15CD0954AEE19BF2}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Leader.et" {
+ coords 58.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_20_Sharpshooter : "{16269A5F2CD693E4}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Sharpshooter.et" {
+ coords 75.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_01_AR : "{18A9F48EBB87D2F0}Prefabs/Characters/Factions/IND/MEI/Character_MEI_AR.et" {
+ coords 46.686 1 114.783
+ angles 0 180 0
+}
+Vehicle TIGR_04_AGS17_Tan : "{19A9036206E23B23}Prefabs/Vehicles/Wheeled/TIGR/AGS/GAZ_TIGR_v2_AGS17_Tan.et" {
+ coords 62 1 150.497
+ angles 0 180 0
+}
+Vehicle BTR70_Base1 : "{1C5FE7B7FF49BB8D}Prefabs/Modded/Vehicles/Wheeled/BTR70/BTR70_Base.et" {
+ coords 149.696 1 150.447
+}
+SCR_ChimeraCharacter REG_AT : "{1C78331E156A3D65}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_AT.et" {
+ coords 66.936 1 85.783
+}
+Vehicle VEH_04_LROffender : "{1D5A5769DBDE4F84}Vehicles/LR/LROffender_WZNP.et" {
+ coords 62 1 128.318
+ angles 0 180 0
+}
+Vehicle VEHTEST_BMP2b : "{1EF865DC4E3F7E0B}IFV/BMP2/BMP2_Olive_test.et" {
+ coords 58 1 122
+ angles 0 180 0
+}
+SCR_ChimeraCharacter NAVAL_LAT : "{1F8E131008DE0DD1}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_LAT.et" {
+ coords 68.936 1 95.783
+}
+SCR_ChimeraCharacter REG_AR : "{23ADBBC31B6A3DC6}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_AR.et" {
+ coords 62.936 1 85.783
+}
+SCR_ChimeraCharacter NAVAL_AT : "{27FB27EA116AC78C}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_AT.et" {
+ coords 66.936 1 95.783
+}
+SCR_ChimeraCharacter NAVAL_Unarmed : "{2BC3C5A7294A3289}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Unarmed.et" {
+ coords 98.936 1 95.783
+}
+SCR_ChimeraCharacter REG_Scout : "{2C490E2846A1E884}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Scout.et" {
+ coords 82.936 1 85.783
+}
+SCR_ChimeraCharacter SF_Rifleman : "{2DB452B3EC386B92}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF.et" {
+ coords 60.936 1 100.783
+}
+SCR_ChimeraCharacter MEIFIX_12_MG2 : "{307A5448B2E63ECC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_MG2.et" {
+ coords 63.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter REG_SR : "{333DA6244C7DA34C}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_SR.et" {
+ coords 92.936 1 85.783
+}
+SCR_ChimeraCharacter NAVAL_Medic : "{34D564602573EDA1}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Medic.et" {
+ coords 78.936 1 95.783
+}
+Vehicle VEH_03_HighLux_Armed : "{3819B48B7A01C28F}Vehicles/HighLux/KILUXnew7725_Armed.et" {
+ coords 56 1 128.318
+ angles 0 180 0
+}
+Vehicle FFRX_TIGR_Arbalet1 : "{3E198415CE15DF27}Prefabs/Vehicles/EnemyTF/FFRX_TIGR_Arbalet.et" {
+ coords 154.331 1 137.836
+}
+SCR_ChimeraCharacter REG_PL : "{426F7FAAC77A2A6D}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_PL.et" {
+ coords 94.936 1 85.783
+}
+Vehicle VEH_07_Bus : "{437E4B6E1ADDE85E}Vehicles/Bus/Zagorus.et" {
+ coords 44 1 137.214
+ angles 0 180 0
+}
+Vehicle Ural1 : "{4597626AF36C0858}Prefabs/Modded/Vehicles/Wheeled/Ural4320/Ural4320.et" {
+ coords 144.003 1 150.306
+}
+SCR_ChimeraCharacter MEIFIX_04_AT : "{46CBE7ED7435A25C}Prefabs/Characters/Factions/IND/MEI/Character_MEI_AT.et" {
+ coords 51.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter SF_S : "{4D20F57C29B6EC1D}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Suppressed/Character_USSR_SF_S.et" {
+ coords 78.936 1 100.783
+}
+SCR_ChimeraCharacter MEIFIX_16_Rifleman4 : "{4DA6B707B1D6839E}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman4.et" {
+ coords 69.186 1 114.783
+ angles 0 180 0
+}
+Vehicle VEH_01_HighLux : "{4EDDBACAAA368FAF}Vehicles/HighLux/KILUXnew7725.et" {
+ coords 44 1 128.318
+ angles 0 180 0
+}
+SCR_ChimeraCharacter NAVAL_Crew : "{4F56119D68E63FF8}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Crew.et" {
+ coords 94.936 1 95.783
+}
+SCR_ChimeraCharacter REG_Officer : "{5117311FB822FD1F}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Officer.et" {
+ coords 96.936 1 85.783
+}
+Vehicle VEH_09_ATV : "{521F48CA9E635A54}Vehicles/ATV/ATV2p.et" {
+ coords 54 1 137.214
+ angles 0 180 0
+}
+Vehicle TIGR_05_Arbalet_Tan : "{52687903BAAEC248}Prefabs/Vehicles/Wheeled/TIGR/ArbaletDM/GAZ_TIGR_v2_Arbalet_KORD_Tan.et" {
+ coords 68 1 150.497
+ angles 0 180 0
+}
+Vehicle BRDM2_base1 : "{532B5F3CF8496E59}Prefabs/Modded/Vehicles/Wheeled/BRDM2/BRDM2_base.et" {
+ coords 152.335 1 150.382
+}
+SCR_ChimeraCharacter REG_SL : "{5436629450D8387A}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_SL.et" {
+ coords 86.936 1 85.783
+}
+Vehicle VEH_08_Dnepr : "{552EE9910227FADE}Vehicles/Dnepr/Dnepr.et" {
+ coords 50 1 137.214
+ angles 0 180 0
+}
+SCR_ChimeraCharacter SF_SL : "{5811F02495F6810E}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_SL.et" {
+ coords 70.936 1 100.783
+}
+SCR_ChimeraCharacter NAVAL_AMG : "{5869A7B6451961B5}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_AMG.et" {
+ coords 72.936 1 95.783
+}
+Vehicle VEH_12_Boat : "{5CB6FA74D12645ED}Vehicles/RiverRunner/RiverRunner.et" {
+ coords 74 1 137.214
+ angles 0 180 0
+}
+GenericEntity : "{5E37C6EAF3E6A034}Prefabs/Props/Agriculture/Beehive_01/Beehive_01_base.et" {
+ coords 93.451 1 201.423
+}
+SCR_ChimeraCharacter SF_Sharpshooter_S : "{5EFF3963153BE048}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Suppressed/Character_USSR_SF_Sharpshooter_S.et" {
+ coords 90.936 1 100.783
+}
+SCR_ChimeraCharacter REG_RTO : "{612F43A4D5AE765F}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_RTO.et" {
+ coords 78.936 1 85.783
+}
+SCR_ChimeraCharacter REG_AAT : "{631158F6898738A4}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_AAT.et" {
+ coords 68.936 1 85.783
+}
+SCR_ChimeraCharacter NAVAL_Ammo : "{63B5AEDAB5EDE4B7}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Ammo.et" {
+ coords 74.936 1 95.783
+}
+KOS_TrackedVehicle VEHTEST_T55 : "{6484A98F55C6AA9E}T-55/T55olive.et" {
+ coords 50 1 122
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_05_AT2 : "{6A455C4D045B7B4F}Prefabs/Characters/Factions/IND/MEI/Character_MEI_AT2.et" {
+ coords 52.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter KLMK_GL : "{6B00D3FC285E0AE0}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_GL_KLMK.et" {
+ coords 74.936 1 90.783
+}
+SCR_ChimeraCharacter SF_SL_S : "{6C1FFF78CD4E4ADA}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Suppressed/Character_USSR_SF_SL_S.et" {
+ coords 86.936 1 100.783
+}
+Vehicle FFRX_Ural_Arsenal1 : "{6D9C3C583DA9C8E4}Prefabs/Vehicles/EnemyTF/FFRX_Ural_Arsenal.et" {
+ coords 138.336 1 137.887
+}
+SCR_ChimeraCharacter NAVAL_Rifleman : "{6F412F678228D5F7}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Rifleman.et" {
+ coords 60.936 1 95.783
+}
+SCR_ChimeraCharacter MEITEST_19_FFRX_Air : "{6FFEC0DEDA000205}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Air.et" {
+ coords 73.686 1 110.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEITEST_20_FFRX_Javelin : "{6FFEC0DEDA000206}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Javelin.et" {
+ coords 75.186 1 110.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEITEST_21_FFRX_Jammer : "{6FFEC0DEDA000207}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Jammer.et" {
+ coords 76.686 1 110.783
+ angles 0 180 0
+}
+Vehicle FFRX_TEST_GBC180 : "{6FFEC0DEF1A00001}Prefabs/Vehicles/AlliedAMF/FFRX_GBC180_Transport.et" {
+ coords 138.059 1 90
+}
+Vehicle FFRX_TEST_GBC180_Cargo : "{6FFEC0DEF1A00002}Prefabs/Vehicles/AlliedAMF/FFRX_GBC180_Cargo.et" {
+ coords 142.035 1 90
+}
+Vehicle FFRX_TEST_VBL : "{6FFEC0DEF1A00003}Prefabs/Vehicles/AlliedAMF/FFRX_VBL.et" {
+ coords 145.606 1 90
+}
+Vehicle FFRX_TEST_VBL_MAG58 : "{6FFEC0DEF1A00004}Prefabs/Vehicles/AlliedAMF/FFRX_VBL_MAG58.et" {
+ coords 148.124 1 90
+}
+Vehicle FFRX_TEST_Griffon : "{6FFEC0DEF1A00005}Prefabs/Vehicles/AlliedAMF/FFRX_Griffon.et" {
+ coords 151.452 1 90
+}
+Vehicle FFRX_TEST_VBCI : "{6FFEC0DEF1A00006}Prefabs/Vehicles/AlliedAMF/FFRX_VBCI.et" {
+ coords 156.061 1 90
+}
+Vehicle FFRX_TEST_Arsenal : "{6FFEC0DEF1A00007}Prefabs/Vehicles/AlliedAMF/FFRX_GBC180_Arsenal.et" {
+ coords 123.329 1 102.71
+}
+Vehicle FFRX_TEST_Ammo : "{6FFEC0DEF1A00008}Prefabs/Vehicles/AlliedAMF/FFRX_GBC180_Ammo.et" {
+ coords 135.329 1 102.71
+}
+Vehicle FFRX_TEST_Repair : "{6FFEC0DEF1A00009}Prefabs/Vehicles/AlliedAMF/FFRX_GBC180_Repair.et" {
+ coords 147.329 1 102.71
+}
+Vehicle FFRX_TEST_Tanker : "{6FFEC0DEF1A0000A}Prefabs/Vehicles/AlliedAMF/FFRX_GBC180_Tanker.et" {
+ coords 159.329 1 102.71
+}
+Vehicle FFRX_TEST_Command : "{6FFEC0DEF1A0000B}Prefabs/Vehicles/AlliedAMF/FFRX_GBC180_Command.et" {
+ coords 171.329 1 102.71
+}
+SCR_ChimeraCharacter MEIFIX_15_Rifleman3 : "{7092923FC4BA0AA9}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman3.et" {
+ coords 67.686 1 114.783
+ angles 0 180 0
+}
+Vehicle VEH_10_Moto : "{72DE4366AA639796}Vehicles/ZAG650/ZAG6502pWZNP.et" {
+ coords 58 1 137.214
+ angles 0 180 0
+}
+SCR_ChimeraCharacter SF_Sapper : "{730CDEC4168637B6}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_Sapper.et" {
+ coords 72.936 1 100.783
+}
+Vehicle FFRX_TIGR_Unarmed1 : "{76FA566A32C88883}Prefabs/Vehicles/EnemyTF/FFRX_TIGR_Unarmed.et" {
+ coords 141.83 1 137.774
+}
+Vehicle FFRX_BM21_Grad1 : "{77683C4167CB572D}Prefabs/Vehicles/EnemyTF/FFRX_BM21_Grad.et" {
+ coords 161.278 1 137.373
+}
+SCR_ChimeraCharacter KLMK_Ammo : "{77D7BFD355620806}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_Ammo_KLMK.et" {
+ coords 72.936 1 90.783
+}
+Vehicle TIGR_03_KORD_Tan : "{7B73B9445F145E6E}Prefabs/Vehicles/Wheeled/TIGR/KORD/GAZ_TIGR_v2_KORD_Tan.et" {
+ coords 56 1 150.497
+ angles 0 180 0
+}
+Vehicle GAZ_TIGR_v2_Mounted_Turret_Base1 : "{7F038AC225B7330B}Prefabs/Vehicles/Wheeled/TIGR/GAZ_TIGR_v2_Mounted_Turret_Base.et" {
+ coords 157.769 1 150.27
+}
+SCR_ChimeraCharacter KLMK_AR : "{862E3B66D0316F0A}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_AR_KLMK.et" {
+ coords 62.936 1 90.783
+}
+SCR_ChimeraCharacter KLMK_MG : "{8A60AEBD529FEB8B}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_MG_KLMK.et" {
+ coords 64.936 1 90.783
+}
+SCR_ChimeraCharacter MEIFIX_11_MG : "{8A6672A86B068679}Prefabs/Characters/Factions/IND/MEI/Character_MEI_MG.et" {
+ coords 61.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_22_Crew : "{8B556AC161BE7405}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Crew.et" {
+ coords 78.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter NAVAL_Sapper : "{8C966363D98C3D2F}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Sapper.et" {
+ coords 82.936 1 95.783
+}
+SCR_ChimeraCharacter SF_Medic : "{8CA70597606992EC}Prefabs/Modded/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_Medic.et" {
+ coords 66.936 1 100.783
+}
+SCR_ChimeraCharacter NAVAL_Sharpshooter : "{8CDEE565CB49D126}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Sharpshooter.et" {
+ coords 88.936 1 95.783
+}
+Vehicle TIGR_02_PKM_Tan : "{8D50E85934A28531}Prefabs/Vehicles/Wheeled/TIGR/PKP/GAZ_TIGR_v2_PKM_Tan.et" {
+ coords 50 1 150.497
+ angles 0 180 0
+}
+SCR_ChimeraCharacter REG_GL : "{8E0FE664CE7D1CA9}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_GL.et" {
+ coords 74.936 1 85.783
+}
+SCR_ChimeraCharacter REG_Sergeant : "{928DC9882A0AC79D}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Sergeant.et" {
+ coords 88.936 1 85.783
+}
+Vehicle UAZ452_transport_base1 : "{92AA1080824A3F7E}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_transport_base.et" {
+ coords 154.844 1 150.313
+}
+SCR_ChimeraCharacter NAVAL_SL : "{92DBBF345A677BC3}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_SL.et" {
+ coords 84.936 1 95.783
+}
+SCR_ChimeraCharacter MEITEST_00_Base : "{92EF7C750D05F9C9}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Base.et" {
+ coords 45.186 1 110.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_14_Rifleman2 : "{950EDEC6C85F9DC2}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman2.et" {
+ coords 66.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_06_Bomber : "{958C0AB8ECDA03F9}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Bomber.et" {
+ coords 54.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_21_Sniper : "{95F67CCC15CAB4CE}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Sniper.et" {
+ coords 76.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter REG_MG : "{96C784C502AC37DA}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_MG.et" {
+ coords 64.936 1 85.783
+}
+SCR_ChimeraCharacter REG_Sharpshooter : "{976AC400219898FA}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Sharpshooter.et" {
+ coords 90.936 1 85.783
+}
+SCR_ChimeraCharacter MISC_Unarmed : "{98EB9CDD85B8C92C}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Unarmed.et" {
+ coords 68.936 1 105.783
+}
+Vehicle UAZ469_base1 : "{99F1610551D54D17}Prefabs/Modded/Vehicles/Wheeled/UAZ469/UAZ469_base.et" {
+ coords 146.908 1 150.302
+}
+SCR_ChimeraCharacter KLMK_AT : "{9A12B3F6ABDF70BE}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_AT_KLMK.et" {
+ coords 66.936 1 90.783
+}
+SCR_ChimeraCharacter KLMK_RTO : "{9C16A2371109644D}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_RTO_KLMK.et" {
+ coords 78.936 1 90.783
+}
+SCR_ChimeraCharacter MEIFIX_23_HeliPilot : "{9EEA722ACE508FDB}Prefabs/Characters/Factions/IND/MEI/Character_MEI_HeliPilot.et" {
+ coords 79.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter CREW_TankCrew : "{9FFEF10757E742EB}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Crew.et" {
+ coords 60.936 1 105.783
+}
+SCR_ChimeraCharacter SF_Sapper_S : "{A16C1DE30B6957D9}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Suppressed/Character_USSR_SF_Sapper_S.et" {
+ coords 88.936 1 100.783
+}
+SCR_ChimeraCharacter CREW_HeliPilot : "{A62FA97C4EC64F14}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_HeliPilot.et" {
+ coords 64.936 1 105.783
+}
+SCR_ChimeraCharacter KLMK_Sapper : "{A70AD7146D3FBF41}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_Sapper_KLMK.et" {
+ coords 80.936 1 90.783
+}
+SCR_ChimeraCharacter MEIFIX_17_Rifleman5 : "{A83AFBFEBD3314F5}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman5.et" {
+ coords 70.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter KLMK_SL : "{A8507C7BBAF64A71}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_SL_KLMK.et" {
+ coords 82.936 1 90.783
+}
+SCR_ChimeraCharacter MEIFIX_19_Scout : "{A8DCD6A481346FB4}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Scout.et" {
+ coords 73.686 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter REG_Medic : "{AB9726163EC1BD81}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Medic.et" {
+ coords 76.936 1 85.783
+}
+SCR_ChimeraCharacter NAVAL_MG : "{AD44903106ACCD33}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_MG.et" {
+ coords 64.936 1 95.783
+}
+SCR_ChimeraCharacter SF_Sharpshooter : "{ADB43E67E3766CE7}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_Sharpshooter.et" {
+ coords 74.936 1 100.783
+}
+SCR_ChimeraCharacter KLMK_Sharpshooter : "{B056E800F6286831}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_Sharpshooter_KLMK.et" {
+ coords 86.936 1 90.783
+}
+SCR_ChimeraCharacter SF_Officer : "{B2A71FE01BA567D6}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_Officer.et" {
+ coords 76.936 1 100.783
+}
+SCR_ChimeraCharacter REG_Ammo : "{B31D4E408AEC99A4}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Ammo.et" {
+ coords 72.936 1 85.783
+}
+Vehicle VEH_06_BTR40 : "{B691953D0FC63609}Vehicles/BTR40/BTR40new.et" {
+ coords 74 1 128.318
+ angles 0 180 0
+}
+SCR_ChimeraCharacter SF_RTO : "{B6A2736A7201DD23}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_RTO.et" {
+ coords 68.936 1 100.783
+}
+SCR_ChimeraCharacter SF_GL : "{B823C229EC3981B7}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Character_USSR_SF_GL.et" {
+ coords 62.936 1 100.783
+}
+SCR_ChimeraCharacter CREW_TankCommander : "{BA010C4C82F3DE92}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_CC.et" {
+ coords 62.936 1 105.783
+}
+Vehicle TIGR_01_Unarmed_Tan : "{BF28FEE927BA80F7}Prefabs/Vehicles/Wheeled/TIGR/Unarmed/GAZ_TIGR_v2_Unarmed_Tan.et" {
+ coords 44 1 150.497
+ angles 0 180 0
+}
+SCR_ChimeraCharacter KLMK_SR : "{C49ED6AA2EA02B15}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_SR_KLMK.et" {
+ coords 88.936 1 90.783
+}
+SCR_ChimeraCharacter CREW_HeliCrew : "{C8FABF6F093DA775}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_HeliCrew.et" {
+ coords 66.936 1 105.783
+}
+Vehicle FFRX_TIGR_Recon1 : "{CBF0E9C7453538CB}Prefabs/Vehicles/EnemyTF/FFRX_TIGR_Recon.et" {
+ coords 145.049 1 137.69
+}
+SCR_ChimeraCharacter REG_Sapper : "{CBF7A398FE060335}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Sapper.et" {
+ coords 80.936 1 85.783
+}
+SCR_ChimeraCharacter SF_GL_S : "{CF43078FA4830404}Prefabs/Characters/Factions/OPFOR/USSR_Army/Spetsnaz/Suppressed/Character_USSR_SF_GL_S.et" {
+ coords 80.936 1 100.783
+}
+SCR_ChimeraCharacter NAVAL_AAT : "{D2D6106D52DF6B0A}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_AAT.et" {
+ coords 70.936 1 95.783
+}
+SCR_ChimeraCharacter NAVAL_Sergeant : "{D4B48CB2120CD6E0}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_Sergeant.et" {
+ coords 86.936 1 95.783
+}
+SCR_ChimeraCharacter KLMK_Medic : "{D66C215D6F03EFFD}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_Medic_KLMK.et" {
+ coords 76.936 1 90.783
+}
+Vehicle VEH_11_Ural_S60 : "{D873FE12B2AEFDAF}Vehicles/AZPS60Ural/Ural4320_WZNP_AZPS60.et" {
+ coords 66 1 137.214
+ angles 0 180 0
+}
+SCR_ChimeraCharacter TEST_Rifleman : "{DCB41B3746FDD1BE}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Rifleman.et" {
+ coords 60.936 1 85.783
+}
+Vehicle FFRX_TIGR_AGS1 : "{E07095C9F153B11F}Prefabs/Vehicles/EnemyTF/FFRX_TIGR_AGS17.et" {
+ coords 157.455 1 137.909
+}
+Vehicle FFRX_TIGR_PKM1 : "{E1073A73475D2E29}Prefabs/Vehicles/EnemyTF/FFRX_TIGR_PKM.et" {
+ coords 148.632 1 137.761
+}
+SCR_ChimeraCharacter MEIFIX_10_Medic : "{E6324648D7C20957}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Medic.et" {
+ coords 60.186 1 114.783
+ angles 0 180 0
+}
+SCR_ChimeraCharacter KLMK_PL : "{E8A05D5E0CEAC836}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_PL_KLMK.et" {
+ coords 90.936 1 90.783
+}
+SCR_ChimeraCharacter KLMK_AAT : "{E8EF64F8B943A507}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_AAT_KLMK.et" {
+ coords 68.936 1 90.783
+}
+SCR_ChimeraCharacter REG_AMG : "{E9AEEF2D9E41321B}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_AMG.et" {
+ coords 70.936 1 85.783
+}
+Vehicle VEH_02_HighLux_SPG9 : "{EA72BBA1D69360F8}Vehicles/HighLux/KILUXnew7725_Armed_SPG9.et" {
+ coords 50 1 128.318
+ angles 0 180 0
+}
+SCR_ChimeraCharacter MEIFIX_02_AR2 : "{EADA2C708DB52BC8}Prefabs/Characters/Factions/IND/MEI/Character_MEI_AR2.et" {
+ coords 48.186 1 114.783
+ angles 0 180 0
+}
+Vehicle TIGR_06_KORD_SPP_Tan : "{EB1805C9B001DE8D}Prefabs/Vehicles/Wheeled/TIGR/KORD/GAZ_TIGR_v2_KORD_SPP_Tan.et" {
+ coords 74 1 150.497
+ angles 0 180 0
+}
+SCR_ChimeraCharacter NAVAL_SR : "{EFC353CC3FF4475A}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_SR.et" {
+ coords 90.936 1 95.783
+}
+SCR_ChimeraCharacter NAVAL_GL : "{F286300A9F54B0FA}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_GL.et" {
+ coords 76.936 1 95.783
+}
+SCR_ChimeraCharacter NAVAL_CC : "{F3AB754B0209BEAC}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_CC.et" {
+ coords 96.936 1 95.783
+}
+SCR_ChimeraCharacter KLMK_AMG : "{F89D79B340033E32}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_AMG_KLMK.et" {
+ coords 70.936 1 90.783
+}
+SCR_ChimeraCharacter MEIFIX_13_Rifleman1 : "{F95AEA26749B12EC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman1.et" {
+ coords 64.686 1 114.783
+ angles 0 180 0
+}
+Vehicle VEH_05_LR_SPG9 : "{F9E9C19E3DC1C0A7}Vehicles/LR/LROffender_WZNP_SPG9.et" {
+ coords 68 1 128.318
+ angles 0 180 0
+}
+SCR_ChimeraCharacter KLMK_Sergeant : "{FC13DAA97D49137F}Prefabs/Characters/Factions/OPFOR/USSR_Army/KLMK/Character_USSR_Sergeant_KLMK.et" {
+ coords 84.936 1 90.783
+}
+SCR_ChimeraCharacter NAVAL_AR : "{FF534E2B68E3D9D0}Prefabs/Characters/Factions/OPFOR/USSR_Army/Naval_Infantry/Character_USSR_NI_AR.et" {
+ coords 62.936 1 95.783
+}

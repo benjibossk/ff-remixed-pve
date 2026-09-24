@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC — Doc de design</title>
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        html{scroll-behavior:smooth}
+        body{padding:0}
+
+        /* --- barre de progression de lecture --- */
+        #progress{position:fixed;top:3px;left:0;height:2px;width:0;z-index:1091;
+            background:linear-gradient(90deg,var(--blue),var(--cyan));box-shadow:0 0 8px rgba(61,139,255,.5);transition:width .08s linear}
+
+        /* --- barre d'outils collante --- */
+        .topbar{position:sticky;top:0;z-index:1080;background:var(--panel);backdrop-filter:var(--hud-blur);
+            border-bottom:1px solid var(--line);padding:10px 0}
+        .topbar .brand{display:flex;align-items:center;gap:12px;color:var(--hi);text-transform:uppercase;
+            font-family:"Oswald";letter-spacing:.1em;font-size:.95rem}
+        .topbar .crest{width:32px;height:32px;flex:0 0 32px;border:1px solid var(--line-strong);display:grid;place-items:center;
+            background:radial-gradient(circle at 50% 40%,rgba(61,139,255,.22),transparent 70%)}
+        .topbar .crest svg{width:19px;height:19px}
+
+        /* --- mise en page 2 colonnes --- */
+        .layout{display:grid;grid-template-columns:1fr;gap:34px;margin-top:1.6rem}
+        @media(min-width:1080px){.layout{grid-template-columns:224px minmax(0,1fr)}}
+
+        /* --- sommaire --- */
+        .toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 100px);overflow:auto}
+        @media(max-width:1079px){.toc{display:none}}
+        .toc .toc-h{font-family:"Oswald";text-transform:uppercase;letter-spacing:.18em;color:var(--dim);
+            font-size:.66rem;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+        .toc a{display:block;color:var(--dim);text-decoration:none;padding:3px 0 3px 13px;border-left:2px solid transparent;
+            line-height:1.35;font-size:.82rem;transition:color .12s,border-color .12s}
+        .toc a.sub{padding-left:26px;font-size:.76rem}
+        .toc a:hover{color:var(--txt)}
+        .toc a.active{color:var(--hi);border-left-color:var(--blue)}
+
+        /* --- en-tête dossier --- */
+        .doc-hero{margin-bottom:1.8rem;padding-bottom:1.3rem;border-bottom:1px solid var(--line)}
+        .doc-hero .chip{display:inline-block;font-family:"Oswald";font-weight:600;font-size:10px;letter-spacing:.26em;color:#0a0f14;
+            background:repeating-linear-gradient(45deg,var(--amber) 0 10px,#caa030 10px 20px);padding:3px 13px}
+        .doc-hero h1{font-family:"Oswald";text-transform:uppercase;color:var(--hi);line-height:1.05;
+            font-size:clamp(1.9rem,4.2vw,3rem);margin:.7rem 0 .5rem;letter-spacing:.02em}
+        .doc-hero .sub{display:flex;flex-wrap:wrap;gap:9px 22px;color:var(--dim);font-size:.78rem;
+            text-transform:uppercase;letter-spacing:.1em}
+        .doc-hero .sub b{color:var(--txt);font-weight:500}
+        .doc-hero .sub i{color:var(--blue);margin-right:5px}
+
+        /* --- corps du document --- */
+        .doc{counter-reset:h2;animation:fade .4s ease}
+        @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+        .doc h1,.doc h2,.doc h3,.doc h4{font-family:"Oswald";color:var(--hi);letter-spacing:.02em;scroll-margin-top:84px}
+        .doc h1{text-transform:uppercase;font-size:1.7rem;margin:2rem 0 1rem}
+        .doc h2{display:flex;align-items:baseline;gap:14px;text-transform:uppercase;font-size:1.32rem;
+            margin:2.4rem 0 1rem;padding-bottom:7px;border-bottom:1px solid var(--line)}
+        .doc h2::before{counter-increment:h2;content:counter(h2,decimal-leading-zero);
+            font-family:"IBM Plex Mono";font-size:.82rem;font-weight:600;color:var(--blue);
+            border:1px solid var(--line-strong);padding:1px 7px;flex:0 0 auto;letter-spacing:0}
+        .doc h3{font-size:1.05rem;color:var(--cyan);margin:1.7rem 0 .6rem;letter-spacing:.04em}
+        .doc h4{font-size:.9rem;color:var(--txt);text-transform:uppercase;letter-spacing:.1em;margin:1.3rem 0 .5rem}
+        .doc p{line-height:1.75;margin:0 0 1rem}
+        .doc>p:first-of-type{font-size:1.06rem;color:var(--hi)}
+        .doc ul,.doc ol{line-height:1.75;padding-left:1.4rem;margin:0 0 1rem}
+        .doc li{margin-bottom:.3rem}
+        .doc ul li::marker{color:var(--blue)}
+        .doc ol li::marker{color:var(--cyan);font-family:"IBM Plex Mono"}
+        .doc a{color:var(--cyan);text-underline-offset:3px}
+        .doc a:hover{color:var(--hi)}
+        .doc strong{color:var(--hi)}
+        .doc code{color:var(--amber);background:rgba(226,165,58,.08);padding:1px 5px;font-size:.9em}
+        .doc pre{background:var(--panel-solid);border:1px solid var(--line);padding:14px 16px;overflow:auto;margin:1rem 0}
+        .doc pre code{color:var(--txt);background:none;padding:0}
+        .doc blockquote{border-left:3px solid var(--blue);background:rgba(61,139,255,.06);
+            padding:12px 18px;margin:1.2rem 0;color:var(--txt)}
+        .doc blockquote p{margin:0}
+        .doc img{max-width:100%;height:auto;border:1px solid var(--line);margin:.6rem 0}
+        .doc hr{border:0;border-top:1px solid var(--line);margin:2.2rem 0}
+        .doc table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.88rem}
+        .doc th,.doc td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+        .doc thead th{font-family:"Oswald";text-transform:uppercase;letter-spacing:.08em;color:var(--dim);
+            background:linear-gradient(180deg,rgba(61,139,255,.08),transparent);border-bottom:1px solid var(--line-strong)}
+        .doc tbody tr:nth-child(even){background:rgba(122,163,196,.04)}
+
+        /* bouton "commenter cette section" collé au H2 */
+        .doc h2 .cbtn{margin-left:auto;font-size:.72rem;color:var(--dim);cursor:pointer;
+            border:1px solid var(--line);padding:2px 8px;white-space:nowrap;flex:0 0 auto}
+        .doc h2 .cbtn:hover{color:var(--blue);border-color:var(--blue)}
+
+        /* --- commentaires --- */
+        .cmt{border-left:2px solid var(--line);padding:7px 0 7px 13px;margin-bottom:9px}
+        .cmt .who{font-family:"Oswald";font-size:.8rem;color:var(--hi)}
+        .cmt .when{font-size:.66rem;color:var(--dim)}
+        .cmt .sec{font-size:.62rem;color:var(--blue);text-transform:uppercase;letter-spacing:.06em}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div id="progress"></div>
+
+<!-- Barre d'outils -->
+<div class="topbar">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2" style="max-width:1180px">
+        <!-- Titre cliquable -> accueil. class="brand" conservee pour garder le style. -->
+        <a class="brand" href="/" style="color:inherit;text-decoration:none" title="Retour a l'accueil">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            Dossier de conception
+        </a>
+        <div class="d-flex gap-2">
+            <button id="btn-edit" class="btn btn-outline-warning btn-sm d-none"><i class="bi bi-pencil me-1"></i>Éditer</button>
+            <a href="/idees" class="btn btn-outline-secondary btn-sm"><i class="bi bi-lightbulb me-1"></i>Idées</a>
+            <a href="/" class="btn btn-secondary btn-sm"><i class="bi bi-house me-1"></i>Accueil</a>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="max-width:1180px">
+    <div class="layout">
+        <!-- Sommaire -->
+        <nav class="toc d-none" id="toc">
+            <div class="toc-h">Sommaire</div>
+            <div id="toc-list"></div>
+        </nav>
+
+        <!-- Colonne document -->
+        <div>
+            <!-- En-tête dossier -->
+            <div class="doc-hero" id="hero">
+                <span class="chip">Document de conception · Diffusion restreinte</span>
+                <h1 id="doc-title">Doc de design</h1>
+                <div class="sub" id="doc-meta"></div>
+            </div>
+
+            <ul class="nav nav-pills mb-3" id="doc-tabs">
+                <li class="nav-item"><a class="nav-link" data-doc="ff-remixed-pve" href="?doc=ff-remixed-pve"><i class="bi bi-flag me-1"></i>Vision</a></li>
+                <li class="nav-item"><a class="nav-link" data-doc="ff-remixed-roadmap" href="?doc=ff-remixed-roadmap"><i class="bi bi-map me-1"></i>Roadmap</a></li>
+                <li class="nav-item"><a class="nav-link" data-doc="ff-remixed-technique" href="?doc=ff-remixed-technique"><i class="bi bi-wrench-adjustable me-1"></i>Technique</a></li>
+            </ul>
+
+            <div id="view" class="doc"><div class="text-center text-muted p-5"><div class="spinner-border"></div></div></div>
+
+            <!-- Éditeur (admin) -->
+            <div id="editor" class="d-none">
+                <div class="mb-2"><label class="form-label small">Titre</label><input id="e-title" class="form-control"></div>
+                <textarea id="e-md" class="form-control" style="font-family:'IBM Plex Mono';font-size:13px;min-height:60vh"></textarea>
+                <div class="d-flex gap-2 mt-2"><button class="btn btn-success btn-sm" id="e-save"><i class="bi bi-check-lg me-1"></i>Enregistrer</button><button class="btn btn-secondary btn-sm" id="e-cancel">Annuler</button><span id="e-msg" class="small align-self-center"></span></div>
+            </div>
+
+            <hr class="my-4">
+            <h5 class="text-muted"><i class="bi bi-chat-left-text me-1"></i>Commentaires (<span id="c-count">0</span>)</h5>
+            <div class="input-group input-group-sm my-2" style="max-width:640px">
+                <select id="c-sec" class="form-select" style="max-width:260px"><option value="">Général</option></select>
+                <input id="c-body" class="form-control" placeholder="Ajouter un commentaire…">
+                <button class="btn btn-primary" id="c-send">Envoyer</button>
+            </div>
+            <div id="c-msg" class="small text-danger mb-2"></div>
+            <div id="comments"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script src="/api/v1/cdn/map/marked.min.js"></script>
+<script src="/api/v1/cdn/map/purify.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const API = '/api/v1';
+    // Doc actif via ?doc= (Vision par défaut). Chaque doc a son propre fil de commentaires (par slug).
+    const DOCS = ['ff-remixed-pve', 'ff-remixed-roadmap', 'ff-remixed-technique'];
+    const _p = new URLSearchParams(location.search).get('doc');
+    const SLUG = DOCS.includes(_p) ? _p : 'ff-remixed-pve';
+    document.querySelectorAll('#doc-tabs .nav-link').forEach(a => { if (a.dataset.doc === SLUG) a.classList.add('active'); });
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const fdate = ts => ts ? new Date(ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+    let ME = null, DOC = null, SECTIONS = [], spy = null;
+
+    async function api(path, opts){ const r = await fetch(API+path, opts); if(r.status===401){ window.location.href='/auth/discord/login'; throw new Error('auth'); } return r; }
+
+    function renderDoc(){
+        const view = document.getElementById('view');
+        // en-tête
+        document.getElementById('doc-title').textContent = (DOC && DOC.title) || 'FF - REMIXED - PVE';
+        const words = DOC && DOC.markdown ? (DOC.markdown.trim().split(/\s+/).filter(Boolean).length) : 0;
+        const mins = Math.max(1, Math.round(words/200));
+        document.getElementById('doc-meta').innerHTML = DOC && DOC.exists
+            ? `<span><i class="bi bi-clock-history"></i>Maj <b>${fdate(DOC.updatedAt)}</b></span>`
+              + `<span><i class="bi bi-book"></i><b>${mins}</b> min de lecture</span>`
+              + `<span><i class="bi bi-file-text"></i><b>${words.toLocaleString('fr-FR')}</b> mots</span>`
+            : `<span><i class="bi bi-hourglass"></i>Document non encore rempli.</span>`;
+
+        if(!DOC.markdown){
+            view.innerHTML = `<div class="text-center text-muted p-5"><i class="bi bi-file-earmark-text fs-1 d-block mb-2"></i>Le document est vide.${ME&&ME.account_type==='admin'?' Clique « Éditer » pour coller le GAME_DESIGN.md.':''}</div>`;
+            SECTIONS = []; buildSectionSelect(); buildTOC(); return;
+        }
+        const html = DOMPurify.sanitize(marked.parse(DOC.markdown));
+        view.innerHTML = html;
+        // ancrer chaque H2 + bouton commenter (ids 's0','s1'… : NE PAS changer, référencés par les commentaires existants)
+        SECTIONS = [];
+        view.querySelectorAll('h2').forEach((h, i) => {
+            const id = 's'+i, label = h.textContent.trim();
+            h.id = id; SECTIONS.push({id, label});
+            const b = document.createElement('span'); b.className='cbtn'; b.innerHTML='<i class="bi bi-chat-dots"></i>'; b.title='Commenter cette section';
+            b.addEventListener('click', () => { document.getElementById('c-sec').value = id; document.getElementById('c-body').focus(); document.getElementById('c-body').scrollIntoView({behavior:'smooth',block:'center'}); });
+            h.appendChild(b);
+        });
+        buildSectionSelect();
+        buildTOC();
+    }
+
+    function buildTOC(){
+        const toc = document.getElementById('toc'), list = document.getElementById('toc-list');
+        const view = document.getElementById('view');
+        const heads = [...view.querySelectorAll('h2, h3')];
+        if(spy){ spy.disconnect(); spy = null; }
+        if(!heads.length){ toc.classList.add('d-none'); return; }
+        toc.classList.remove('d-none');
+        let h3i = 0;
+        list.innerHTML = heads.map(h => {
+            if(h.tagName === 'H3' && !h.id) h.id = 'h3-'+(h3i++);
+            const label = h.textContent.replace(/\s+$/,'').trim();
+            return `<a href="#${h.id}" data-t="${h.id}" class="${h.tagName==='H3'?'sub':''}">${esc(label)}</a>`;
+        }).join('');
+        // scroll-spy : surligne la section visible
+        const links = {}; list.querySelectorAll('a').forEach(a => links[a.dataset.t] = a);
+        spy = new IntersectionObserver(entries => {
+            entries.forEach(en => {
+                if(!en.isIntersecting) return;
+                list.querySelectorAll('a.active').forEach(x => x.classList.remove('active'));
+                if(links[en.target.id]) links[en.target.id].classList.add('active');
+            });
+        }, {rootMargin:'-80px 0px -72% 0px', threshold:0});
+        heads.forEach(h => spy.observe(h));
+    }
+
+    function buildSectionSelect(){
+        const sel = document.getElementById('c-sec');
+        sel.innerHTML = '<option value="">Général</option>' + SECTIONS.map(s=>`<option value="${s.id}">${esc(s.label)}</option>`).join('');
+    }
+    const secLabel = id => (SECTIONS.find(s=>s.id===id)||{}).label || id;
+
+    function commentHtml(cm){
+        const anchor = (cm.targetId||'').split('#')[1] || '';
+        const canDel = ME && (ME.account_type==='admin' || String(ME.id)===String(cm.authorId));
+        return `<div class="cmt"><div class="d-flex justify-content-between"><span class="who">${esc(cm.authorName||'?')} ${anchor?`<span class="sec">§ ${esc(secLabel(anchor))}</span>`:''}</span><span class="when">${fdate(cm.createdAt)} ${canDel?`<i class="bi bi-trash text-danger ms-2" style="cursor:pointer" data-delc="${cm.id}"></i>`:''}</span></div><div style="white-space:pre-wrap">${esc(cm.body)}</div></div>`;
+    }
+
+    async function loadComments(){
+        const cs = await (await api(`/design/${SLUG}/comments`)).json();
+        document.getElementById('c-count').textContent = cs.length;
+        document.getElementById('comments').innerHTML = cs.map(commentHtml).join('') || '<div class="text-muted small">Aucun commentaire.</div>';
+    }
+
+    async function load(){
+        DOC = await (await api(`/design/${SLUG}`)).json();
+        renderDoc();
+        loadComments();
+    }
+
+    // édition admin
+    function openEditor(){
+        document.getElementById('e-title').value = DOC.title || 'FF - REMIXED - PVE — Design';
+        document.getElementById('e-md').value = DOC.markdown || '';
+        document.getElementById('view').classList.add('d-none');
+        document.getElementById('editor').classList.remove('d-none');
+    }
+    function closeEditor(){ document.getElementById('editor').classList.add('d-none'); document.getElementById('view').classList.remove('d-none'); }
+    async function saveDoc(){
+        const msg = document.getElementById('e-msg'); msg.textContent='Enregistrement…'; msg.className='small text-muted align-self-center';
+        const body = {title: document.getElementById('e-title').value.trim(), markdown: document.getElementById('e-md').value};
+        const r = await api(`/design/${SLUG}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+        if(!r.ok){ msg.textContent = (await r.json()).error || 'Erreur'; msg.className='small text-danger align-self-center'; return; }
+        closeEditor(); await load();
+    }
+
+    async function sendComment(){
+        const msg = document.getElementById('c-msg'); msg.textContent='';
+        const inp = document.getElementById('c-body'), body = inp.value.trim(); if(!body) return;
+        const anchor = document.getElementById('c-sec').value;
+        const r = await api(`/design/${SLUG}/comments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({body, anchor})});
+        if(!r.ok){ msg.textContent = (await r.json()).error || 'Erreur'; return; }
+        inp.value=''; loadComments();
+    }
+
+    document.getElementById('comments').addEventListener('click', async e => {
+        const d = e.target.closest('[data-delc]'); if(!d) return;
+        if(!confirm('Supprimer ce commentaire ?')) return;
+        await api(`/comments/${d.dataset.delc}`,{method:'DELETE'}); loadComments();
+    });
+    document.getElementById('c-send').addEventListener('click', sendComment);
+    document.getElementById('c-body').addEventListener('keydown', e=>{ if(e.key==='Enter') sendComment(); });
+    document.getElementById('btn-edit').addEventListener('click', openEditor);
+    document.getElementById('e-cancel').addEventListener('click', closeEditor);
+    document.getElementById('e-save').addEventListener('click', saveDoc);
+
+    // barre de progression de lecture
+    const bar = document.getElementById('progress');
+    window.addEventListener('scroll', () => {
+        const el = document.documentElement, max = el.scrollHeight - el.clientHeight;
+        bar.style.width = (max > 0 ? (el.scrollTop / max) * 100 : 0) + '%';
+    }, {passive:true});
+
+    async function init(){
+        try { const me = await fetch(API+'/users/me'); if(!me.ok){ window.location.href='/auth/discord/login'; return; } ME = await me.json(); }
+        catch(e){ window.location.href='/auth/discord/login'; return; }
+        if(ME.account_type==='admin') document.getElementById('btn-edit').classList.remove('d-none');
+        load();
+    }
+    init();
+});
+</script>
+</body>
+</html>

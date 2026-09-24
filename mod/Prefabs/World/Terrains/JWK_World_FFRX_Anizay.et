@@ -1,0 +1,13 @@
+JWK_WorldEntity : "{461473B74D9BC6FF}Prefabs/World/JWK_World_Base.et" {
+ ID "6A447449A2A59DF0"
+ m_vMapOffset -175.833 -100 -200.383
+ m_vMapSize 10640.878 699.742 10546.158
+ m_sPersistenceKey "FFRX_Anizay"
+ m_sRoadNetworkPath "Assets/JWK/RoadNetworks/Anizay.json"
+ m_iBiome DESERT
+ m_sPlaceName "Anizay"
+ m_sDefaultEnemyFaction "MEI"
+ m_sDefaultSupportingFaction "US"
+ m_sDefaultPlayerFaction "FIA_DESERT"
+ m_sDefaultAmbientFaction "MEC"
+}

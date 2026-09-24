@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recensement des spawns — Intranet Tactique</title>
+    <meta name="description" content="Ce que le jeu fait réellement apparaître : groupes, soldats et véhicules ennemis, en proportions.">
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
+
+        .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:22px;}
+        .kpi{background:var(--panel);padding:13px 15px;display:flex;flex-direction:column;gap:2px;}
+        .kpi-lbl{font-family:"Oswald";text-transform:uppercase;letter-spacing:.08em;font-size:.7rem;color:var(--dim);}
+        .kpi-num{font-family:"Oswald";font-weight:600;font-size:1.55rem;line-height:1.1;}
+        .kpi-sub{font-family:"IBM Plex Mono";font-size:11px;color:var(--dim);}
+
+        .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;}
+        .card-x{background:var(--panel);border:1px solid var(--line);padding:16px 18px 18px;}
+        .card-x h2{font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:1rem;margin:0 0 2px;}
+        .card-x .hint{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--dim);margin-bottom:12px;line-height:1.5;}
+
+        /* Une ligne = un prefab. La barre porte la proportion, le chiffre porte le compte. */
+        .row-x{display:grid;grid-template-columns:1fr 52px 44px;gap:10px;align-items:center;padding:3px 0;}
+        .row-x .nm{font-family:"IBM Plex Mono";font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .row-x .ct{font-family:"Oswald";font-size:.9rem;text-align:right;}
+        .row-x .pc{font-family:"IBM Plex Mono";font-size:11px;color:var(--dim);text-align:right;}
+        .bar{grid-column:1 / -1;height:3px;background:var(--line);margin:-1px 0 4px;}
+        .bar span{display:block;height:100%;}
+
+        .msg{background:var(--panel);border:1px solid var(--line);padding:26px;text-align:center;color:var(--dim);font-family:"IBM Plex Mono";font-size:12.5px;line-height:1.7;}
+        .foot{font-family:"IBM Plex Mono";font-size:11px;color:var(--dim);margin-top:18px;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="fx-grid"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            <span class="fw-bold">Recensement</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <button id="btn-reset" class="btn btn-outline-warning btn-sm" title="Remet les compteurs a zero, en jeu et ici">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Repartir de zéro</button>
+            <a href="/economie" class="btn btn-outline-light btn-sm"><i class="bi bi-graph-up me-1"></i>Économie</a>
+            <a href="/adminmap" class="btn btn-outline-light btn-sm"><i class="bi bi-map me-1"></i>Carte</a>
+            <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-house"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="container" style="padding-top:90px;padding-bottom:60px;">
+    <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-1">
+        <div>
+            <h1 class="display-6 fw-bold mb-1">Ce que l'ennemi envoie vraiment</h1>
+            <p class="text-muted mb-0" style="max-width:700px">
+                Le jeu compte chaque groupe, chaque soldat et chaque véhicule ennemi qu'il fait apparaître,
+                et pousse le cumul toutes les 10 minutes. À lire pour une seule question :
+                <b>est-ce représentatif de ce qu'on veut affronter ?</b> Un prefab à 60 % veut dire qu'on
+                combat six fois le même bonhomme ; un prefab absent veut dire qu'il ne sort jamais.
+            </p>
+        </div>
+    </div>
+    <div id="meta" class="foot mb-3"></div>
+
+    <div id="body"><div class="msg">Chargement…</div></div>
+</main>
+
+<script>
+const API = '/api/v1';
+
+const api = async (path) => {
+    const r = await fetch(`${API}/${path}`);
+    if (!r.ok) throw new Error(`API ${r.status}`);
+    return r.status === 204 ? null : r.json();
+};
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const COLORS = { group:'#3d8bff', soldier:'#e2483a', vehicle:'#e0a33a', source:'#39c2d1' };
+
+const CARDS = [
+    { key:'group',   title:'Types de groupe',
+      hint:"Le prefab de groupe demandé à la file de spawn. C'est le niveau où se décide la variété : si un seul type domine, toutes les rencontres se ressemblent." },
+    { key:'soldier', title:'Soldats',
+      hint:"Les personnages effectivement apparus. Inclut ceux de DARC, qui ne passe pas par la file de spawn de FF et n'est donc pas visible dans les groupes ci-contre." },
+    { key:'vehicle', title:'Véhicules',
+      hint:"Véhicules ennemis avec équipage attachés à une force. Un parc déséquilibré se voit ici avant de se voir en jeu." },
+    { key:'source',  title:'Sources',
+      hint:"D'où viennent les spawns. Sert surtout à vérifier qu'aucun producteur ne prend toute la place." },
+];
+
+function card(bucket, def){
+    const total = bucket ? bucket.total : 0;
+    const items = bucket ? bucket.items : [];
+    const col = COLORS[def.key] || '#7aa3c4';
+
+    let inner;
+    if (!items.length){
+        inner = `<div class="hint" style="margin:0">Rien de recensé pour l'instant.</div>`;
+    } else {
+        inner = items.map(it => {
+            const p = total > 0 ? Math.round(it.c * 100 / total) : 0;
+            return `<div class="row-x">
+                        <span class="nm" title="${esc(it.n)}">${esc(it.n)}</span>
+                        <span class="ct">${it.c}</span>
+                        <span class="pc">${p}%</span>
+                        <span class="bar"><span style="width:${p}%;background:${col}"></span></span>
+                    </div>`;
+        }).join('');
+    }
+
+    return `<div class="card-x">
+                <h2>${def.title} <span style="color:${col}">· ${total}</span></h2>
+                <div class="hint">${def.hint}</div>
+                ${inner}
+            </div>`;
+}
+
+function render(d){
+    const b = d.buckets || {};
+    const distinct = k => (b[k] ? b[k].items.length : 0);
+
+    const kpis = [
+        { lbl:'Durée observée', num: Math.round(d.duration_sec / 60) + ' min', sub:'depuis le démarrage du serveur' },
+        { lbl:'Spawns de groupe', num: d.group_spawns, sub:'via la file FF / Réoccupation' },
+        { lbl:'Types de groupe', num: distinct('group'), sub:'prefabs distincts' },
+        { lbl:'Types de soldat', num: distinct('soldier'), sub:'prefabs distincts' },
+        { lbl:'Types de véhicule', num: distinct('vehicle'), sub:'prefabs distincts' },
+    ];
+
+    document.getElementById('body').innerHTML =
+        `<div class="kpis">` + kpis.map(k =>
+            `<div class="kpi"><span class="kpi-lbl">${k.lbl}</span>
+             <span class="kpi-num">${k.num}</span>
+             <span class="kpi-sub">${k.sub}</span></div>`).join('') + `</div>` +
+        `<div class="cards">` + CARDS.map(def => card(b[def.key], def)).join('') + `</div>`;
+}
+
+let curSid = null;
+
+async function load(){
+    const body = document.getElementById('body');
+
+    let sid = null;
+    try {
+        const act = await api('public/active-server');
+        if (act && act.id) sid = act.id;
+        curSid = sid;
+    } catch (_) {}
+    if (!sid){
+        body.innerHTML = `<div class="msg">Aucun serveur actif.</div>`;
+        return;
+    }
+
+    let d;
+    try {
+        d = await api(`servers/${sid}/ffcensus`);
+    } catch (e) {
+        body.innerHTML = `<div class="msg">Accès refusé — cette page demande d'être connecté
+            avec un compte autorisé sur le serveur.<br><a href="/" class="link-info">Retour à l'accueil</a></div>`;
+        return;
+    }
+
+    if (!d || d.empty){
+        body.innerHTML = `<div class="msg">Aucun recensement reçu pour l'instant.<br>
+            Le jeu envoie son premier rapport <b>10 minutes</b> après le démarrage du serveur.</div>`;
+        document.getElementById('meta').textContent = '';
+        return;
+    }
+
+    document.getElementById('meta').textContent =
+        `Dernier envoi : ${new Date(d.received_at).toLocaleString('fr-FR')} · cumul depuis le démarrage · rapport toutes les 10 min`;
+    render(d);
+}
+
+// ===== REMISE A ZERO =====
+// Le compteur qui fait autorite est CELUI DU JEU : il cumule depuis le demarrage du
+// serveur et reecrase l'instantane du site a chaque rapport. Vider seulement la table
+// ici ne servirait donc a rien -- les anciens chiffres reviendraient au rapport suivant.
+// On envoie un ordre "census_reset" dans la file web -> jeu (meme mecanisme que les
+// ordres de groupes) ; le jeu remet ses compteurs a zero et renvoie aussitot un rapport
+// vide, que le prochain rafraichissement affichera.
+document.getElementById('btn-reset').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    if (!curSid) { alert("Aucun serveur actif."); return; }
+    if (!confirm("Remettre le recensement a zero ? Les compteurs repartent de zero EN JEU, les chiffres deja accumules seront perdus.")) return;
+
+    btn.disabled = true;
+    const before = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Envoi...';
+    try {
+        const r = await fetch(`${API}/command`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ server_id: curSid, type: 'census_reset' })
+        });
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || ('HTTP ' + r.status));
+        // Le jeu ne lit la file d'ordres que periodiquement : on laisse un instant
+        // avant de recharger, sinon on relit l'ancien instantane et on croit que
+        // le bouton n'a rien fait.
+        btn.innerHTML = '<i class="bi bi-check2 me-1"></i>Demandé';
+        setTimeout(load, 4000);
+        setTimeout(() => { btn.innerHTML = before; btn.disabled = false; }, 6000);
+    } catch (err) {
+        alert("Echec : " + err.message);
+        btn.innerHTML = before;
+        btn.disabled = false;
+    }
+});
+
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>

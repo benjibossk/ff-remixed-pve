@@ -1,0 +1,48 @@
+// FF - REMIXED - PVE -- Thales OB 72 Sophie avec designation laser.
+//
+// CE QU'ON FAIT : on part des jumelles SOFLAM de TacticalFlava (qui portent le guidage
+// laser) et on remplace leur apparence par le modele francais d'AMF-FANTASSIN. Cote
+// joueur c'est une Sophie ; cote moteur c'est un designateur laser complet.
+//
+// POURQUOI CET HERITAGE-LA, ET PAS L'INVERSE. Les deux prefabs sources derivent du meme
+// Binoculars_base {447D9C49127DE98B}, mais ce qui est DUR a reproduire est le laser :
+//   - TF_LASER_BinocularComputer + TF_LASER_Spot, plus toute la couche d'actions
+//     (reglage du code, affichage HI/LO...) definie dans le SOFLAM.
+// Le modele 3D, lui, n'est qu'une ligne. On herite donc du SOFLAM et on repeint, plutot
+// que d'heriter de la Sophie et de recopier le systeme laser.
+//
+// GUIDS D'INSTANCE : les composants surcharges ci-dessous reprennent EXACTEMENT les GUIDs
+// du parent (ils viennent tous de Binoculars_base, et sont donc identiques chez TF et chez
+// AMF -- verifie). Un GUID neuf serait ignore SANS erreur et on garderait l'apparence du
+// SOFLAM sans comprendre pourquoi. Cf. memoire enfusion-override-instance-guid.
+//
+// DEPENDANCES : TacticalFlava {5D550926D43F1409} pour le parent et le laser,
+// AMF-FANTASSIN {64CF25A41DCBDBE0} pour le modele. Les deux sont deja des dependances
+// de REMIXED, rien a ajouter.
+GenericEntity : "{FD315CB1803037F1}Prefabs/Items/Equipment/Binoculars/SOFLAM/SOFLAM_Binoculars.et" {
+ ID "6FFEC0DEB0C00010"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Thales OB 72 Sophie"
+     // Description reprise d'AMF, MAIS corrigee : la leur precise "non equipe d'un
+     // telemetre", ce qui etait vrai de leur version passive. Celle-ci porte le
+     // designateur laser du SOFLAM, il aurait ete trompeur de garder la phrase.
+     Description "Objectif Binoculaire modele 72. Observation thermique et designation laser pour le guidage des munitions."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 2.4
+    }
+   }
+  }
+  // Le modele francais a la place de l'AN/PEQ-1.
+  //
+  // L'assignation de materiau PIP_DISPLAY heritee du SOFLAM (son petit ecran) reste
+  // declaree par le parent : le modele de la Sophie n'expose pas ce slot, l'assignation
+  // ne trouve donc pas sa cible et reste sans effet. On ne la redeclare pas.
+  MeshObject "{5D0CB09DD1352E70}" {
+   Object "{01404674CFC9C395}Assets/Items/Equipement/Binoculars/OB72_Sophie/OB72Sophie.xob"
+  }
+ }
+}

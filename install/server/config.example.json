@@ -1,0 +1,96 @@
+{
+    "bindAddress": "0.0.0.0",
+    "bindPort": 2001,
+    "publicAddress": "<YOUR PUBLIC IP>",
+    "publicPort": 2001,
+    "a2s": {
+        "address": "0.0.0.0",
+        "port": 17777
+    },
+    "game": {
+        "name": "<YOUR SERVER NAME>",
+        "password": "",
+        "passwordAdmin": "<ADMIN PASSWORD - CHANGE ME>",
+        "admins": [],
+        "scenarioId": "{6FFEC0DEDA000504}Missions/FFRX_Anizay.conf",
+        "maxPlayers": 20,
+        "visible": true,
+        "crossPlatform": true,
+        "supportedPlatforms": [
+            "PLATFORM_PC",
+            "PLATFORM_XBL",
+            "PLATFORM_PSN"
+        ],
+        "gameProperties": {
+            "serverMaxViewDistance": 2500,
+            "serverMinGrassDistance": 50,
+            "networkViewDistance": 1500,
+            "disableThirdPerson": false,
+            "fastValidation": true,
+            "battlEye": true,
+            "VONDisableUI": false,
+            "missionHeader": {}
+        },
+        "mods": [
+            {
+                "modId": "69DF0268E97F72A3",
+                "name": "PVE REMIXED FF"
+            },
+            {
+                "modId": "6266DCA9193C705E",
+                "name": "Anizay"
+            },
+            {
+                "modId": "6A3A9BE6FEB34F4F",
+                "name": "desert vehicle"
+            },
+            {
+                "modId": "64CEC8E005828E5D",
+                "name": "MEI"
+            },
+            {
+                "modId": "6A468387A16CD851",
+                "name": "FF - Persistent Checkpoints"
+            },
+            {
+                "modId": "5D550926D43F1409",
+                "name": "TacticalFlava"
+            },
+            {
+                "modId": "64E37695015F8AFA",
+                "name": "AT-4"
+            },
+            {
+                "modId": "689EDED542F881AF",
+                "name": "DarcChopper"
+            },
+            {
+                "modId": "692121914CDE6746",
+                "name": "DarcChopperCompatFF"
+            },
+            {
+                "modId": "5DD55EE55380FA5C",
+                "name": "IED Emporium 2.0"
+            }
+        ]
+    },
+    "operating": {
+        "lobbyPlayerSynchronise": true,
+        "playerSaveTime": 120,
+        "aiLimit": -1,
+        "joinQueue": {
+            "maxSize": 0
+        },
+        "disableNavmeshStreaming": [],
+        "slotReservationTimeout": 180
+    },
+    "rcon": {
+        "password": "<RCON PASSWORD - CHANGE ME>",
+        "address": "127.0.0.1",
+        "port": 19999,
+        "maxClients": 16,
+        "permission": "admin",
+        "blacklist": [],
+        "whitelist": []
+    }
+}

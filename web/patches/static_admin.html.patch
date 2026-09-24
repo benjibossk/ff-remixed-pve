@@ -1,0 +1,386 @@
+diff --git a/static/admin.html b/static/admin.html
+index cd26974..1f0d961 100644
+--- a/static/admin.html
++++ b/static/admin.html
+@@ -3,7 +3,7 @@
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <title>[GTG] Live Map - Admin Dashboard</title>
++    <title>PC — Administration</title>
+     <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+     <link rel="stylesheet" href="/api/v1/cdn/map/leaflet.css"/>
+@@ -62,13 +62,22 @@
+             border: 1px solid white;
+         }
+     </style>
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
++    <link rel="stylesheet" href="/static/theme.css">
+ </head>
+ <body>
++<div class="tricolore"></div>
+ 
+ <div class="container-fluid" id="admin-dashboard-container">
+     <div class="d-flex justify-content-between align-items-center mb-4">
+-        <h1 class="mb-0">[GTG] Live Map - Admin Dashboard</h1>
+-        <a href="/" class="btn btn-secondary">Back to Landing Page</a>
++        <h1 class="mb-0"><a href="/" class="d-flex align-items-center gap-3" style="color:inherit;text-decoration:none" title="Retour a l'accueil"><span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>PC — Administration</a></h1>
++        <div class="d-flex gap-2">
++            <a href="/commandes" class="btn btn-outline-warning"><i class="bi bi-terminal me-1"></i> Commandes</a>
++            <a href="/admin/loadouts" class="btn btn-info"><i class="bi bi-person-vcard me-1"></i> Dotations</a>
++            <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
++        </div>
+     </div>
+     <div id="auth-status-container"></div>
+     <div id="dashboard-content" class="d-none">
+@@ -87,12 +96,14 @@
+                             <th>User</th>
+                             <th class="text-center">Account Type</th>
+                             <th class="text-center">Owned Servers</th>
+-                            <th class="text-center" style="width: 15%;">Server Limit</th>
++                            <th class="text-center" style="width: 12%;">Server Limit</th>
++                            <th style="width: 22%;">UID en jeu (lien)</th>
+                             <th class="text-end">Actions</th>
+                         </tr>
+                         </thead>
+                         <tbody id="user-table-body"></tbody>
+                     </table>
++                    <datalist id="known-players"></datalist>
+                 </div>
+             </div>
+         </div>
+@@ -171,6 +182,57 @@
+                 <div id="save-status" class="mt-2"></div>
+             </div>
+         </div>
++
++        <div class="card mb-4">
++            <div class="card-header"><h3 class="mb-0">Effectifs &amp; Grades</h3></div>
++            <div class="card-body">
++                <div class="row g-3 align-items-end mb-3">
++                    <div class="col-md-6">
++                        <label for="roster-server-select" class="form-label">Serveur</label>
++                        <select id="roster-server-select" class="form-select">
++                            <option selected disabled value="">Sélectionner un serveur...</option>
++                        </select>
++                    </div>
++                    <div class="col-md-6">
++                        <button id="roster-refresh-btn" class="btn btn-info" disabled><i class="bi bi-arrow-clockwise"></i> Rafraîchir les joueurs</button>
++                        <span id="roster-status" class="ms-2 text-muted"></span>
++                    </div>
++                </div>
++                <p class="small text-muted">Attribue un grade fixe (Discord) à un joueur en ligne. L'ordre <code>setrank</code> est envoyé au jeu (appliqué de suite si le joueur est connecté, sinon au prochain spawn). Sans catalogue de grades poussé par le mod, le grade se saisit au <strong>numéro</strong>.</p>
++
++                <div id="roster-catalog" class="mb-3"></div>
++
++                <div class="d-flex align-items-center flex-wrap gap-2 mb-2 small">
++                    <span class="text-muted">Trier :</span>
++                    <div class="btn-group btn-group-sm" role="group" id="roster-sort">
++                        <button type="button" class="btn btn-outline-light active" data-sort="playtime">Temps de jeu</button>
++                        <button type="button" class="btn btn-outline-light" data-sort="name">Nom</button>
++                        <button type="button" class="btn btn-outline-light" data-sort="rank">Rang</button>
++                    </div>
++                    <div class="form-check form-switch ms-2 mb-0">
++                        <input class="form-check-input" type="checkbox" id="roster-online-only">
++                        <label class="form-check-label" for="roster-online-only">En ligne seulement</label>
++                    </div>
++                </div>
++
++                <div class="table-responsive">
++                    <table class="table table-dark table-hover align-middle">
++                        <thead>
++                        <tr>
++                            <th>Joueur</th>
++                            <th>Temps de jeu</th>
++                            <th>Grade détecté</th>
++                            <th style="width: 26%;">Changer le grade</th>
++                            <th class="text-end">Action</th>
++                        </tr>
++                        </thead>
++                        <tbody id="roster-table-body">
++                            <tr><td colspan="5" class="text-center text-muted">Sélectionne un serveur puis « Rafraîchir les joueurs ».</td></tr>
++                        </tbody>
++                    </table>
++                </div>
++            </div>
++        </div>
+     </div>
+ </div>
+ <div class="modal fade" id="userServersModal" tabindex="-1">
+@@ -332,13 +394,20 @@
+             testMarkersLayer.addTo(configMapInstance);
+ 
+             if (mapConfig.TilesURL) {
+-                new LTileLayerInvertedY(mapConfig.TilesURL, {
++                // Voir MapConfig.TileSchemeXYZ : tuiles historiques (Y + zoom inverses)
++                // ou XYZ standard. Le calibrateur doit afficher exactement comme la carte.
++                const tileOpts = {
+                     bounds: bounds,
+                     noWrap: true,
+                     maxZoom: mapConfig.MaxZoom,
+                     minZoom: mapConfig.MinZoom,
+-                    zoomReverse: true,
+-                }).addTo(configMapInstance);
++                };
++                if (mapConfig.TileSchemeXYZ) {
++                    L.tileLayer(mapConfig.TilesURL, tileOpts).addTo(configMapInstance);
++                } else {
++                    tileOpts.zoomReverse = true;
++                    new LTileLayerInvertedY(mapConfig.TilesURL, tileOpts).addTo(configMapInstance);
++                }
+             }
+ 
+             const initialViewArma = armaToLeaflet([mapConfig.InitialViewLng || 6400, mapConfig.InitialViewLat || 6400]);
+@@ -514,6 +583,24 @@
+ 
+         const setupEventListeners = () => {
+             mapSelect.addEventListener('change', (e) => loadConfigMap(e.target.value));
++
++            const rosterServerSelect = document.getElementById('roster-server-select');
++            const rosterRefreshBtn = document.getElementById('roster-refresh-btn');
++            rosterServerSelect.addEventListener('change', () => { rosterRefreshBtn.disabled = !rosterServerSelect.value; });
++            rosterRefreshBtn.addEventListener('click', () => fetchRoster(rosterServerSelect.value));
++            document.getElementById('roster-sort').addEventListener('click', (e) => {
++                const btn = e.target.closest('button[data-sort]');
++                if (!btn) return;
++                document.querySelectorAll('#roster-sort button').forEach(b => b.classList.remove('active'));
++                btn.classList.add('active');
++                rosterState.sortKey = btn.dataset.sort;
++                if (rosterState.rows.length) renderRoster();
++            });
++            document.getElementById('roster-online-only').addEventListener('change', (e) => {
++                rosterState.onlineOnly = e.target.checked;
++                if (rosterState.rows.length) renderRoster();
++            });
++
+             calibratorServerSelect.addEventListener('change', () => {
+                 fetchPlayersBtn.disabled = false;
+             });
+@@ -618,6 +705,26 @@
+                     });
+                 }
+                 allServers = Array.from(serverSet.values());
++                const rosterSel = document.getElementById('roster-server-select');
++                allServers.forEach(s => rosterSel.add(new Option(s.name, s.id)));
++
++                // Datalist des joueurs connus (UID -> nom) pour l'aide à la liaison Discord<->jeu.
++                const dl = document.getElementById('known-players');
++                const seenUid = new Set();
++                for (const s of allServers) {
++                    try {
++                        const roster = await fetchData(`servers/${s.id}/roster`);
++                        (roster || []).forEach(p => {
++                            if (p.playerGuid && !seenUid.has(p.playerGuid)) {
++                                seenUid.add(p.playerGuid);
++                                const o = document.createElement('option');
++                                o.value = p.playerGuid;
++                                o.label = (p.name || '') + ' — ' + p.playerGuid;
++                                dl.appendChild(o);
++                            }
++                        });
++                    } catch (_) {}
++                }
+             } catch (err) {
+                 document.getElementById('dashboard-content').classList.add('d-none');
+                 document.getElementById('auth-status-container').innerHTML = `<div class="alert alert-danger text-center"><h3>Access Denied</h3><p>${err.message}</p><a href="/auth/discord/login" class="btn btn-primary">Login as Admin</a></div>`;
+@@ -629,12 +736,12 @@
+             const userTableBody = document.getElementById('user-table-body');
+             userTableBody.innerHTML = '';
+             if (!users || users.length === 0) {
+-                userTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No users found.</td></tr>';
++                userTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No users found.</td></tr>';
+                 return;
+             }
+             users.forEach(user => {
+                 const tr = document.createElement('tr');
+-                tr.innerHTML = `<td><img src="${user.avatar}" alt="${user.username}" class="avatar me-2"><strong>${user.username}</strong><br><small class="text-muted">ID: ${user.id}</small></td><td class="text-center">${user.account_type}</td><td class="text-center">${user.owned_server_count}</td><td class="text-center"><input type="number" class="form-control form-control-sm text-center" value="${user.max_servers}" min="0" data-userid="${user.id}" ${user.account_type === 'admin' ? 'disabled' : ''}></td><td class="text-end"><button class="btn btn-sm btn-info view-servers-btn" data-userid="${user.id}" data-username="${user.username}" title="View User's Servers"><i class="bi bi-hdd-stack"></i></button><button class="btn btn-sm btn-success save-limit-btn" data-userid="${user.id}" title="Save Server Limit"><i class="bi bi-save"></i></button></td>`;
++                tr.innerHTML = `<td><img src="${user.avatar}" alt="${user.username}" class="avatar me-2"><strong>${user.username}</strong><br><small class="text-muted">ID: ${user.id}</small></td><td class="text-center">${user.account_type}</td><td class="text-center">${user.owned_server_count}</td><td class="text-center"><input type="number" class="form-control form-control-sm text-center" value="${user.max_servers}" min="0" data-userid="${user.id}" ${user.account_type === 'admin' ? 'disabled' : ''}></td><td><div class="input-group input-group-sm"><input type="text" list="known-players" class="form-control form-control-sm link-uid-input" value="${user.bohemia_uid || ''}" placeholder="UID en jeu…" data-userid="${user.id}"><button class="btn btn-sm btn-info save-link-btn" data-userid="${user.id}" title="Lier ce compte à l'UID"><i class="bi bi-link-45deg"></i></button></div></td><td class="text-end"><button class="btn btn-sm btn-info view-servers-btn" data-userid="${user.id}" data-username="${user.username}" title="View User's Servers"><i class="bi bi-hdd-stack"></i></button><button class="btn btn-sm btn-success save-limit-btn" data-userid="${user.id}" title="Save Server Limit"><i class="bi bi-save"></i></button></td>`;
+                 userTableBody.appendChild(tr);
+             });
+             attachUserActionListeners();
+@@ -666,11 +773,24 @@
+                     }
+                 });
+             });
+-            document.querySelectorAll('input[data-userid]').forEach(input => {
++            document.querySelectorAll('.save-link-btn').forEach(btn => {
++                btn.addEventListener('click', async (e) => {
++                    const userId = e.currentTarget.dataset.userid;
++                    const input = document.querySelector(`.link-uid-input[data-userid="${userId}"]`);
++                    try {
++                        await fetchData(`admin/users/${userId}/link`, {
++                            method: 'PUT', headers: {'Content-Type': 'application/json'},
++                            body: JSON.stringify({ bohemia_uid: input.value.trim() })
++                        });
++                        btn.classList.remove('btn-info'); btn.classList.add('btn-success');
++                        setTimeout(() => { btn.classList.remove('btn-success'); btn.classList.add('btn-info'); }, 1200);
++                    } catch (err) { alert('Erreur de liaison : ' + err.message); }
++                });
++            });
++            document.querySelectorAll('input.form-control-sm.text-center[data-userid]').forEach(input => {
+                 input.addEventListener('input', e => {
+                     const saveBtn = document.querySelector(`.save-limit-btn[data-userid="${e.target.dataset.userid}"]`);
+-                    saveBtn.classList.remove('btn-success');
+-                    saveBtn.classList.add('btn-warning');
++                    if (saveBtn) { saveBtn.classList.remove('btn-success'); saveBtn.classList.add('btn-warning'); }
+                 });
+             });
+             document.querySelectorAll('.view-servers-btn').forEach(btn => btn.addEventListener('click', async (e) => {
+@@ -701,6 +821,154 @@
+             }));
+         };
+ 
++        // ===== Effectifs & Grades (setrank via file d'ordres web -> jeu) =====
++        const fltRgbSolid = (v) => { v = Number(v) || 0; if (v < 0) v = v >>> 0; const r = (v >>> 16) & 255, g = (v >>> 8) & 255, b = v & 255; return `rgb(${r},${g},${b})`; };
++        const fltEsc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
++
++        let rosterState = { serverId: null, rows: [], catalog: {}, squadByGuid: new Map(), sortKey: 'playtime', onlineOnly: false };
++
++        const fmtPlaytime = (sec) => {
++            sec = Number(sec) || 0;
++            const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
++            if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m`;
++            if (m > 0) return `${m}m`;
++            return `${Math.floor(sec)}s`;
++        };
++
++        async function fetchRoster(serverId) {
++            if (!serverId) return;
++            const body = document.getElementById('roster-table-body');
++            const status = document.getElementById('roster-status');
++            status.textContent = 'Chargement...';
++            body.innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border spinner-border-sm"></div></td></tr>';
++            try {
++                // roster = TOUS les joueurs déjà connectés (fiche PlayerStat) ; catalogue grades ; escouades (live).
++                const [roster, ranksCatalog] = await Promise.all([
++                    fetchData(`servers/${serverId}/roster`),
++                    fetchData(`public/ranks/${serverId}`).catch(() => ({}))
++                ]);
++                renderRankCatalog(ranksCatalog || {});
++                let squads = [];
++                try { squads = await fetchData(`public/squads/${serverId}`); } catch (_) {}
++                const squadByGuid = new Map();
++                (squads || []).forEach(sq => (sq.members || []).forEach(u => squadByGuid.set(u, sq)));
++
++                rosterState = {
++                    serverId, rows: roster || [], catalog: ranksCatalog || {}, squadByGuid,
++                    sortKey: rosterState.sortKey, onlineOnly: rosterState.onlineOnly
++                };
++
++                if (!rosterState.rows.length) {
++                    body.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Aucun joueur enregistré sur ce serveur pour le moment.</td></tr>';
++                    status.textContent = '';
++                    return;
++                }
++                renderRoster();
++                const online = rosterState.rows.filter(r => r.online).length;
++                status.textContent = `${rosterState.rows.length} joueur(s) · ${online} en ligne`;
++            } catch (e) {
++                body.innerHTML = `<tr><td colspan="5" class="text-danger text-center">Erreur : ${fltEsc(e.message)}</td></tr>`;
++                status.textContent = '';
++            }
++        }
++
++        function renderRoster() {
++            const body = document.getElementById('roster-table-body');
++            const { rows, catalog, squadByGuid, sortKey, onlineOnly } = rosterState;
++            body.innerHTML = '';
++            const nm = r => (r.name || r.playerGuid);
++
++            let list = rows.slice();
++            if (onlineOnly) list = list.filter(r => r.online);
++            list.sort((a, b) => {
++                if (sortKey === 'name') return nm(a).toUpperCase().localeCompare(nm(b).toUpperCase());
++                if (sortKey === 'rank') return (b.rank || 0) - (a.rank || 0) || nm(a).localeCompare(nm(b));
++                return (b.playtimeSeconds || 0) - (a.playtimeSeconds || 0); // temps de jeu décroissant
++            });
++
++            if (!list.length) {
++                body.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Aucun joueur (filtre « en ligne »).</td></tr>';
++                return;
++            }
++
++            list.forEach(r => {
++                const guid = r.playerGuid;
++                const facKey = r.factionKey || '';
++                const cat = catalog[facKey] || [];
++                const sq = squadByGuid.get(guid);
++
++                let rankControl;
++                if (cat.length) {
++                    rankControl = `<select class="form-select form-select-sm roster-rank" data-uid="${fltEsc(guid)}">` +
++                        cat.map(x => `<option value="${x.i}" ${x.i === r.rank ? 'selected' : ''}>${x.i} — ${fltEsc(x.name)}</option>`).join('') + `</select>`;
++                } else {
++                    const cur = (r.rank !== undefined && r.rank !== null) ? r.rank : '';
++                    rankControl = `<input type="number" min="0" value="${cur}" class="form-control form-control-sm roster-rank" data-uid="${fltEsc(guid)}" placeholder="n° grade" style="max-width:130px">`;
++                }
++
++                const found = cat.find(x => x.i === r.rank);
++                const detectedLabel = found
++                    ? `${fltEsc(found.name)} <small class="text-muted">(${r.rank})</small>`
++                    : `<span class="text-muted">n°</span> ${r.rank || 0}`;
++                const xp = (r.xp !== undefined && r.xp !== null) ? ` <small class="text-muted">· XP ${r.xp}</small>` : '';
++                const detectedCell = `<span class="badge text-bg-warning">${detectedLabel}</span>${xp}`;
++
++                const onlineDot = `<span class="d-inline-block rounded-circle me-2" style="width:9px;height:9px;background:${r.online ? '#46d17f' : '#43566a'}" title="${r.online ? 'En ligne' : 'Hors ligne'}"></span>`;
++                const squadDot = sq ? `<span class="d-inline-block rounded-circle ms-1" style="width:8px;height:8px;background:${fltRgbSolid(sq.color)}" title="${fltEsc(sq.name || '')}"></span>` : '';
++
++                const tr = document.createElement('tr');
++                tr.innerHTML = `<td>${onlineDot}<strong>${fltEsc(nm(r))}</strong>${squadDot}<br><small class="text-muted">${fltEsc(facKey)}</small></td>
++                    <td><i class="bi bi-clock-history me-1 text-muted"></i>${fmtPlaytime(r.playtimeSeconds)}</td>
++                    <td>${detectedCell}</td>
++                    <td>${rankControl}</td>
++                    <td class="text-end"><button class="btn btn-sm btn-success roster-apply" data-uid="${fltEsc(guid)}"><i class="bi bi-check-lg"></i> Appliquer</button><span class="roster-fb ms-2 small" data-uid="${fltEsc(guid)}"></span></td>`;
++                body.appendChild(tr);
++            });
++            body.querySelectorAll('.roster-apply').forEach(btn => {
++                btn.addEventListener('click', () => {
++                    const uid = btn.dataset.uid;
++                    const input = body.querySelector(`.roster-rank[data-uid="${CSS.escape(uid)}"]`);
++                    sendSetRank(rosterState.serverId, uid, input ? input.value : 0, body.querySelector(`.roster-fb[data-uid="${CSS.escape(uid)}"]`));
++                });
++            });
++        }
++
++        // Affiche le catalogue complet des grades détectés (poussé par Fleet), par faction.
++        function renderRankCatalog(ranksCatalog) {
++            const box = document.getElementById('roster-catalog');
++            const factions = Object.keys(ranksCatalog || {}).filter(k => (ranksCatalog[k] || []).length);
++            if (!factions.length) {
++                box.innerHTML = `<div class="alert alert-info mb-0 py-2 small"><i class="bi bi-info-circle me-1"></i>Aucun catalogue de grades détecté pour l'instant. Il arrive automatiquement dès que le mod Fleet tourne (envoi 1× au démarrage) — en attendant, le grade se saisit au numéro.</div>`;
++                return;
++            }
++            const total = factions.reduce((n, f) => n + ranksCatalog[f].length, 0);
++            let html = `<div class="card" style="background:rgba(6,11,16,.5)"><div class="card-body py-2">
++                <div class="d-flex align-items-center mb-2"><i class="bi bi-list-ol me-2"></i><strong>Grades détectés</strong>
++                <span class="badge text-bg-secondary ms-2">${total} au total</span></div>`;
++            factions.sort().forEach(f => {
++                const list = [...ranksCatalog[f]].sort((a, b) => a.i - b.i);
++                html += `<div class="mb-1"><span class="badge text-bg-info me-2">${fltEsc(f)}</span>` +
++                    list.map(r => `<span class="badge text-bg-warning me-1 mb-1">${r.i} · ${fltEsc(r.name)}</span>`).join('') + `</div>`;
++            });
++            html += `</div></div>`;
++            box.innerHTML = html;
++        }
++
++        async function sendSetRank(serverId, uid, rank, fb) {
++            const r = parseInt(rank, 10);
++            if (isNaN(r) || r < 0) { if (fb) { fb.textContent = 'n° invalide'; fb.className = 'roster-fb ms-2 small text-danger'; } return; }
++            if (fb) { fb.textContent = 'Envoi...'; fb.className = 'roster-fb ms-2 small text-info'; }
++            try {
++                await fetchData('command', {
++                    method: 'POST', headers: { 'Content-Type': 'application/json' },
++                    body: JSON.stringify({ server_id: serverId, type: 'setrank', uid: uid, rank: r })
++                });
++                if (fb) { fb.textContent = '✓ ordre envoyé'; fb.className = 'roster-fb ms-2 small text-success'; }
++            } catch (e) {
++                if (fb) { fb.textContent = 'Erreur : ' + e.message; fb.className = 'roster-fb ms-2 small text-danger'; }
++            }
++        }
++
+         initialize();
+     });
+ </script>

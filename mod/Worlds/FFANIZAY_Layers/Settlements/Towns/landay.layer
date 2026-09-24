@@ -1,0 +1,146 @@
+JWK_CheckpointEntity JWK_CheckpointController_68E1020597397159 : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ coords 7406.406 89.53 6884.733
+}
+JWK_TownEntity JWK_TownController_68E10205543C1B51 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Landay"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 7397.436 89.789 6873.679
+ {
+  PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+   components {
+    JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+     m_aTags {
+      BATTLE_AREA
+     }
+     m_bApplyFactionToParkingSpots 0
+    }
+   }
+   coords 0.101 -0.001 0.186
+   Points {
+    ShapePoint "{68E102054BC99FC1}" {
+     Position 20.195 -5.233 62.601
+    }
+    ShapePoint "{68E102054A7A36D8}" {
+     Position 89.926 0.731 13.678
+    }
+    ShapePoint "{68E102054A34BDCC}" {
+     Position 85.525 3.403 -41.179
+    }
+    ShapePoint "{68E102054A04C761}" {
+     Position 36.235 4.386 -95.577
+    }
+    ShapePoint "{68E102054AD1F137}" {
+     Position -4.625 3.819 -111.976
+    }
+    ShapePoint "{68E102054AA54C77}" {
+     Position -46.902 0.12 -74.427
+    }
+    ShapePoint "{68E102054A8C130A}" {
+     Position -63.155 0.119 -46.157
+    }
+    ShapePoint "{68E102054945163D}" {
+     Position -69.329 -1.463 -17.113
+    }
+    ShapePoint "{68E1020549002236}" {
+     Position -70.801 -1.788 10.254
+    }
+    ShapePoint "{68E1020549C0B966}" {
+     Position -62.556 -0.574 37.866
+    }
+    ShapePoint "{68E10205498E4900}" {
+     Position -54.473 -0.757 55.853
+    }
+    ShapePoint "{68E10205484C0B31}" {
+     Position -44.771 -0.076 69.739
+    }
+    ShapePoint "{68E1020548FA3D98}" {
+     Position -13.189 -0.954 71.649
+    }
+   }
+  }
+ }
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 7403.195 89.687 6872.12
+ Points {
+  ShapePoint "{68E10219D11E467D}" {
+   Position -66.311 0.222 -49.071
+  }
+  ShapePoint "{68E10219CEA91039}" {
+   Position -67.346 -0.054 30.338
+  }
+  ShapePoint "{68E10219CD5B64FA}" {
+   Position -60.464 -0.827 63.764
+  }
+  ShapePoint "{68E10219CD3DBCF8}" {
+   Position -41.76 -2.693 84.739
+  }
+  ShapePoint "{68E10219CD0A0D07}" {
+   Position -13.942 -4.326 94.965
+  }
+  ShapePoint "{68E10219CDE46F6E}" {
+   Position 16.329 -5.116 92.762
+  }
+  ShapePoint "{68E10219CDB86244}" {
+   Position 45.788 -4.777 77.183
+  }
+  ShapePoint "{68E10219CC64EB63}" {
+   Position 68.305 -1.864 42.846
+  }
+  ShapePoint "{68E10219CC2F41C9}" {
+   Position 74.731 1.545 13.293
+  }
+  ShapePoint "{68E10219CC0AA645}" {
+   Position 75.37 1.553 -4.562
+  }
+  ShapePoint "{68E10219CCE0B3B0}" {
+   Position 69.069 2.13 -28.885
+  }
+  ShapePoint "{68E10219CCC08561}" {
+   Position 47.167 2.671 -60.714
+  }
+  ShapePoint "{68E10219CC81D12E}" {
+   Position 33.427 2.029 -74.853
+  }
+  ShapePoint "{68E10219CB60889B}" {
+   Position 23.332 3.071 -86.107
+  }
+  ShapePoint "{68E10219CB410A93}" {
+   Position 13.849 2.9 -92.975
+  }
+  ShapePoint "{68E10219CB1D9BB5}" {
+   Position -10.584 3.418 -96.076
+  }
+  ShapePoint "{68E10219CBC97C6B}" {
+   Position -31.641 0.32 -85.583
+  }
+  ShapePoint "{68E10219C967D723}" {
+   Position -63.016 0.218 -64.099
+  }
+ }
+}
+SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+ coords 7404.672 89.347 6892.334
+ angles 0 172.56 0
+ {
+  StaticModelEntity {
+   ID "62A693F2AC4FB612"
+   coords 0 0.49 0
+   angles 1.998 0 1.09
+  }
+ }
+}

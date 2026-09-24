@@ -1,0 +1,39 @@
+GameProject {
+ ID "FFREMIXEDPVE"
+ GUID "69DF0268E97F72A3"
+ TITLE "FF - REMIXED - PVE"
+ Dependencies {
+  "5D6EA74A94173EDF" "5D6EBC81EB1842EF" "58D0FB3206B6F859" "69A510CE600D1126" "64CF25A41DCBDBE0" "65DB713038B8533C" "69A47272BCF14AD5" "" "631EE12D448D7FCC" "5ED0FAC84A48D018" "68B2E735099BA541" "69142B53324289C0" "65AD7D1E9EEAFA53" "6A3CA05DC7E1A327" "5DD55EE55380FA5C" "5D550926D43F1409"
+ }
+ Configurations {
+  GameProjectConfig PC {
+   WidgetManagerSettings WidgetManagerSettings "{AC4BE58770485E02}" {
+    StringTables {
+     StringTableDefinition "{68CD0BCAB156A41A}" {
+      StringTableSource "{F35C3381DCA63334}localization_MCD.st"
+      Languages {
+       LanguageDefinition "{68CD0BCE0BC335CF}" {
+        Code "en_us"
+        StringTableRuntime "{6846A7FFEFA419E3}localization_MCD.en_us.conf"
+       }
+       LanguageDefinition "{CD000000000F0001}" {
+        Code "fr_fr"
+        StringTableRuntime "{CD000000000F0002}localization_MCD.fr_fr.conf"
+       }
+      }
+     }
+    }
+   }
+  }
+  GameProjectConfig XBOX_ONE {
+  }
+  GameProjectConfig XBOX_SERIES {
+  }
+  GameProjectConfig PS4 {
+  }
+  GameProjectConfig PS5 {
+  }
+  GameProjectConfig HEADLESS {
+  }
+ }
+}

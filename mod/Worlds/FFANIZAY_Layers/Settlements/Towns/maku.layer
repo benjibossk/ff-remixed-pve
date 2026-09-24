@@ -1,0 +1,80 @@
+JWK_TownEntity JWK_TownController_68E1272B07F8E996 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Maku"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 6867.598 120.157 5588.544
+ m_iTownRange 180
+ m_iPopulation 110
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 6868.875 120.158 5585.659
+ Points {
+  ShapePoint "{68E1272B5F7956D5}" {
+   Position 234.188 19.496 3.846
+  }
+  ShapePoint "{68E1272B5F3EBE05}" {
+   Position 197.045 15.41 -62.304
+  }
+  ShapePoint "{68E1272B5F088F55}" {
+   Position 140.985 19.347 -119.266
+  }
+  ShapePoint "{68E1272B5FD41F86}" {
+   Position 80.458 22.188 -157.607
+  }
+  ShapePoint "{68E1272B5FB90D93}" {
+   Position 0.75 11.815 -206.43
+  }
+  ShapePoint "{68E1272B5F9D6661}" {
+   Position -59.337 4.982 -216.969
+  }
+  ShapePoint "{68E1272B5E7DB1E6}" {
+   Position -113.121 10.076 -202.652
+  }
+  ShapePoint "{68E1272B5E4102DB}" {
+   Position -158.677 12.491 -150.514
+  }
+  ShapePoint "{68E1272B5E2059A0}" {
+   Position -179.057 9.979 -93.92
+  }
+  ShapePoint "{68E1272B5EF99C8A}" {
+   Position -173.449 11.505 11.894
+  }
+  ShapePoint "{68E1272B5EC745E0}" {
+   Position -140.6 4.849 82.018
+  }
+  ShapePoint "{68E1272B5EAF149A}" {
+   Position -97.9 4.676 129.715
+  }
+  ShapePoint "{68E1272B5D7162E1}" {
+   Position -42.851 -0.44 152.876
+  }
+  ShapePoint "{68E1272B5D424D9A}" {
+   Position 12.099 -0.273 167.056
+  }
+  ShapePoint "{68E1272B5D28531C}" {
+   Position 80.475 11.162 149.449
+  }
+  ShapePoint "{68E1272B5DF9C4DB}" {
+   Position 138.039 12.615 113.201
+  }
+  ShapePoint "{68E1272B5DB2DA57}" {
+   Position 180.49 10.909 77.86
+  }
+  ShapePoint "{68E1272B5C7ACFB4}" {
+   Position 201.899 19.246 47.101
+  }
+ }
+}

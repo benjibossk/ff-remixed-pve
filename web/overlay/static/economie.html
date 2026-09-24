@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Économie de guerre — Intranet Tactique</title>
+    <meta name="description" content="Stocks, production réelle et territoire : où en est l'effort de guerre.">
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
+
+        /* Bandeau de chiffres clés */
+        .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:22px;}
+        .kpi{background:var(--panel);padding:13px 15px;display:flex;flex-direction:column;gap:2px;}
+        .kpi-lbl{font-family:"IBM Plex Mono";font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);}
+        .kpi-num{font-family:"Oswald";font-size:1.75rem;font-weight:600;line-height:1.05;}
+        .kpi-sub{font-family:"IBM Plex Mono";font-size:10.5px;color:var(--dim);}
+        .kpi-bar{height:4px;background:#1a2430;margin-top:5px;overflow:hidden;}
+        .kpi-bar span{display:block;height:100%;}
+
+        /* Cartes de graphes */
+        .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:14px;}
+        .card2{background:var(--panel);border:1px solid var(--line);padding:14px 16px 8px;}
+        .card2 h2{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.95rem;color:var(--hi);margin:0 0 2px;}
+        .card2 .hint{font-family:"IBM Plex Mono";font-size:10.5px;color:var(--dim);margin-bottom:9px;}
+        .legend{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 0;font-family:"IBM Plex Mono";font-size:10.5px;color:var(--dim);}
+        .legend i{display:inline-block;width:9px;height:9px;margin-right:5px;vertical-align:-1px;}
+        .chart{position:relative;width:100%;height:190px;}
+        .chart svg{display:block;width:100%;height:100%;overflow:visible;}
+        .rd{position:absolute;top:0;right:0;background:rgba(6,11,16,.94);border:1px solid var(--line);
+            padding:4px 8px;font-family:"IBM Plex Mono";font-size:10.5px;color:var(--txt);pointer-events:none;display:none;white-space:nowrap;}
+        .rd b{color:var(--hi);font-weight:600;}
+
+        .ranges{display:flex;gap:6px;flex-wrap:wrap;}
+        .ranges .btn{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.76rem;}
+        .msg{background:var(--panel);border:1px solid var(--line);padding:26px;text-align:center;color:var(--dim);font-family:"IBM Plex Mono";font-size:12.5px;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="fx-grid"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            <span class="fw-bold">Économie</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/adminmap" class="btn btn-outline-light btn-sm"><i class="bi bi-map me-1"></i>Carte</a>
+            <a href="/roadmap" class="btn btn-outline-light btn-sm"><i class="bi bi-diagram-3 me-1"></i>Roadmap</a>
+            <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-house"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="container" style="padding-top:90px;padding-bottom:60px;">
+    <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-1">
+        <div>
+            <h1 class="display-6 fw-bold mb-1">L'effort de guerre</h1>
+            <p class="text-muted mb-0" style="max-width:660px">
+                Ce qu'on a en stock, ce qui rentre réellement, et ce qu'on tient sur la carte.
+                Les débits sont <b>mesurés</b> dans le jeu heure de jeu par heure de jeu, pas estimés depuis une formule.
+            </p>
+        </div>
+        <div class="ranges" id="ranges"></div>
+    </div>
+    <p class="text-muted mb-4" style="font-family:'IBM Plex Mono';font-size:10.5px" id="meta"></p>
+
+    <div id="body"></div>
+</main>
+
+<script>
+const API = '/api/v1';
+
+// Fenêtres proposées. 1 échantillon/minute côté serveur, sous-échantillonné à 600 points
+// au-delà : la fenêtre change la période couverte, jamais la lisibilité du graphe.
+const RANGES = [
+    { h: 6,   label: '6 h' },
+    { h: 24,  label: '24 h' },
+    { h: 168, label: '7 j' },
+    { h: 720, label: '30 j' },
+];
+let curHours = 24;
+
+const C = { all:'#7aa3c4', sup:'#3d8bff', supMax:'#2c4763', fuel:'#e0a33a', prod:'#4cc38a', prodFuel:'#e0a33a',
+            player:'#3d8bff', enemy:'#e2483a', camp:'#39c2d1' };
+
+const api = async (path) => {
+    const r = await fetch(`${API}/${path}`);
+    if (!r.ok) throw new Error(`API ${r.status}`);
+    return r.status === 204 ? null : r.json();
+};
+
+const fmt = n => (n == null ? '—' : Math.round(n).toLocaleString('fr-FR'));
+const pct = (a, b) => (b > 0 ? Math.round(a * 100 / b) : 0);
+
+function hhmm(ts){
+    const d = new Date(ts * 1000);
+    const p = n => String(n).padStart(2, '0');
+    // Au-delà de 24 h la date compte plus que la minute.
+    if (curHours > 24) return `${p(d.getDate())}/${p(d.getMonth()+1)} ${p(d.getHours())}h`;
+    return `${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// ---------------------------------------------------------------------------
+//  Graphe : SVG écrit à la main, aucune librairie.
+//  On reste sur des lignes brutes (pas de lissage) : chaque point est une mesure,
+//  une courbe adoucie inventerait des valeurs entre deux échantillons.
+// ---------------------------------------------------------------------------
+function chart(el, samples, series, opts){
+    opts = opts || {};
+    const W = 700, H = 190, PL = 46, PR = 8, PT = 10, PB = 20;
+    const iw = W - PL - PR, ih = H - PT - PB;
+
+    let max = 0;
+    series.forEach(s => samples.forEach(r => { const v = s.get(r); if (v > max) max = v; }));
+    if (opts.max100) max = 100;
+    if (max <= 0) max = 1;
+    max = opts.max100 ? 100 : niceMax(max);
+
+    const x = i => PL + (samples.length < 2 ? iw / 2 : i * iw / (samples.length - 1));
+    const y = v => PT + ih - (Math.max(0, Math.min(v, max)) / max) * ih;
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
+    for (let g = 0; g <= 4; g++){
+        const gy = PT + ih * g / 4, val = max * (1 - g / 4);
+        svg += `<line x1="${PL}" y1="${gy}" x2="${W-PR}" y2="${gy}" stroke="rgba(122,163,196,.13)" stroke-width="1"/>`;
+        svg += `<text x="${PL-6}" y="${gy+3.5}" text-anchor="end" fill="#6b7d8f" font-family="IBM Plex Mono" font-size="9">${short(val)}</text>`;
+    }
+    series.forEach(s => {
+        const pts = samples.map((r, i) => `${x(i).toFixed(1)},${y(s.get(r)).toFixed(1)}`).join(' ');
+        if (s.area) svg += `<polygon points="${PL},${PT+ih} ${pts} ${x(samples.length-1)},${PT+ih}" fill="${s.color}" opacity=".10"/>`;
+        svg += `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="${s.w||1.6}"
+                 stroke-dasharray="${s.dash||''}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    });
+    if (samples.length){
+        svg += `<text x="${PL}" y="${H-5}" fill="#6b7d8f" font-family="IBM Plex Mono" font-size="9">${hhmm(samples[0].t)}</text>`;
+        svg += `<text x="${W-PR}" y="${H-5}" text-anchor="end" fill="#6b7d8f" font-family="IBM Plex Mono" font-size="9">${hhmm(samples[samples.length-1].t)}</text>`;
+    }
+    svg += `<line id="cx" x1="0" y1="${PT}" x2="0" y2="${PT+ih}" stroke="#7aa3c4" stroke-width="1" opacity="0"/>`;
+    svg += `</svg><div class="rd"></div>`;
+    el.innerHTML = svg;
+
+    // Survol : on retrouve l'échantillon le plus proche horizontalement.
+    const cx = el.querySelector('#cx'), rd = el.querySelector('.rd');
+    el.onmousemove = e => {
+        if (!samples.length) return;
+        const b = el.getBoundingClientRect();
+        const rel = (e.clientX - b.left) / b.width * W;
+        let i = Math.round((rel - PL) / (iw / Math.max(1, samples.length - 1)));
+        i = Math.max(0, Math.min(i, samples.length - 1));
+        cx.setAttribute('x1', x(i)); cx.setAttribute('x2', x(i)); cx.setAttribute('opacity', '.55');
+        rd.style.display = 'block';
+        rd.innerHTML = `<b>${hhmm(samples[i].t)}</b> · ` +
+            series.map(s => `<span style="color:${s.color}">${s.name}</span> ${fmt(s.get(samples[i]))}${s.unit||''}`).join(' · ');
+    };
+    el.onmouseleave = () => { cx.setAttribute('opacity','0'); rd.style.display = 'none'; };
+}
+
+function niceMax(v){
+    const mag = Math.pow(10, Math.floor(Math.log10(v)));
+    return Math.ceil(v / (mag / 2)) * (mag / 2);
+}
+function short(v){
+    if (v >= 1000) return (v / 1000).toFixed(v >= 10000 ? 0 : 1).replace('.', ',') + 'k';
+    return Math.round(v);
+}
+
+function legend(series){
+    return `<div class="legend">` + series.map(s =>
+        `<span><i style="background:${s.color}"></i>${s.name}</span>`).join('') + `</div>`;
+}
+
+function card(id, title, hint, series){
+    return `<div class="card2"><h2>${title}</h2><div class="hint">${hint}</div>
+            <div class="chart" id="${id}"></div>${legend(series)}</div>`;
+}
+
+// ---------------------------------------------------------------------------
+function render(samples){
+    const body = document.getElementById('body');
+    if (!samples.length){
+        body.innerHTML = `<div class="msg">Aucun relevé sur cette période.<br>
+            Le serveur alimente cette page en continu : si elle est vide, c'est qu'il n'a pas tourné,
+            ou que la version de REMIXED qui envoie l'état n'est pas encore chargée.</div>`;
+        return;
+    }
+    const last = samples[samples.length - 1];
+    const first = samples[0];
+    const d = (k) => last[k] - first[k]; // variation sur la fenêtre
+    const arrow = v => v > 0 ? `<span style="color:${C.prod}">▲ +${fmt(v)}</span>`
+                    : (v < 0 ? `<span style="color:${C.enemy}">▼ ${fmt(v)}</span>` : `<span>= stable</span>`);
+
+    const kpis = [
+        { lbl:'Ravitaillement', num:fmt(last.supplies), sub:`sur ${fmt(last.suppliesAll)} presents sur la carte · ${arrow(d('supplies'))}`,
+          bar:pct(last.supplies, last.suppliesAll), col:C.sup },
+        { lbl:'Production', num:fmt(last.prodSupplies), sub:`sur ${fmt(last.prodSuppliesAll)} produits sur la carte`,
+          bar:pct(last.prodSupplies, last.prodSuppliesAll), col:C.prod },
+        { lbl:'Carburant', num:fmt(last.fuel), sub:`sur ${fmt(last.fuelAll)} presents sur la carte · ${arrow(d('fuel'))}`,
+          bar:pct(last.fuel, last.fuelAll), col:C.fuel },
+        { lbl:'Prod. carburant', num:fmt(last.prodFuel), sub:`sur ${fmt(last.prodFuelAll)} produits sur la carte`,
+          bar:pct(last.prodFuel, last.prodFuelAll), col:C.fuel },
+        { lbl:'Usines tenues', num:`${last.factories}/${last.factoriesTotal}`, sub:'sites de production',
+          bar:pct(last.factories, last.factoriesTotal), col:C.prod },
+        { lbl:'Stations-service', num:`${last.fuelStations}/${last.fuelStationsTotal}`, sub:'sites de carburant',
+          bar:pct(last.fuelStations, last.fuelStationsTotal), col:C.fuel },
+        { lbl:'Territoire', num:`${Math.round(last.playerPct)}%`, sub:`${last.pois}/${last.poisTotal} points tenus`,
+          bar:last.playerPct, col:C.player },
+        { lbl:'Campagne', num:last.campaignPct >= 0 ? `${Math.round(last.campaignPct)}%` : '—',
+          sub:'avancement global', bar:Math.max(0, last.campaignPct), col:C.camp },
+    ];
+
+    // Deux lignes partout : ce qu'on TIENT, et ce que la carte contient/produit AU TOTAL.
+    // L'ecart entre les deux est la vraie lecture de l'avancement : il se resserre a
+    // mesure qu'on prend les sites.
+    const sSup = [
+        { name:'Nous', color:C.sup, get:r => r.supplies, area:true },
+        { name:'Carte entière', color:C.all, get:r => r.suppliesAll, dash:'4 3', w:1.2 },
+        { name:'Notre capacité', color:C.supMax, get:r => r.suppliesMax, dash:'1 3', w:1 },
+    ];
+    const sFuel = [
+        { name:'Nous', color:C.fuel, get:r => r.fuel, area:true },
+        { name:'Carte entière', color:C.all, get:r => r.fuelAll, dash:'4 3', w:1.2 },
+    ];
+    const sProd = [
+        { name:'Supplies/h (nous)', color:C.prod, get:r => r.prodSupplies, area:true },
+        { name:'Supplies/h (carte)', color:C.all, get:r => r.prodSuppliesAll, dash:'4 3', w:1.2 },
+        { name:'Carburant/h (nous)', color:C.prodFuel, get:r => r.prodFuel },
+    ];
+    const sTerr = [
+        { name:'Nous', color:C.player, get:r => r.playerPct, unit:'%', area:true },
+        { name:'Ennemi', color:C.enemy, get:r => r.enemyPct, unit:'%' },
+        { name:'Campagne', color:C.camp, get:r => Math.max(0, r.campaignPct), unit:'%', dash:'4 3', w:1.2 },
+    ];
+    const sSites = [
+        { name:'Usines', color:C.prod, get:r => r.factories },
+        { name:'Bases', color:C.player, get:r => r.bases },
+        { name:'Stations', color:C.fuel, get:r => r.fuelStations },
+    ];
+    const sPress = [
+        { name:'Effectifs ennemis', color:C.enemy, get:r => r.enemyManpower, area:true },
+        { name:'Joueurs connectés', color:C.player, get:r => r.players },
+    ];
+
+    body.innerHTML =
+        `<div class="kpis">` + kpis.map(k =>
+            `<div class="kpi"><span class="kpi-lbl">${k.lbl}</span>
+             <span class="kpi-num" style="color:${k.col}">${k.num}</span>
+             <span class="kpi-sub">${k.sub}</span>` +
+            (k.bar != null ? `<span class="kpi-bar"><span style="width:${Math.min(100,k.bar)}%;background:${k.col}"></span></span>` : '') +
+            `</div>`).join('') + `</div>` +
+        `<div class="cards">` +
+        card('c-sup',  'Ravitaillement', "Ce qu'on tient, comparé au total présent sur la carte. L'écart, c'est ce qui reste à prendre.", sSup) +
+        card('c-prod', 'Production réelle', 'Ce qui est rentré à la dernière heure de jeu complète. Zéro tant qu\'aucune heure ne s\'est écoulée depuis le démarrage.', sProd) +
+        card('c-fuel', 'Carburant', 'Le carburant se recharge de façon probabiliste : la courbe est en escalier, c\'est normal.', sFuel) +
+        card('c-terr', 'Territoire', 'Part des points d\'intérêt tenus par chaque camp, et avancement de campagne déclaré par le jeu.', sTerr) +
+        card('c-sites','Sites économiques', 'Usines, bases militaires et stations-service sous notre contrôle.', sSites) +
+        card('c-press','Pression', 'Garnisons ennemies cumulées, et présence de joueurs sur la même échelle de temps.', sPress) +
+        `</div>`;
+
+    chart(document.getElementById('c-sup'),  samples, sSup);
+    chart(document.getElementById('c-prod'), samples, sProd);
+    chart(document.getElementById('c-fuel'), samples, sFuel);
+    chart(document.getElementById('c-terr'), samples, sTerr, { max100:true });
+    chart(document.getElementById('c-sites'),samples, sSites);
+    chart(document.getElementById('c-press'),samples, sPress);
+}
+
+async function load(){
+    const body = document.getElementById('body');
+    body.innerHTML = `<div class="msg">Chargement…</div>`;
+    document.querySelectorAll('#ranges .btn').forEach(b =>
+        b.className = 'btn btn-sm ' + (+b.dataset.h === curHours ? 'btn-primary' : 'btn-outline-light'));
+
+    let sid = null;
+    try {
+        const act = await api('public/active-server');
+        if (act && act.id) sid = act.id;
+    } catch (_) {}
+    if (!sid){
+        body.innerHTML = `<div class="msg">Aucun serveur actif.</div>`;
+        return;
+    }
+
+    let data;
+    try {
+        data = await api(`servers/${sid}/ffstate/history?hours=${curHours}`);
+    } catch (e) {
+        // L'historique est réservé : sans session, la réponse est un 401/403.
+        body.innerHTML = `<div class="msg">Accès refusé — cette page demande d'être connecté
+            avec un compte autorisé sur le serveur.<br><a href="/" class="link-info">Retour à l'accueil</a></div>`;
+        return;
+    }
+
+    const samples = (data && data.samples) || [];
+    document.getElementById('meta').textContent =
+        `${samples.length} relevé(s) · fenêtre ${curHours} h · 1 mesure par minute côté serveur`;
+    render(samples);
+}
+
+document.getElementById('ranges').innerHTML = RANGES.map(r =>
+    `<button class="btn btn-sm btn-outline-light" data-h="${r.h}">${r.label}</button>`).join('');
+document.querySelectorAll('#ranges .btn').forEach(b =>
+    b.onclick = () => { curHours = +b.dataset.h; load(); });
+
+load();
+setInterval(load, 60000); // même cadence que l'échantillonnage
+</script>
+</body>
+</html>

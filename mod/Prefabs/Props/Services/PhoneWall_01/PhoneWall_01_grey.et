@@ -1,0 +1,14 @@
+GenericEntity : "{5E2FB92225D25541}Prefabs/Modded/Props/Services/PhoneWall_01/PhoneWall_01_Base.et" {
+ ID "5472971EFCB8F21D"
+ coords 0.914 -0.138 -1.134
+ {
+  GenericEntity {
+   ID "65AED012B995B9DF"
+   components {
+    ActionsManagerComponent "{65C7120ABE864673}" {
+     Enabled 0
+    }
+   }
+  }
+ }
+}

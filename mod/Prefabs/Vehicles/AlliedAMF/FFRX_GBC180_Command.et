@@ -1,0 +1,41 @@
+Vehicle : "{A5019E4548F81453}Prefabs/Vehicles/Land_Vehicles/Wheeled_Vehicles/GBC180/CCE/GBC180_CCE_MK2_Transport.et" {
+ ID "69ED6B8F2F09B05A"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE000001E1}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE000001E2}" {
+    m_iVehicleType TRUCK
+    m_iParkingType TRUCK
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType UNARMED
+    m_iArmorType UNARMORED
+    m_iSpecialType UNDEFINED
+   }
+  }
+  SCR_EditableVehicleComponent "{50DEB7C26B5EB312}" {
+   m_UIInfo SCR_EditableVehicleUIInfo "{5298E609432D192D}" {
+    Name "GBC180 - Commandement"
+   }
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo TroopTransport {
+     Enabled 0
+    }
+    EntitySlotInfo CargoBase {
+     Enabled 0
+    }
+    RegisteringComponentSlotInfo CargoCover {
+     Enabled 0
+    }
+    RegisteringComponentSlotInfo FFRX_Equip {
+     Offset 0 0.1543 0.5248
+     MergePhysics 1
+     Prefab "{392FBE246E9CF91C}Prefabs/Vehicles/Wheeled/Ural4320/VehParts/FIA/Ural4320_FIA_combox.et"
+    }
+   }
+  }
+ }
+ m_eVehicleType COMM_TRUCK
+}

@@ -1,0 +1,41 @@
+# Line-ending policy. This file is not cosmetic — two entries below are load-bearing.
+
+# Default: let git normalise text in the repository, check out native in the worktree.
+* text=auto
+
+# Patches must NEVER be converted. `git apply` compares context byte for byte, and a
+# patch checked out with CRLF fails to apply against an LF tree (and vice versa).
+# Marking them -text disables all conversion in both directions.
+*.patch -text
+*.diff  -text
+
+# Shell scripts must be LF. A CRLF shebang makes the kernel look for an interpreter
+# literally named "bash\r" and the script dies with "bad interpreter".
+*.sh    text eol=lf
+
+# Windows batch files must be CRLF, or cmd.exe mis-parses labels and multi-line blocks.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# Arma / Enfusion sources. Treated as text so diffs are readable, forced to LF so the
+# same file does not churn between a Windows Workbench and a Linux server checkout.
+*.c     text eol=lf
+*.et    text eol=lf
+*.conf  text eol=lf
+*.gproj text eol=lf
+*.layout text eol=lf
+*.meta  text eol=lf
+*.st    text eol=lf
+
+# Binary assets: no conversion, no diffing.
+*.edds  binary
+*.xob   binary
+*.png   binary
+*.jpg   binary
+*.wav   binary
+*.ogg   binary
+*.pak   binary
+*.rdb   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary

@@ -1,0 +1,69 @@
+diff --git a/docker-compose.yaml b/docker-compose.yaml
+index 95d9088..756bc62 100644
+--- a/docker-compose.yaml
++++ b/docker-compose.yaml
+@@ -1,27 +1,45 @@
+-# Docker Compose file for the [GTG] Live Map application.
+-# Defines the services required to run the entire stack:
+-# - MariaDB: The main database for storing all persistent data.
+-# - Redis: Used for scalable session storage and as a job queue for workers.
+-# - App: The main Go application, which can be run in different modes.
+-
+-version: '3.8'
++# Stack complète [GTG] Live Map : app Go + MariaDB + Redis.
++# (Le compose d'origine ne contenait que 'app', sans base ni port — reconstruit ici.)
++# Lancer :  docker compose up --build -d      Web sur http://localhost:8080
+ 
+ services:
++  mariadb:
++    image: mariadb:11
++    container_name: gtg-mariadb
++    restart: always
++    environment:
++      MARIADB_ROOT_PASSWORD: CHANGEME_root_password
++      MARIADB_DATABASE: gtglivemap
++      MARIADB_USER: gtg
++      MARIADB_PASSWORD: CHANGEME_db_password
++    volumes:
++      - gtg_db:/var/lib/mysql
++    healthcheck:
++      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
++      interval: 5s
++      timeout: 5s
++      retries: 30
++
++  redis:
++    image: redis:7-alpine
++    container_name: gtg-redis
++    restart: always
++
+   app:
+     container_name: gtg-livemap-app
+-    # Tells Docker Compose to build the image using the Dockerfile in the current directory.
+     build: .
+     restart: always
++    depends_on:
++      mariadb:
++        condition: service_healthy
++      redis:
++        condition: service_started
++    ports:
++      - "8080:8080"
+     volumes:
+-      # Mounts the local config.yaml file into the container in read-only mode.
+-      # This allows you to change the configuration without rebuilding the image.
+       - ./config.yaml:/config.yaml:ro
+-    environment:
+-      # This environment variable controls which mode the Go application starts in.
+-      # It overrides the default CMD in the Dockerfile.
+-      # Options: 'all', 'web', 'scheduler', 'consumer'
+-      - APP_MODE=web
+-    # The command that will be executed when the container starts.
+-    # It runs the compiled Go binary and passes the value of the APP_MODE
+-    # environment variable as a command-line argument.
+-    command: /gtg-livemap-server -mode ${APP_MODE}
++      - ./static:/static:ro          # frontend en volume : modifs appliquées sans rebuild
++    command: /gtg-livemap-server -mode web
++
++volumes:
++  gtg_db:

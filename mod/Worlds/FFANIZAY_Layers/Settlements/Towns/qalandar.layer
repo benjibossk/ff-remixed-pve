@@ -1,0 +1,147 @@
+JWK_TownEntity JWK_TownController_68DEC116D7BCDE5F : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Qalandar"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 3545.285 172.247 2871.516
+ {
+  $grp JWK_CheckpointEntity : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+   JWK_CheckpointController_68DCC49280B6AE7 {
+    coords 94.586 17.408 -209.61
+    angles 0 -156.999 0
+    {
+     SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+      coords 15.448 0.901 2.283
+      angles 0 175.72 0
+      {
+       StaticModelEntity {
+        ID "62A693F2AC4FB612"
+        coords 0 -1.25 0
+        angles 6.025 0 -0.814
+       }
+      }
+     }
+     $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+      {
+       coords -10.831 -0.024 -2.6
+       angles 0 20.806 0
+       {
+        StaticModelEntity {
+         ID "62A693F2AC4FB612"
+         coords 0 -1.983 0
+         angles -12.883 0 -2.977
+        }
+       }
+      }
+      {
+       coords -4.884 1.445 14.53
+       angles 0 -173.752 0
+       {
+        StaticModelEntity {
+         ID "62A693F2AC4FB612"
+         coords 0 -0.05 0
+         angles 9.304 0 0.545
+        }
+       }
+      }
+     }
+    }
+   }
+   JWK_CheckpointController_68DCC49280B6AE8 {
+    coords -47.499 -6.832 242.14
+    angles 0 -156.999 0
+    m_iRange 50
+    {
+     SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+      coords 5.583 0.901 29.648
+      angles 0 19.757 0
+      {
+       StaticModelEntity {
+        ID "62A693F2AC4FB612"
+        coords 0 1.189 0
+        angles -5.41 0 -2.445
+       }
+      }
+     }
+     $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+      {
+       coords 6.418 -0.024 -8.807
+       angles 0 25.567 0
+       {
+        StaticModelEntity {
+         ID "62A693F2AC4FB612"
+         coords 0 -0.107 0
+         angles -3.434 0 0.309
+        }
+       }
+      }
+      {
+       coords -5.975 2.727 5.905
+       angles 0 5.663 0
+       {
+        StaticModelEntity {
+         ID "62A693F2AC4FB612"
+         coords 0 -2.856 0
+         angles -3.1 0 4.251
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 3543.646 169.156 2872.489
+ Points {
+  ShapePoint "{68DEC116CDF00EB4}" {
+   Position -264.77 -6.265 -18.608
+  }
+  ShapePoint "{68DEC116CDA25C25}" {
+   Position -187.34 5.66 163.622
+  }
+  ShapePoint "{68DEC116CC5BE900}" {
+   Position -87.707 -1.767 241.326
+  }
+  ShapePoint "{68DEC116CC0DDB40}" {
+   Position 58.278 6.282 300.652
+  }
+  ShapePoint "{68DEC116CCB31FCA}" {
+   Position 147.885 -5.905 161.685
+  }
+  ShapePoint "{68DEC116CC8EE7CB}" {
+   Position 207.648 -7.805 13.135
+  }
+  ShapePoint "{68DEC116CB4B1612}" {
+   Position 222.506 -5.035 -88.846
+  }
+  ShapePoint "{68DEC116CB192D6B}" {
+   Position 201.986 -3.24 -157.064
+  }
+  ShapePoint "{68DEC116CBD5C6D6}" {
+   Position 140.365 9.521 -225.232
+  }
+  ShapePoint "{68DEC116CB96E39C}" {
+   Position 61.746 25.393 -288.957
+  }
+  ShapePoint "{68DEC116CA57E52F}" {
+   Position -18.745 15.18 -267.354
+  }
+  ShapePoint "{68DEC116CA079846}" {
+   Position -155.575 5.534 -135.505
+  }
+ }
+}

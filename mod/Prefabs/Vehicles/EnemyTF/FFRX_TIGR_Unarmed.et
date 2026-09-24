@@ -1,0 +1,18 @@
+Vehicle : "{6F4D5B56F4905A62}Prefabs/Vehicles/Wheeled/TIGR/Unarmed/GAZ_TIGR_v2_Unarmed_Green.et" {
+ ID "69EEC444E679BD57"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000011}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000012}" {
+    m_iVehicleType CAR
+    m_iParkingType CAR
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType UNARMED
+    m_iArmorType LIGHT_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+ coords 141.83 1 137.774
+}

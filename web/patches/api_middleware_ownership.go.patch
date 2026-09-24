@@ -1,0 +1,62 @@
+diff --git a/api/middleware/ownership.go b/api/middleware/ownership.go
+index 12126fd..d9f5e72 100644
+--- a/api/middleware/ownership.go
++++ b/api/middleware/ownership.go
+@@ -56,3 +56,57 @@ func ServerOwnerOrAdminMiddleware() gin.HandlerFunc {
+ 		c.Next()
+ 	}
+ }
++
++// ServerManagerMiddleware autorise la GESTION DE CONTENU d'un serveur (whitelists,
++// dotations, marqueurs, roster, carte…) au propriétaire, à un admin global, OU à un
++// utilisateur qui a un accès partagé (table server_access). Les opérations SENSIBLES
++// (suppression du serveur, régénération de clé API, gestion de la liste d'accès)
++// restent gardées par ServerOwnerOrAdminMiddleware (propriétaire / admin global only).
++func ServerManagerMiddleware() gin.HandlerFunc {
++	return func(c *gin.Context) {
++		userID_iface, exists := c.Get("user_id")
++		if !exists {
++			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
++			return
++		}
++		userID := userID_iface.(uint64)
++
++		var user models.User
++		if err := database.DB.First(&user, userID).Error; err != nil {
++			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authenticated user not found in database"})
++			return
++		}
++
++		serverID, err := uuid.Parse(c.Param("id"))
++		if err != nil {
++			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid server ID format"})
++			return
++		}
++
++		var server models.Server
++		if err := database.DB.First(&server, serverID).Error; err != nil {
++			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "server not found"})
++			return
++		}
++
++		allowed := false
++		if user.AccountType == "admin" || server.OwnerID == userID {
++			allowed = true
++		} else {
++			var cnt int64
++			database.DB.Model(&models.ServerAccess{}).
++				Where("user_id = ? AND server_id = ?", userID, serverID).Count(&cnt)
++			if cnt > 0 {
++				allowed = true
++			}
++		}
++
++		if !allowed {
++			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "you do not have permission to manage this server"})
++			return
++		}
++
++		c.Set("server", server)
++		c.Next()
++	}
++}

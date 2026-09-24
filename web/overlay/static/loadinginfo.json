@@ -1,0 +1,11 @@
+{
+  "_comment": "Lignes affichées sur l'ÉCRAN DE CHARGEMENT du jeu (mod FF - REMIXED - PVE, FFRX_LoadingFeed.c). Fichier PUBLIC : le client n'a aucune clé d'API pendant le chargement, un endpoint authentifié serait inutilisable. Édition simple : modifier 'lines' puis scp — aucun rebuild. Max 6 lignes retenues côté jeu, les suivantes sont ignorées. Garder des phrases COURTES : elles défilent 10 s chacune, en alternance avec les astuces du jeu.",
+  "lines": [
+    "La construction est réservée au Génie : sors ta pelle et appuie sur J.",
+    "Un civil se souvient de toi. Aide-le, il t'accueillera ; rançonne-le, il te trahira.",
+    "La nuit, l'ennemi sans vision nocturne voit moins bien. Servez-vous-en.",
+    "Toute voiture abandonnée n'est pas innocente. Certaines sont piégées.",
+    "Fouille les cadavres ennemis : les documents valent mieux que les munitions.",
+    "Retrouve tes stats, la carte et le journal sur arma.collectifxxl.fr"
+  ]
+}

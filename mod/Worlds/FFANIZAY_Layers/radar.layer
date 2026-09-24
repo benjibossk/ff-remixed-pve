@@ -1,0 +1,182 @@
+$grp JWK_RadarSiteEntity : "{3F9B4D4ECA55D3E9}Prefabs/Controllers/Loadtime/JWK_RadarSiteController.et" {
+ JWK_RadarSiteController_68DF021BEBC31948 {
+  coords 9840.233 103.165 8812.568
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 -2.459 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 -0.77 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -5.209 1.416 8.114
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC2 {
+  coords 4333.567 255.134 3251.938
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 1.321 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 -3.734 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -5.209 -2.307 8.114
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC3 {
+  coords 9732.043 86.242 6040.489
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 -1.873 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 -1.2 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -5.209 1.283 8.114
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC4 {
+  coords 8547.612 131.973 9885.043
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 -0.373 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 -0.606 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -5.209 0.289 8.114
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC5 {
+  coords 5639.381 178.054 9688.862
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 -0.794 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 0.182 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -5.209 0.477 8.114
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC6 {
+  coords 5709.21 236.935 3653.305
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 1.522 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 0.971 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -4.695 -1.028 10.683
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC7 {
+  coords 9052.31 86.95 6723.348
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 -1.068 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 0.075 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -4.694 0.503 10.683
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC8 {
+  coords 9065.288 108.869 5049.386
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 -0.904 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 -1.009 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -4.694 0.162 10.683
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+ JWK_RadarSiteController_68DF021BEBC9 {
+  coords 6817.583 99.683 6308.711
+  m_iLinkRange 60
+  {
+   $grp GenericEntity : "{175B6A7A698B274F}Prefabs/Structures/Military/RadarSite/RadarSiteTarget_RPL5_01.et" {
+    {
+     coords 5.063 0.467 -10.609
+     angles 0 -171.134 0
+    }
+    {
+     coords 13.199 -0.985 5.048
+     angles 0 84.6 0
+    }
+    {
+     coords -4.694 -0.516 10.683
+     angles -12.276 -45.583 18.059
+    }
+   }
+  }
+ }
+}

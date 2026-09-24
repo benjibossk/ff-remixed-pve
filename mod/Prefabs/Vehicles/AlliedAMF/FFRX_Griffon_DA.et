@@ -1,0 +1,22 @@
+Vehicle : "{79132E0B6ED98DC0}Prefabs/Vehicles/Land_Vehicles/Wheeled_Vehicles/VBMR/VBMR_VTT_TDF.et" {
+ ID "6A5A000000000341"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000341}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000342}" {
+    m_iVehicleType CAR
+    m_iParkingType CAR
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType MEDIUM_ARMED
+    m_iArmorType HEAVY_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+  SCR_EditableVehicleComponent "{50DEB7C26B5EB312}" {
+   m_UIInfo SCR_EditableVehicleUIInfo "{5298E609432D192D}" {
+    Name "VBMR Griffon (Daguet)"
+   }
+  }
+ }
+}

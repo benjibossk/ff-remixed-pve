@@ -1,0 +1,170 @@
+$grp StaticModelEntity : "{68CA807F237FFB7A}Prefabs/Modded/Structures/Infrastructure/Towers/TransmitterTower_01/TransmitterTower_01_base.et" {
+ {
+  coords 2976.776 195.771 1228.423
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC6012 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 278.554 290.311 2650.049
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC2 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 566.364 162.661 4508.699
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC3 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 358.455 136.576 6371.226
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC4 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 821.462 151.304 9625.573
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC5 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 2605.508 137.93 5566.487
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC6 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 3122.815 138.778 6562.286
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC7 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 3606.309 146.132 8938.618
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC8 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 5271.86 156.654 9217.08
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC9 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 6635.364 175.942 8832.978
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC10 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 8773.391 153.936 8727.968
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC11 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 6371.128 121.579 7504.059
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC12 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 5050.095 141.96 7439.048
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC13 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 4412.651 244.496 4205.807
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC14 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 4237.903 256.008 1926.005
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC15 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 715.265 214.57 3371.177
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC16 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 8262.134 206.34 3107.201
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC17 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 9494.468 94.081 5175.897
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC18 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 9614.722 136.821 2867.933
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC19 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 6583.306 281.547 3447.885
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC20 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+ {
+  coords 5541.586 155.195 8100.621
+  {
+   JWK_RadioSiteEntity JWK_RadioSiteController_68DF0206B6FC21 : "{14C2550C9BBE7476}Prefabs/Controllers/Loadtime/JWK_RadioSiteController.et" {
+    coords -5.266 0.112 -2.28
+   }
+  }
+ }
+}

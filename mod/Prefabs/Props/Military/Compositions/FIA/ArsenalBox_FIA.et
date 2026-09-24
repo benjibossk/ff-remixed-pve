@@ -1,0 +1,130 @@
+// FF - REMIXED - PVE -- caisse d'arsenal FIA (le modele reellement pose en jeu, via
+// Prefabs/FFRX/Build/FFRX_ArsenalBox.et qui l'embarque).
+//
+// C'EST ICI que vivent les actions de dotation, PAS dans le .ct du shop FF. Les deux
+// jeux ont coexiste un temps -> chaque dotation apparaissait DEUX FOIS dans le menu
+// (constate le 2026-09-10). Les actions FFRX ont donc ete retirees de
+// Prefabs/Components/JWK_ShopActionsManager.ct, qui ne sert plus qu'au shop FF.
+//
+// 20 emplacements : les dotations de faction (8 pour la FIA) PUIS les tenues perso du
+// joueur, l'index etant aligne sur la vue combinee construite serveur-side
+// (FFRX_LoadoutRegistry.BuildCombined). Un index sans dotation ne s'affiche pas.
+GenericEntity : "{54986385A6AF77B2}Prefabs/Props/Military/Arsenal/ArsenalBoxes/ArsenalBox_Base.et" {
+ ID "56F2C6D6F7C6DAFA"
+ components {
+  ActionsManagerComponent "{56F2C6D1431ADB12}" {
+   additionalActions + {
+    FFRX_SaveLoadoutAction "{6FFEC0DEB111C240}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 30
+    }
+    FFRX_RefundLoadoutAction "{6FFEC0DEB111C241}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 31
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C250}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 32
+     m_iIndex 0
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C251}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 33
+     m_iIndex 1
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C252}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 34
+     m_iIndex 2
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C253}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 35
+     m_iIndex 3
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C254}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 36
+     m_iIndex 4
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C255}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 37
+     m_iIndex 5
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C256}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 38
+     m_iIndex 6
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C257}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 39
+     m_iIndex 7
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C258}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 40
+     m_iIndex 8
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C259}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 41
+     m_iIndex 9
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C25A}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 42
+     m_iIndex 10
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C25B}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 43
+     m_iIndex 11
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C25C}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 44
+     m_iIndex 12
+    }
+    FFRX_LoadoutAction "{6FFEC0DEB111C25D}" {
+     ParentContextList {
+      "default"
+     }
+     "Sort Priority" 45
+     m_iIndex 13
+    }
+   }
+  }
+ }
+}

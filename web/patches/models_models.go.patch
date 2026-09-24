@@ -1,0 +1,371 @@
+diff --git a/models/models.go b/models/models.go
+index 3171b1e..60990aa 100644
+--- a/models/models.go
++++ b/models/models.go
+@@ -25,6 +25,31 @@ type MapConfig struct {
+ 	OffsetY         *float64
+ 	ScaleX          *float64 `gorm:"column:scale_x"`
+ 	ScaleY          *float64 `gorm:"column:scale_y"`
++
++	// Schema de numerotation des tuiles.
++	//
++	//   false (defaut) : convention historique de reforger.recoil.org -- l'axe Y est
++	//                    inverse (coords.y = -coords.y - 1) ET le zoom l'est aussi
++	//                    (zoomReverse). C'est ce qu'attendent Everon, Arland, Kolguyev.
++	//   true           : convention XYZ standard (Google/OSM/Leaflet par defaut), sans
++	//                    aucune inversion. C'est ce qu'utilise arma-mortar.com pour les
++	//                    tuiles d'Anizay.
++	//
++	// Melanger les deux donnait une carte a l'envers et des tuiles qui disparaissaient
++	// en zoomant (zoomReverse demande un z de plus en plus petit, donc inexistant).
++	TileSchemeXYZ bool `gorm:"default:false"`
++
++	// Facteur d'echelle du CRS : combien de metres de jeu par pixel au zoom 0.
++	// Formule : tailleTerrain / (256 * nbTuilesParCoteAuZoom0).
++	//
++	// Etait code en dur a 12.501 cote front, ce qui suppose la pyramide de
++	// reforger.recoil.org (Everon 12800 m -> 1024 px au zoom 0, soit 4x4 tuiles).
++	// arma-mortar.com commence lui a UNE seule tuile au zoom 0, donc pour Anizay
++	// (10240 m) il faut 10240/256 = 40. Avec 12.501 la carte ne couvrait qu'environ
++	// un quart de la zone des marqueurs.
++	//
++	// NULL = garder 12.501 (comportement historique des cartes vanilla).
++	TileScale *float64
+ 	CreatedAt       time.Time
+ 	UpdatedAt       time.Time
+ }
+@@ -114,6 +139,13 @@ type PlayerPosition struct {
+ 	RotationZ      float64
+ 	InVehicle      bool
+ 	Faction        Faction `gorm:"foreignKey:FactionID"`
++	// Valeurs live poussées à chaque tick, NON persistées (gorm:"-") — juste relayées
++	// dans le cache des dernières positions servi au frontend.
++	Rank       int    `gorm:"-"`
++	XP         int    `gorm:"-"`
++	FactionKey string `gorm:"-"`
++	Radio      int    `gorm:"-"`
++	LastSeen   int64  `gorm:"-"`
+ }
+ 
+ func (PlayerPosition) TableName() string {
+@@ -137,7 +169,12 @@ type PositionPayload struct {
+ 	PlayerGUID   string         `json:"playerGuid"`
+ 	PlayerName   string         `json:"playerName"` // We add this for names
+ 	FactionName  string         `json:"factionName"`
++	FactionKey   string         `json:"factionKey"` // clé faction (US/USSR) — pour le join grades
+ 	FactionColor FactionColor   `json:"factionColor"`
++	Rank         int            `json:"rank"`     // grade live (non persisté)
++	XP           int            `json:"xp"`       // XP live (non persisté)
++	Radio        int            `json:"radio"`    // 0 NONE,1 RECEIVE,2 SEND,3 BOTH (liaison HQ)
++	LastSeen     int64          `json:"lastSeen"` // Unix s de la position rapportée (figée si radio<2)
+ 	Positions    []PositionData `json:"positions"`
+ }
+ 
+@@ -168,6 +205,7 @@ type User struct {
+ 	Avatar      string `gorm:"size:255"`
+ 	AccountType string `gorm:"type:enum('owner','admin');default:'owner'"`
+ 	MaxServers  uint   `gorm:"default:10"`
++	BohemiaUID  string `gorm:"size:255;index"` // UID Reforger du perso en jeu (lien Discord<->jeu)
+ 	CreatedAt   time.Time
+ 	UpdatedAt   time.Time
+ }
+@@ -188,6 +226,22 @@ type DamageEvent struct {
+ 	HitZone        string `gorm:"size:100"`
+ 	IsFriendlyFire bool
+ 	IsKill         bool `gorm:"default:false"`
++
++	// --- Champs apportes par le mod "ReforgerJS Support" (685448E58B08F021) ---
++	// L'ancien mod RJS Logging ne fournissait ni position ni marqueur IA : il ne
++	// loguait que la distance du tir. Support expose killerPosition/victimPosition,
++	// ce qui permet enfin de placer les combats sur la carte.
++	// Colonnes purement additives : AutoMigrate les cree sans toucher aux lignes
++	// existantes. Restent a zero pour les evenements issus de l'ancien format.
++	IsAI          bool   `gorm:"default:false;index"`
++	KillerName    string `gorm:"size:100"`
++	VictimName    string `gorm:"size:100"`
++	KillerFaction string `gorm:"size:50"`
++	VictimFaction string `gorm:"size:50"`
++	KillerX       float64
++	KillerY       float64
++	VictimX       float64
++	VictimY       float64
+ }
+ 
+ func (DamageEvent) TableName() string {
+@@ -231,6 +285,87 @@ func (PlayerIdentity) TableName() string {
+ 	return "player_identities"
+ }
+ 
++// PlayerStat = fiche cumulée par joueur ET par serveur (1 ligne/joueur/serveur).
++// Alimentée à chaque tick de positions : dernier grade/xp connus + temps de jeu cumulé.
++// Permet à l'admin d'afficher TOUS les joueurs déjà connectés (même hors ligne), triables.
++type PlayerStat struct {
++	ServerID        uuid.UUID `gorm:"type:varchar(36);primaryKey"`
++	PlayerGUID      string    `gorm:"size:255;primaryKey"`
++	LastRank        int
++	LastXP          int
++	FactionKey      string `gorm:"size:64"`
++	FirstSeen       time.Time
++	LastSeen        time.Time `gorm:"index"`
++	PlaytimeSeconds int64
++	WalkSeconds     int64   // temps à pied (hors véhicule)
++	DriveSeconds    int64   // temps en véhicule
++	DistanceMeters  float64 // distance parcourue cumulée
++	LastPosX        float64 // dernière position (pour le calcul de distance)
++	LastPosZ        float64
++}
++
++func (PlayerStat) TableName() string {
++	return "player_stats"
++}
++
++// MarkerMeta fige la date/heure de pose ET l'auteur d'origine d'un marqueur, par
++// (server_id, marker_id). Fleet re-stampe `created` après un redémarrage → on garde la
++// valeur de la 1re réception. Cf. FLEET_GTG_CONTRACT / TASK_WEB_MARKERS §5bis.
++type MarkerMeta struct {
++	ServerID uuid.UUID `gorm:"type:varchar(36);primaryKey"`
++	MarkerID int       `gorm:"primaryKey"`
++	Created  int64     // Unix secondes = date de pose d'origine
++	Author   string    `gorm:"size:100"`
++}
++
++func (MarkerMeta) TableName() string {
++	return "marker_meta"
++}
++
++// RankCatalog persiste le catalogue de grades par serveur (blob JSON de map[faction][]Rank).
++// Fleet ne le renvoie qu'une fois par reboot -> on le garde en base pour survivre à un
++// redémarrage web. Cf. ranks.go.
++type RankCatalog struct {
++	ServerID string `gorm:"primaryKey;size:36"`
++	Data     string `gorm:"type:text"` // JSON: {"US":[{"i":0,"name":"..."}], ...}
++}
++
++func (RankCatalog) TableName() string {
++	return "rank_catalog"
++}
++
++// Loadout = dotation nommée capturée en jeu (#loadout publish) et poussée par Fleet.
++// data = blob JSON OPAQUE (arbre inventaire) stocké VERBATIM, jamais reformaté.
++// specialty = catégorie gérée uniquement côté site (le jeu ne l'envoie pas). Cf. TASK_WEB_LOADOUTS.
++type Loadout struct {
++	ID uint `gorm:"primaryKey"`
++	// OwnerUID = "" -> faction dotation (visible par toute la faction) ;
++	// OwnerUID = <UID Reforger> -> tenue perso d'un joueur. Unicité = (owner, faction, name).
++	OwnerUID  string    `gorm:"size:255;index;uniqueIndex:idx_loadout_owner_faction_name;default:''"`
++	Faction   string    `gorm:"size:64;uniqueIndex:idx_loadout_owner_faction_name"`
++	Name      string    `gorm:"size:128;uniqueIndex:idx_loadout_owner_faction_name"`
++	Specialty string    `gorm:"size:128;default:''"`
++	Data      string    `gorm:"type:mediumtext"`
++	UpdatedAt time.Time
++}
++
++func (Loadout) TableName() string {
++	return "loadouts"
++}
++
++// SquadWhitelist = liste d'accès d'un groupe (ex. KILO Commandement). Seuls ces UID
++// peuvent rejoindre le groupe en jeu (cf. FFRX_Groups.c allowedPlayerUIDs). Persisté
++// pour l'UI ; au save on pousse aussi un ordre group_whitelist au jeu (live).
++// Uids = liste d'UID (BohemiaUID) séparés par ';'. Clé = (server_id, group_id).
++type SquadWhitelist struct {
++	ID        uint      `gorm:"primaryKey" json:"id"`
++	ServerID  string    `gorm:"size:64;uniqueIndex:idx_wl_server_group" json:"serverId"`
++	GroupID   int       `gorm:"uniqueIndex:idx_wl_server_group" json:"groupId"`
++	GroupName string    `gorm:"size:128;default:''" json:"groupName"`
++	Uids      string    `gorm:"type:text" json:"uids"`
++	UpdatedAt time.Time `json:"updatedAt"`
++}
++
+ type BadWord struct {
+ 	Word         string `gorm:"primaryKey;size:100"` // The word itself is the primary key
+ 	LanguageCode string `gorm:"size:5;index"`        // z.B. 'de', 'en', 'es', 'multi'
+@@ -240,6 +375,58 @@ func (BadWord) TableName() string {
+ 	return "bad_words"
+ }
+ 
++// --- Collaboration : boîte à idées + doc de design (cf. TASK_WEB_COLLAB) ---
++
++// Idea = idée proposée par un membre connecté (intranet). Statut = roadmap.
++type Idea struct {
++	ID        uint      `gorm:"primaryKey" json:"id"`
++	AuthorID  uint64    `json:"authorId"`                                 // User.ID (Discord)
++	Title     string    `gorm:"size:180" json:"title"`
++	Body      string    `gorm:"type:text" json:"body"`
++	Category  string    `gorm:"size:40;index" json:"category"`            // ex: "Renseignement", "Logistique"...
++	Status    string    `gorm:"size:20;index;default:open" json:"status"` // open|planned|in_progress|done|declined
++	CreatedAt time.Time `json:"createdAt"`
++	UpdatedAt time.Time `json:"updatedAt"`
++	// Champs calculés renvoyés à l'API (non persistés).
++	VoteCount  int    `gorm:"-" json:"voteCount"`
++	HasVoted   bool   `gorm:"-" json:"hasVoted"`
++	AuthorName string `gorm:"-" json:"authorName"`
++}
++
++func (Idea) TableName() string { return "ideas" }
++
++// IdeaVote = 1 vote par (idée, utilisateur).
++type IdeaVote struct {
++	IdeaID uint   `gorm:"primaryKey" json:"ideaId"`
++	UserID uint64 `gorm:"primaryKey" json:"userId"`
++}
++
++func (IdeaVote) TableName() string { return "idea_votes" }
++
++// Comment = commentaire générique (idées ET doc de design).
++type Comment struct {
++	ID         uint      `gorm:"primaryKey" json:"id"`
++	TargetType string    `gorm:"size:16;index:idx_comment_target" json:"targetType"` // "idea" | "design"
++	TargetID   string    `gorm:"size:64;index:idx_comment_target" json:"targetId"`   // idea.ID en texte, ou slug(#ancre) design
++	AuthorID   uint64    `json:"authorId"`
++	Body       string    `gorm:"type:text" json:"body"`
++	CreatedAt  time.Time `json:"createdAt"`
++	AuthorName string    `gorm:"-" json:"authorName"`
++}
++
++func (Comment) TableName() string { return "comments" }
++
++// DesignDoc = document de design en markdown (un par slug, édité par un admin).
++type DesignDoc struct {
++	Slug      string    `gorm:"primaryKey;size:40" json:"slug"`
++	Title     string    `gorm:"size:180" json:"title"`
++	Markdown  string    `gorm:"type:longtext" json:"markdown"`
++	UpdatedBy uint64    `json:"updatedBy"`
++	UpdatedAt time.Time `json:"updatedAt"`
++}
++
++func (DesignDoc) TableName() string { return "design_docs" }
++
+ // SystemSetting stores general key-value settings for the application.
+ type SystemSetting struct {
+ 	// The key of the setting, e.g. "demo_server_id"
+@@ -251,3 +438,129 @@ type SystemSetting struct {
+ func (SystemSetting) TableName() string {
+ 	return "system_settings"
+ }
++
++// FFStateSample — historique ECHANTILLONNE de l'etat FF, pour suivre l'avancement
++// de la campagne (economie, territoire) dans le temps.
++//
++// POURQUOI : /ffstate n'etait garde qu'EN MEMOIRE (une map, un seul snapshot par
++// serveur, perdu au redemarrage). On voyait donc l'instant present, jamais une
++// evolution -- or "ou en est la campagne ?" est par nature une question de tendance :
++// les supplies qui montent, les usines qui basculent, le territoire qui change.
++//
++// Echantillonnage : un enregistrement par minute maximum (cf. ffstateSampleEvery).
++// Le jeu pousse toutes les ~5 s ; tout stocker ferait ~17k lignes/jour pour rien.
++// A 1/min on reste sous 1500 lignes/jour, largement suffisant pour une courbe.
++//
++// On ne stocke PAS le blob complet : uniquement des agregats numeriques. Le detail
++// reste dans le snapshot en memoire, qui lui n'a pas besoin d'historique.
++type FFStateSample struct {
++	ID         uint      `gorm:"primaryKey"`
++	ServerID   uuid.UUID `gorm:"type:varchar(36);index:idx_ffs_server_time"`
++	RecordedAt time.Time `gorm:"index:idx_ffs_server_time"`
++
++	// Territoire : nombre de POI par camp (villes, bases, usines, tours radio...).
++	PoisTotal  int
++	PoisPlayer int
++	PoisEnemy  int
++
++	// Detail par type, pour distinguer l'economique du militaire.
++	FactoriesPlayer int
++	FactoriesTotal  int
++	BasesPlayer     int
++	BasesTotal      int
++
++	// Economie : supplies cumules sur les sites tenus par le joueur, et capacite max.
++	// C'est la jauge d'avancement la plus parlante.
++	SuppliesPlayer int
++	SuppliesMax    int
++	FuelPlayer     int
++	FuelMax        int
++
++	// Debits MESURES par heure de jeu (FFRX_ProductionTracker cote jeu : stock lu
++	// avant/apres la production de FF, pas une formule rejouee). Le stock seul ne dit
++	// pas si la campagne progresse : deux serveurs a 3000 supplies n'ont pas le meme
++	// avenir selon qu'ils en produisent 40 ou 400 par heure.
++	ProdSupplies int
++	ProdFuel     int
++
++	// Meme mesure sur TOUTE la carte (sites tenus + ennemis). Une usine ennemie
++	// produit elle aussi : sans cette serie on ne voit que ce qu'on possede, jamais
++	// ce qui reste a prendre. C'est la difference entre les deux qui dit ou en est
++	// la campagne.
++	SuppliesAll    int
++	SuppliesMaxAll int
++	ProdSuppliesAll int
++	FuelAll        int
++	FuelMaxAll     int
++	ProdFuelAll    int
++
++	// Stations-service tenues / totales (les usines ont deja Factories*).
++	FuelStationsPlayer int
++	FuelStationsTotal  int
++
++	// Pression ennemie : effectifs de garnison adverses cumules.
++	EnemyManpower int
++
++	PlayersOnline int
++
++	// Agregats deja calcules par le JEU (bloc "summary" du payload). On les reprend
++	// tels quels plutot que de les recalculer : c'est la meme mesure que celle
++	// affichee en jeu, donc pas de divergence possible entre le site et le serveur.
++	// CampaignPct est la jauge d'avancement la plus directe.
++	CampaignPct float64
++	PlayerPct   float64
++	EnemyPct    float64
++}
++
++func (FFStateSample) TableName() string {
++	return "ffstate_samples"
++}
++
++// ServerEvent = journal admin unifie. Une ligne par evenement notable du serveur :
++// connexion, deconnexion, chat, action admin... Les kills restent dans damage_events
++// (format historique, deja exploite par la carte) ; la page /journal fusionne les deux.
++//
++// Alimente par le plugin Fleet (POST /api/v1/events/log). Volontairement generique :
++// un `Type` + un `Details` libre, pour ajouter un type d'evenement sans migration.
++//
++// Credit : le decoupage des evenements (CONNECT/DISCONNECT, plateforme du joueur) est
++// repris de "ReforgerJS Support" (685448E58B08F021), avec l'accord de son auteur. Notre
++// implementation est autonome : elle ne lit pas ses fichiers, Fleet emet directement.
++type ServerEvent struct {
++	ID             uint      `gorm:"primaryKey"`
++	ServerID       uuid.UUID `gorm:"type:varchar(36);index:idx_srv_evt_time"`
++	EventTimestamp time.Time `gorm:"index:idx_srv_evt_time"`
++
++	// CONNECT | DISCONNECT | CHAT | ADMIN | GAME
++	Type string `gorm:"size:32;index"`
++
++	PlayerUID  string `gorm:"size:255;index"`
++	PlayerName string `gorm:"size:100"`
++	// platform-windows / platform-xbl / platform-psn -> permet de voir d'ou vient un joueur.
++	Platform string `gorm:"size:32;index"`
++	Faction  string `gorm:"size:50"`
++
++	// Contenu libre selon le type : message de chat, cause de kick, cible d'une action...
++	Message string `gorm:"type:text"`
++	Details string `gorm:"type:text"`
++}
++
++func (ServerEvent) TableName() string {
++	return "server_events"
++}
++
++// EventLogPayload = corps du POST /api/v1/events/log (lot d'evenements).
++type EventLogPayload struct {
++	Events []EventLogData `json:"events"`
++}
++
++type EventLogData struct {
++	Timestamp  int64  `json:"timestamp"` // epoch seconds ; 0 = maintenant
++	Type       string `json:"type"`
++	PlayerUID  string `json:"playerUid"`
++	PlayerName string `json:"playerName"`
++	Platform   string `json:"platform"`
++	Faction    string `json:"faction"`
++	Message    string `json:"message"`
++	Details    string `json:"details"`
++}

@@ -1,0 +1,76 @@
+// FF - REMIXED - PVE -- Panneau 6 m B de mur, version CONSTRUITE PAR LE JOUEUR.
+//
+// POURQUOI CE PREFAB EXISTE. Les pieces de mur du jeu de base sont du DECOR DE CARTE :
+// elles n'ont ni RplComponent, ni persistance, ni action. Verifie sur toute leur chaine
+// d'heritage (TinWall_01_rusty -> TinWall_01 -> TinWall_01_base -> Wall_MultiPhase_Base) :
+// zero RplComponent partout.
+//
+// Consequence constatee en jeu le 2026-09-19 : le serveur construisait bien le mur (le log
+// annoncait "19 m, 5 pieces"), mais RIEN n'apparaissait chez le client -- une entite sans
+// composant de replication n'existe que sur la machine qui l'a creee. En Workbench on est
+// serveur ET client, donc ca semblait marcher.
+//
+// CE QU'ON AJOUTE, ET POURQUOI CHAQUE CHOSE :
+//   StaticModelEntity            -- ON REDECLARE LA CLASSE (voir l'encadre ci-dessous)
+//   RplComponent                 -- sans lui la piece est invisible pour tout le monde
+//   EPF_PersistenceComponent     -- survit au redemarrage (EPF suit tout seul, c'est pour
+//                                   ca qu'il faut au contraire le METTRE EN PAUSE ailleurs)
+//   JWK_BuildAreaItemComponent   -- EXIGE par le demontage : RpcAsk_DisassembleConstruction
+//                                   le cherche, et sans lui rien ne se passe
+//   ActionsManagerComponent      -- le contexte "Disassembly" et l'action FF
+//
+// Copie fidele de ce que porte un batiment FF (Prefabs/Compositions/BuildItems/Bunker.et).
+//
+// /!\ POURQUOI ON REDECLARE LA CLASSE EN StaticModelEntity.
+//
+// Le RplComponent ne suffisait PAS. Le moteur l'a dit explicitement au premier essai :
+//
+//   DestructibleEntity ('SCR_DestructibleEntity','TinWall_01_Pole.xob') was spawned at
+//   runtime. It won't take damage and wont replicate.
+//
+// Un SCR_DestructibleEntity cree A L'EXECUTION ne replique pas, quels que soient ses
+// composants -- c'est la CLASSE qui bloque. La chaine du jeu de base introduit cette
+// classe des Wall_MultiPhase_Base, mais sa racine (Wall_Base) est bien un
+// StaticModelEntity. On revient donc a la classe racine.
+//
+// Ce qu'on perd : le mur n'est plus destructible par les degats. Assume -- il reste
+// demontable a la pelle, ce qui est le comportement voulu pour une construction de joueur.
+//
+// ON NE REDECLARE NI MeshObject NI RigidBody : la piece de base les porte deja. Les
+// redeclarer avec un GUID d'instance neuf en AJOUTERAIT un second et le moteur refuserait
+// l'entite -- c'est le bug qui empechait la caisse d'arsenal d'etre persistee.
+StaticModelEntity : "{4CED256B088E2FF8}Prefabs/Structures/Walls/Metal/TinWall_01_rusty/TinWall_01_6m_B_rusty.et" {
+ ID "6FFEC0DEB2600300"
+ components {
+  RplComponent "{6FFEC0DEB2600301}" {
+  }
+  EPF_PersistenceComponent "{6FFEC0DEB2600302}" {
+   m_pSaveData JWK_BuildItemSaveDataClass "{6FFEC0DEB2600303}" {
+   }
+  }
+  JWK_BuildAreaItemComponent "{6FFEC0DEB2600304}" {
+  }
+  ActionsManagerComponent "{6FFEC0DEB2600305}" {
+   ActionContexts {
+    UserActionContext "{6FFEC0DEB2600306}" {
+     ContextName "Disassembly"
+     Position PointInfo "{6FFEC0DEB2600307}" {
+     }
+     Radius 6
+    }
+   }
+   additionalActions {
+    JWK_DisassemblyConstructionAction "{6FFEC0DEB2600308}" {
+     ParentContextList {
+      "Disassembly"
+     }
+     UIInfo SCR_ActionUIInfo "{6FFEC0DEB2600309}" {
+      Name "#JWK-Action-Disassembly"
+     }
+     VisibilityRange 6
+     Duration 10
+    }
+   }
+  }
+ }
+}

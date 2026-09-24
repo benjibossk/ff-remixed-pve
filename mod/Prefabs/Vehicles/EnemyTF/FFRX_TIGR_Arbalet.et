@@ -1,0 +1,18 @@
+Vehicle : "{95A220DF8D6E2543}Prefabs/Vehicles/Wheeled/TIGR/ArbaletDM/GAZ_TIGR_v2_Arbalet_KORD_Green.et" {
+ ID "69EEC444E1F61761"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000061}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000062}" {
+    m_iVehicleType CAR
+    m_iParkingType CAR
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType MEDIUM_ARMED
+    m_iArmorType LIGHT_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+ coords 154.331 1 137.836
+}

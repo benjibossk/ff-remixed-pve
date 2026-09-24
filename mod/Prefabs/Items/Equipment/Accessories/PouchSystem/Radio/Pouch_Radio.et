@@ -1,0 +1,59 @@
+GenericEntity : "{30D4D9300051C7A5}Prefabs/Items/Equipment/Accessories/PouchSystem/Radio/Pouch_Radio_Base.et" {
+ ID "521AC0491712FB3A"
+ components {
+  FactionAffiliationComponent "{6616FD36E617110D}" {
+   "faction affiliation" "FR"
+  }
+  MeshObject "{521AC04910AB9941}" {
+   Object "{915E48B6C4F20083}Assets/Items/Pouch/Pouch_Radio/SMB/Pouch_SMB_Radio.xob"
+  }
+  RigidBody "{521AC04910AB9947}" {
+   ModelGeometry 0
+  }
+  SCR_EquipmentStorageComponent "{5526DABF40B24F9D}" {
+   Attributes SCR_ItemAttributeCollection "{6220A4FD9840D5C7}" {
+    ItemDisplayName UIInfo "{6220A4FD9169B7AD}" {
+     Name "#AMF-Pouch-RadioSMB-Name"
+     Description ""
+    }
+    ItemPhysAttributes ItemPhysicalAttributes "{6220A4FD8B4C83DE}" {
+     Weight 0.4
+     SizeSetupStrategy Manual
+     ItemDimensions 2 2 2
+     ItemVolume 550
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{6220A4FFAC25EF52}" {
+      CameraOrbitAngles -25 25 0
+      CameraDistanceToItem 1.5
+      FOV 10
+     }
+    }
+    CommonItemType "AMF_M"
+    m_bStackable 0
+   }
+   StoragePurpose 0x41 0
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 500
+   MaxItemSize 10 10 10
+   InitialStorageSlots {
+    SCR_EquipmentStorageSlot Radio {
+     Offset -0.0228 0.003 0.0352
+     Angles -0.0464 -179.91441 -10.3251
+     Prefab "{DC1B220C66D47F85}Prefabs/Items/Equipment/Radios/Radio_ER328.et"
+     ActivatePhysicsOnDetaching 1
+     AllowedItemTypes {
+      "RADIO"
+     }
+    }
+   }
+  }
+  BaseLoadoutClothComponent "{521AC04910AB9954}" {
+   AreaType AMF_Vest_Pouch "{5ED29F2F21C568DD}" {
+   }
+   WornModel "{915E48B6C4F20083}Assets/Items/Pouch/Pouch_Radio/SMB/Pouch_SMB_Radio.xob"
+   ItemModel "{915E48B6C4F20083}Assets/Items/Pouch/Pouch_Radio/SMB/Pouch_SMB_Radio.xob"
+  }
+ }
+ coords 1368.416 37.247 2380.154
+}

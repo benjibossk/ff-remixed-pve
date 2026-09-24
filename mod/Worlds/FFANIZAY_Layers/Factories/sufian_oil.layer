@@ -1,0 +1,312 @@
+$grp JWK_CheckpointEntity : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ JWK_CheckpointController_68DCC4A6D64AD86E3 {
+  coords 1530.977 133.094 6646.859
+  angles 0 81.577 0
+  {
+   $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    {
+     coords 9.306 -1.012 13.57
+     angles 0 -178.152 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0.007 0.111 0.004
+       angles -3.696 0 3.577
+      }
+     }
+    }
+    {
+     coords 10.201 -0.758 -3.714
+     angles 0 -179.014 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0.005 0.313 0.004
+       angles -0.294 0 2.911
+      }
+     }
+    }
+   }
+  }
+ }
+ JWK_CheckpointController_68DCC4A6D64AD86E4 {
+  coords 1360.716 129.665 6408.713
+  angles 0 81.577 0
+  {
+   SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    coords 1.744 2.33 13.97
+    angles 0 178.93 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.471 0
+      angles -0.943 0 1.924
+     }
+    }
+   }
+   SCR_SiteSlotEntity : "{F73BB819723B9490}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareSmall.et" {
+    coords 9.923 2.297 -5.899
+    angles 0 177.598 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0.005 0.036 0
+      angles -0.856 0 6.431
+     }
+    }
+   }
+  }
+ }
+ JWK_CheckpointController_68DCC4A6D64AD86E5 {
+  coords 1308.726 135.07 6816.782
+  angles 0 81.577 0
+  {
+   SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    coords 2.013 0.031 -0.433
+    angles 0 9.765 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0.008 0.302 0.047
+      angles -2.03 0 0.576
+     }
+    }
+   }
+   SCR_SiteSlotEntity : "{F73BB819723B9490}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareSmall.et" {
+    coords 13.586 0.469 -1.116
+    angles 0 178.752 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords -0.003 0.061 -0.007
+      angles 3.541 0 -2.347
+     }
+    }
+   }
+  }
+ }
+}
+JWK_FactoryEntity JWK_FactoryController_68DCC4AE9A5BD5AE : "{644F3F0AD98280B4}Prefabs/Controllers/Loadtime/JWK_FactoryController.et" {
+ components {
+  JWK_NamedLocationComponent "{64E512EE3D735264}" {
+   m_sName "Sufian Oil"
+  }
+ }
+ coords 1341.713 135.002 6618.223
+ {
+  GenericEntity Factory_ResourceStorage_68DCC4AE977F1F46 : "{34EE59A28125F95F}Prefabs/Compositions/Factory_ResourceStorage.et" {
+   coords -0.911 -0.027 -0.362
+   angles 1.089 85.804 2.611
+   {
+    GenericEntity Factory_Storage_68DCC4AE977F1E0F {
+     ID "64D5310E6D3945D6"
+    }
+   }
+  }
+  $grp PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+   {
+    components {
+     JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+      m_aTags {
+       POI_AREA
+       PLAYER_CONSTRUCTION
+       BLOCK_TRAFFIC
+      }
+     }
+    }
+    coords 0.219 0.076 2.335
+    Points {
+     ShapePoint "{68DCC4908A480504}" {
+      Position -18.408 0.87 201.406
+     }
+     ShapePoint "{68DCC49088FACF75}" {
+      Position -52.217 -0.92 120.074
+     }
+     ShapePoint "{68DCC4908640CF49}" {
+      Position -55.248 -0.677 110.685
+     }
+     ShapePoint "{68DCC490852C9C8D}" {
+      Position -55.785 -0.719 96.143
+     }
+     ShapePoint "{68DCC49084A6C693}" {
+      Position -54.031 -1.535 69.604
+     }
+     ShapePoint "{68DCC49083847593}" {
+      Position -50.786 -1.211 49.476
+     }
+     ShapePoint "{68DCC4908178986A}" {
+      Position -47.929 -1.114 31.29
+     }
+     ShapePoint "{68DCC4908063E6E8}" {
+      Position -48.17 -1.214 20.249
+     }
+     ShapePoint "{68DCC490BECDB07F}" {
+      Position -46.765 -1.901 -11.496
+     }
+     ShapePoint "{68DCC490BD8381B4}" {
+      Position -45.659 -2.003 -40.934
+     }
+     ShapePoint "{68DCC490BCAAE3D2}" {
+      Position -45.105 -2.203 -60.634
+     }
+     ShapePoint "{68DCC490BA6971F8}" {
+      Position -45.569 -2.793 -75.922
+     }
+     ShapePoint "{68DCC490B95B5817}" {
+      Position -45.979 -2.974 -93.348
+     }
+     ShapePoint "{68DCC490B9B79A3C}" {
+      Position -43.608 -3.685 -109.239
+     }
+     ShapePoint "{68DCC490B8F2E101}" {
+      Position -37.848 -3.31 -131.877
+     }
+     ShapePoint "{68DCC490AEC3FE15}" {
+      Position -27.134 -2.221 -182.506
+     }
+     ShapePoint "{68DCC490AD2DBF38}" {
+      Position -18.97 -1.462 -204.218
+     }
+     ShapePoint "{68DCC490AC0502AA}" {
+      Position 10.685 -2.107 -213.176
+     }
+     ShapePoint "{68DCC490AB613F62}" {
+      Position 21.091 -2.862 -218.422
+     }
+     ShapePoint "{68DCC490A9F59467}" {
+      Position 26.51 -3.123 -206.02
+     }
+     ShapePoint "{68DCC490A8B9E74A}" {
+      Position 26.127 -4.18 -183.808
+     }
+     ShapePoint "{68DCC490A70401E9}" {
+      Position 30.292 -4.353 -173.646
+     }
+     ShapePoint "{68DCC490A78D0090}" {
+      Position 43.704 -2.734 -170.488
+     }
+     ShapePoint "{68DCC490A6F2328E}" {
+      Position 51.572 -4.116 -166.098
+     }
+     ShapePoint "{68DCC490A55FE0E3}" {
+      Position 58.864 -5.698 -149.145
+     }
+     ShapePoint "{68DCC490A49E41C7}" {
+      Position 56.028 -5.126 -128.154
+     }
+     ShapePoint "{68DCC490A245EED1}" {
+      Position 58.541 -4.813 -112.638
+     }
+     ShapePoint "{68DCC490A1D32953}" {
+      Position 51.45 -3.847 -84.521
+     }
+     ShapePoint "{68DCC490DE60294C}" {
+      Position 47.635 -3.437 -58.97
+     }
+     ShapePoint "{68DCC490DD0FEC74}" {
+      Position 43.121 -2.739 -21.886
+     }
+     ShapePoint "{68DCC490DB6199D8}" {
+      Position 40.673 -2.198 2.799
+     }
+     ShapePoint "{68DCC490D96FC7B2}" {
+      Position 52.25 -1.546 19.119
+     }
+     ShapePoint "{68DCC490D83D1E97}" {
+      Position 36.005 -1.212 14.778
+     }
+     ShapePoint "{68DCC490D8AD113C}" {
+      Position 22.977 -0.857 15.554
+     }
+     ShapePoint "{68DCC490D70247DC}" {
+      Position 15.456 -0.488 16.083
+     }
+     ShapePoint "{68DCC490D5709926}" {
+      Position 14.817 -0.502 31.065
+     }
+     ShapePoint "{68DCC490D3EBD818}" {
+      Position 13.213 0.509 68.907
+     }
+     ShapePoint "{68DCC490D2D96976}" {
+      Position 14.925 1.299 95.115
+     }
+     ShapePoint "{68DCC490D1BBDB86}" {
+      Position 14.518 2.851 123.896
+     }
+     ShapePoint "{68DCC490D02BC3E7}" {
+      Position 14.54 3.672 148.882
+     }
+     ShapePoint "{68DCC490CF75DD4F}" {
+      Position 13.133 1.169 167.552
+     }
+     ShapePoint "{68DCC490CE42C6F8}" {
+      Position 6.402 -0.062 194.252
+     }
+     ShapePoint "{68DCC490CEA45300}" {
+      Position -7.998 1.039 204.071
+     }
+    }
+   }
+   {
+    components {
+     JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+      m_aTags {
+       BATTLE_AREA
+      }
+     }
+    }
+    coords -0.985 0.037 1.689
+    Points {
+     ShapePoint "{68DCC49441D12BE5}" {
+      Position 81.67 -5.445 -178.359
+     }
+     ShapePoint "{68DCC4944184E9D0}" {
+      Position 76.853 -4.407 -34.104
+     }
+     ShapePoint "{68DCC4947D530FA2}" {
+      Position 104.281 -0.054 37.533
+     }
+     ShapePoint "{68DCC4947D282D2E}" {
+      Position 108.137 12.225 89.367
+     }
+     ShapePoint "{68DCC4947DFC3743}" {
+      Position 97.453 13.69 156.124
+     }
+     ShapePoint "{68DCC4947D957C2D}" {
+      Position 92.371 9.464 195.76
+     }
+     ShapePoint "{68DCC4947CA44285}" {
+      Position 78.408 -3.466 221.521
+     }
+     ShapePoint "{68DCC4947B56D3F8}" {
+      Position 16.933 -2.87 237.14
+     }
+     ShapePoint "{68DCC4947B272751}" {
+      Position -39.09 1.874 249.702
+     }
+     ShapePoint "{68DCC4947B0FF517}" {
+      Position -62.105 0.479 245.016
+     }
+     ShapePoint "{68DCC4947BA74786}" {
+      Position -79.812 -1.046 172.75
+     }
+     ShapePoint "{68DCC4947AE5E48D}" {
+      Position -84.496 -1.221 -9.775
+     }
+     ShapePoint "{68DCC4947A9C984C}" {
+      Position -72.572 -3.072 -98.424
+     }
+     ShapePoint "{68DCC4947941EC0A}" {
+      Position -61.035 -3.874 -212.957
+     }
+     ShapePoint "{68DCC49479AA78EC}" {
+      Position -25.2 -4.16 -258.705
+     }
+     ShapePoint "{68DCC4947816BFCE}" {
+      Position 51.457 -9.48 -274.733
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+SCR_ChimeraCharacter : "{DE3786C0C6C978D4}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_BaseLoadout.et" {
+ ID "69EF4D410552E3EF"
+ components {
+  CharacterGrenadeSlotComponent "{520EA1D2F659CE6E}" {
+   WeaponTemplate "{21839CF5BB32FF4D}Prefabs/Weapons/Grenades/AMF_GR_OF.et"
+  }
+  CharacterGrenadeSlotComponent "{5A6CDA0CCF43068E}" {
+   WeaponTemplate "{2A1A0F3F15BBCAD7}Prefabs/Weapons/Grenades/GR_FUM_FR/GR_FUM_MA_White.et"
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFAB}" {
+   WeaponTemplate "{9552897A017B53FE}Prefabs/Weapons/Rifles/HK416F/HK416F-S_EO512.et"
+   WeaponSlotIndex 0
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFDC}" {
+   WeaponTemplate "{163B4015946457A5}Prefabs/Weapons/Handguns/Glock17/Handgun_Glock17.et"
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{52A62092DB95EB57}Prefabs/Characters/HeadGear/F3_HELMET/MSA_FELIN_CE_Base.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{7326973EDED9139D}Prefabs/Characters/Uniforms/F3_Ubas/CE/F3_Ubas_Rolled_CE_Caporal.et"
+    }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab "{B95BD66EA8F863C9}Prefabs/Characters/Vests/Structure_Modilaire_Balistique/Structure_Modulaire_Balistique_Base.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{ADBA42284222F1BA}Prefabs/Characters/Uniforms/F3_Pantalon/F3_Pantalon_CE.et"
+    }
+    LoadoutSlotInfo Boots {
+     Prefab "{253C75176D3BF9A4}Prefabs/Characters/Footwear/Haix_Sable_Base.et"
+    }
+    LoadoutSlotInfo Back {
+     Prefab "{B11BA9F90C3AAFD5}Prefabs/Characters/Backpack/TECPACK45L.et"
+    }
+    LoadoutSlotInfo Vest {
+     Enabled 1
+     Prefab "{ABAC4A7351DCC4FA}Prefabs/Characters/Vests/Ceinture_De_Combat/Ceinture_SMB.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{10F3F4B0F182F139}Prefabs/Characters/Handwear/gants_coyote_v2/gloves_coyote_v2_base.et"
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6FFEC0DEF1A0000C}Prefabs/Vehicles/AlliedAMF/FFRX_GBC_ArsenalCover.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

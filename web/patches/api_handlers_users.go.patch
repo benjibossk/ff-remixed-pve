@@ -1,0 +1,56 @@
+diff --git a/api/handlers/users.go b/api/handlers/users.go
+index adbddb9..be7b274 100644
+--- a/api/handlers/users.go
++++ b/api/handlers/users.go
+@@ -29,6 +29,7 @@ func MeHandler(c *gin.Context) {
+ 		"username":     user.Username,
+ 		"avatar":       toProxyAvatarURL(user.Avatar),
+ 		"account_type": user.AccountType,
++		"bohemia_uid":  user.BohemiaUID, // UID en jeu lié (vide si non lié)
+ 	})
+ }
+ 
+@@ -131,6 +132,7 @@ func AdminGetAllUsersHandler(c *gin.Context) {
+ 		AccountType      string `json:"account_type"`
+ 		MaxServers       uint   `json:"max_servers"`
+ 		OwnedServerCount int64  `json:"owned_server_count"`
++		BohemiaUID       string `json:"bohemia_uid"`
+ 	}
+ 
+ 	response := make([]AdminUserResponse, len(users))
+@@ -142,12 +144,35 @@ func AdminGetAllUsersHandler(c *gin.Context) {
+ 			AccountType:      u.AccountType,
+ 			MaxServers:       u.MaxServers,
+ 			OwnedServerCount: serverCounts[u.ID],
++			BohemiaUID:       u.BohemiaUID,
+ 		}
+ 	}
+ 
+ 	c.JSON(http.StatusOK, response)
+ }
+ 
++// AdminSetUserLinkHandler lie (ou délie) un compte Discord à un UID Reforger en jeu.
++// PUT /admin/users/:user_id/link  body { "bohemia_uid": "<uid>" }  ("" pour délier).
++func AdminSetUserLinkHandler(c *gin.Context) {
++	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
++	if err != nil {
++		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
++		return
++	}
++	var req struct {
++		BohemiaUID string `json:"bohemia_uid"`
++	}
++	if err := c.ShouldBindJSON(&req); err != nil {
++		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
++		return
++	}
++	if res := database.DB.Model(&models.User{}).Where("id = ?", userID).Update("bohemia_uid", req.BohemiaUID); res.Error != nil {
++		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update link"})
++		return
++	}
++	c.JSON(http.StatusOK, gin.H{"ok": true, "user_id": userID, "bohemia_uid": req.BohemiaUID})
++}
++
+ // AdminGetUserServersHandler fetches all servers (owned and shared) of a specific user.
+ func AdminGetUserServersHandler(c *gin.Context) {
+ 	targetUserIDStr := c.Param("user_id")

@@ -1,0 +1,3011 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC — CARTE ADMIN (FF)</title>
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/api/v1/cdn/map/leaflet.css"/>
+    <link rel="stylesheet"
+          href="/api/v1/cdn/map/Control.FullScreen.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      /* ============ PC — SITUATION TACTIQUE · thème C2 SCORPION ============ */
+      :root{
+        --bg:#070b10; --bg2:#0b121a;
+        --panel:rgba(9,15,21,.86); --panel-solid:#0a1017;
+        --line:rgba(122,163,196,.16); --line-strong:rgba(122,163,196,.34);
+        --txt:#c6d5e1; --hi:#eaf3fb; --dim:#6f8698; --faint:#43566a;
+        --blue:#3d8bff;         /* ami / SCORPION */
+        --cyan:#39c2d1;
+        --red:#e0403a;          /* hostile / alerte */
+        --amber:#e2a53a;        /* données / warn */
+        --green:#46d17f;        /* live / OK */
+        --fr-blue:#1b4fa0; --fr-red:#c8362f;
+        --hud-blur: blur(9px);
+        font-synthesis:none;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0;overflow:hidden}
+      body{
+        background:var(--bg); color:var(--txt);
+        font-family:"IBM Plex Mono",ui-monospace,monospace;
+        font-size:13px; letter-spacing:.2px;
+        text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased;
+      }
+      .disp{font-family:"Oswald",sans-serif;text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+
+      /* ---- Carte plein écran (fond immersif) ---- */
+      #map{position:fixed; inset:0; width:100%; height:100%; z-index:0;}
+      .leaflet-container{background:#05080c;}
+      .leaflet-control-attribution{display:none;}
+      .leaflet-bar,.leaflet-control-zoom,.leaflet-control-fullscreen a{
+        background:var(--panel-solid)!important;border:1px solid var(--line)!important;color:var(--txt)!important;
+        backdrop-filter:var(--hud-blur);
+      }
+      .leaflet-bar a{color:var(--txt)!important;}
+      .leaflet-bar a:hover{background:#14202c!important;color:var(--hi)!important;}
+      .leaflet-control-zoom{margin-top:96px!important;margin-left:18px!important;}
+
+      /* ---- Overlays d'ambiance (grain + scanlines + vignette) ---- */
+      .fx{position:fixed;inset:0;pointer-events:none;z-index:5;}
+      .fx.grid{background-image:
+          linear-gradient(rgba(122,163,196,.06) 1px,transparent 1px),
+          linear-gradient(90deg,rgba(122,163,196,.06) 1px,transparent 1px);
+        background-size:54px 54px; opacity:.55;}
+      .fx.scan{background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px);opacity:.3;}
+      .fx.vig{box-shadow:inset 0 0 220px 40px rgba(0,0,0,.78), inset 0 0 60px rgba(0,0,0,.45);}
+      .fx.noise{display:none;}
+
+      /* ---- Cadre HUD générique (coins réticule) ---- */
+      .hud{position:fixed;z-index:20;background:var(--panel);backdrop-filter:var(--hud-blur);
+        border:1px solid var(--line);}
+      .bracket{position:relative;}
+      .bracket::before,.bracket::after{content:"";position:absolute;width:12px;height:12px;pointer-events:none;}
+      .bracket::before{top:-1px;left:-1px;border-top:2px solid var(--blue);border-left:2px solid var(--blue);}
+      .bracket::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--blue);border-right:2px solid var(--blue);}
+
+      /* ===== BANDEAU DE COMMANDEMENT (haut) ===== */
+      .hud-top{top:0;left:0;right:0;height:64px;display:flex;align-items:stretch;
+        border-left:0;border-right:0;border-top:0;}
+      .tricolore{position:fixed;top:0;left:0;right:0;height:3px;z-index:22;
+        background:linear-gradient(90deg,var(--fr-blue) 0 33.33%,#e9edf2 33.33% 66.66%,var(--fr-red) 66.66% 100%);}
+      .brand{display:flex;align-items:center;gap:14px;padding:0 20px;min-width:340px;}
+      .crest{width:38px;height:38px;flex:0 0 38px;border:1px solid var(--line-strong);
+        display:grid;place-items:center;position:relative;background:
+          radial-gradient(circle at 50% 40%,rgba(61,139,255,.22),transparent 70%);}
+      .crest svg{width:22px;height:22px;}
+      .brand .t1{font-size:16px;color:var(--hi);line-height:1;}
+      .brand .t2{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin-top:5px;}
+      .brand .t2 b{color:var(--cyan);font-weight:500;}
+      .top-center{flex:1;display:flex;align-items:center;justify-content:center;}
+      .classif{font-family:"Oswald";font-weight:600;font-size:11px;letter-spacing:.28em;color:#0a0f14;
+        background:repeating-linear-gradient(45deg,var(--amber) 0 10px,#caa030 10px 20px);
+        padding:2px 14px;border-radius:1px;}
+      .theatre{font-size:10.5px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;}
+      .theatre b{color:var(--cyan);font-weight:500;}
+      .top-right{display:flex;align-items:center;gap:18px;padding:0 20px;min-width:340px;justify-content:flex-end;}
+      .clock{text-align:right;line-height:1.15;}
+      .clock .z{font-family:"Oswald";font-weight:600;font-size:20px;color:var(--hi);letter-spacing:.04em;}
+      .clock .d{font-size:9.5px;color:var(--dim);letter-spacing:.16em;text-transform:uppercase;}
+      .status{display:flex;align-items:center;gap:8px;font-family:"Oswald";text-transform:uppercase;font-size:12px;letter-spacing:.12em;}
+      .live-indicator{width:9px;height:9px;border-radius:50%;background:var(--faint);display:inline-block;box-shadow:0 0 0 3px rgba(0,0,0,.4);}
+      .live-indicator.active{background:var(--green);animation:pulse 1.6s infinite;}
+      .live-indicator.wait{background:var(--amber);box-shadow:0 0 7px var(--amber);animation:none;}
+      @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(70,209,127,.6)}70%{box-shadow:0 0 0 9px rgba(70,209,127,0)}100%{box-shadow:0 0 0 0 rgba(70,209,127,0)}}
+
+      /* Panneaux FF regroupes : une fois places dans #ff-dock, ils ne sont plus
+         ancres a l'ecran mais empiles dans la colonne. */
+      #ff-dock > *{position:static !important;top:auto !important;right:auto !important;
+        bottom:auto !important;left:auto !important;
+        /* largeur uniforme : sans ca chaque panneau prend sa largeur naturelle et la
+           colonne devient irreguliere (box-sizing pour que padding et bordure rentrent
+           dans les 100%). */
+        width:100% !important;max-width:100% !important;box-sizing:border-box;}
+      #ff-dock #hud-right{gap:8px;}
+
+      /* ===== DOCK DROIT (Unités + Journal) ===== */
+      .hud-right{position:fixed;top:82px;right:18px;bottom:22px;width:336px;display:flex;flex-direction:column;gap:14px;
+        background:transparent;border:0;z-index:20;}
+
+      /* Contrôle secteur (bas-gauche) */
+      .sector-ctrl{position:fixed;left:18px;bottom:18px;z-index:20;padding:11px 15px;display:flex;flex-direction:column;gap:9px;}
+      .sector-ctrl .row1{display:flex;gap:10px;align-items:center;}
+      /* Crédit discret bas de page */
+      .credit-foot{position:fixed;left:50%;bottom:7px;transform:translateX(-50%);z-index:19;
+        font-family:"Oswald";text-transform:uppercase;font-size:10px;letter-spacing:.2em;
+        color:rgba(255,255,255,.28);white-space:nowrap;}
+      .credit-foot a{color:rgba(255,255,255,.5);text-decoration:none;}
+      .credit-foot a:hover{color:#fff;}
+      .pane{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--panel);
+        backdrop-filter:var(--hud-blur);border:1px solid var(--line);}
+      .pane-head{display:flex;align-items:center;justify-content:space-between;gap:8px;
+        padding:11px 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(61,139,255,.07),transparent);}
+      .pane-head h4{margin:0;font-family:"Oswald";font-weight:600;font-size:14px;letter-spacing:.1em;color:var(--hi);text-transform:uppercase;display:flex;align-items:center;gap:9px;}
+      .pane-head h4 .idx{font-family:"IBM Plex Mono";font-size:10px;color:var(--blue);border:1px solid var(--line-strong);padding:1px 5px;font-weight:400;}
+      .pane-tools{display:flex;gap:6px;}
+      .pane-body{flex:1;min-height:0;overflow-y:auto;padding:8px;}
+      #player-search-input{margin:8px 8px 2px;width:calc(100% - 16px);}
+
+      /* liste unités */
+      .list-group{border:0;}
+      .list-group-item{background:rgba(15,23,32,.5)!important;border:1px solid var(--line)!important;
+        border-radius:0!important;margin-bottom:5px;color:var(--txt);padding:8px 10px;font-size:12px;
+        display:flex;align-items:center;transition:.14s;}
+      .list-group-item:hover{background:rgba(61,139,255,.1)!important;border-color:var(--line-strong)!important;transform:translateX(-2px);}
+      .list-dot{width:12px;height:12px;border-radius:50%;border:2px solid #0a0f14;display:inline-block;vertical-align:middle;margin-right:10px;box-shadow:0 0 6px currentColor;flex:0 0 auto;}
+      /* en-tête d'escouade dans la liste des unités */
+      .squad-head{font-family:"Oswald";text-transform:uppercase;letter-spacing:.09em;font-size:11.5px;color:var(--cyan);
+        padding:7px 10px 4px;margin:6px 0 3px;border-left:2px solid var(--blue);background:linear-gradient(90deg,rgba(61,139,255,.1),transparent);}
+      .squad-head .squad-sub{color:var(--dim);font-family:"IBM Plex Mono";letter-spacing:.04em;text-transform:none;font-size:10.5px;}
+      .squad-head.clickable{cursor:pointer;user-select:none;}
+      .squad-head.clickable:hover{color:var(--hi);background:linear-gradient(90deg,rgba(61,139,255,.18),transparent);}
+      .squad-chev{font-size:9px;margin-right:6px;transition:transform .15s;display:inline-block;}
+      .squad-chev.open{transform:rotate(90deg);}
+      .squad-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;box-shadow:0 0 5px currentColor;border:1px solid rgba(0,0,0,.5);}
+      /* badge de grade dans la liste des unités */
+      .rank-badge{display:inline-block;font-family:"Oswald";text-transform:uppercase;font-size:9.5px;letter-spacing:.06em;
+        color:var(--amber);border:1px solid rgba(226,165,58,.4);padding:0 4px;margin:0 3px 0 2px;vertical-align:middle;line-height:15px;}
+      /* menu contextuel clic droit */
+      #map-ctxmenu{display:none;position:fixed;z-index:1300;min-width:190px;background:var(--panel-solid);
+        border:1px solid var(--line-strong);backdrop-filter:var(--hud-blur);box-shadow:0 8px 26px rgba(0,0,0,.55);padding:4px;}
+      #map-ctxmenu .ctx-item{display:flex;align-items:center;width:100%;gap:4px;background:transparent;border:0;color:var(--txt);
+        font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:12px;padding:8px 12px;cursor:pointer;text-align:left;}
+      #map-ctxmenu .ctx-item:hover{background:rgba(61,139,255,.14);color:var(--hi);}
+      #map-ctxmenu .ctx-item.danger:hover{background:rgba(224,64,58,.16);color:var(--red);}
+      #map-ctxmenu .ctx-sep{height:1px;background:var(--line);margin:3px 6px;}
+      .event-log-item{font-size:11.5px;padding:6px 10px;border-left:2px solid var(--red);background:rgba(15,23,32,.5)!important;margin-bottom:4px;}
+      .event-log-item .fw-bold{color:var(--amber);}
+      .event-log-item .text-danger{color:var(--red)!important;}
+      .event-log-item .text-info{color:var(--blue)!important;}
+
+      /* ===== CONSOLE BAS (secteur + live + timeline) ===== */
+      .hud-bottom{left:18px;right:18px;bottom:16px;height:88px;display:flex;align-items:stretch;gap:0;
+        padding:0;overflow:hidden;}
+      .console-sec{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:12px 16px;
+        min-width:262px;flex:0 0 auto;border-right:1px solid var(--line);}
+      .console-sec .row1{display:flex;gap:10px;align-items:center;}
+      .console-time{flex:1;display:flex;flex-direction:column;justify-content:center;gap:7px;padding:12px 18px;min-width:0;}
+      .ct-head{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+      .ct-head .lbl{font-family:"Oswald";text-transform:uppercase;font-size:12px;letter-spacing:.12em;color:var(--dim);}
+      #time-label{color:var(--cyan);font-family:"IBM Plex Mono";font-size:12px;letter-spacing:.04em;}
+      .ct-row{display:flex;align-items:center;gap:12px;}
+      .console-cred{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:4px;padding:10px 16px;border-left:1px solid var(--line);min-width:128px;flex:0 0 auto;white-space:nowrap;}
+      .console-cred .k{font-family:"Oswald";font-size:11px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;}
+      .console-cred a{color:var(--blue);text-decoration:none;font-size:11px;}
+      .console-cred a:hover{color:var(--cyan);text-decoration:underline;}
+      .console-cred .v{font-size:9px;color:var(--faint);}
+
+      /* ---- Contrôles (labels/inputs/boutons) ---- */
+      .lbl-k{font-family:"Oswald";text-transform:uppercase;font-size:10.5px;letter-spacing:.16em;color:var(--dim);margin-bottom:5px;display:block;}
+      .form-select,.form-control{background:rgba(6,11,16,.8)!important;border:1px solid var(--line)!important;color:var(--txt)!important;
+        border-radius:0!important;font-family:"IBM Plex Mono"!important;font-size:12px!important;box-shadow:none!important;}
+      .form-select:focus,.form-control:focus{border-color:var(--blue)!important;box-shadow:0 0 0 1px rgba(61,139,255,.35)!important;}
+      .form-select{background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),linear-gradient(135deg,var(--dim) 50%,transparent 50%)!important;
+        background-position:calc(100% - 16px) center,calc(100% - 11px) center!important;background-size:5px 5px,5px 5px!important;background-repeat:no-repeat!important;}
+      optgroup{font-style:normal;font-weight:600;color:var(--cyan);background:#0a0f14;font-family:"Oswald";letter-spacing:.08em;}
+      option{background:#0a0f14;color:var(--txt);}
+      .form-control::placeholder{color:var(--faint);}
+
+      .btn-t{font-family:"Oswald";text-transform:uppercase;letter-spacing:.1em;font-size:12px;font-weight:500;
+        background:rgba(15,23,32,.6);border:1px solid var(--line);color:var(--txt);border-radius:0;padding:7px 14px;
+        display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:.14s;white-space:nowrap;}
+      .btn-t:hover{border-color:var(--blue);color:var(--hi);background:rgba(61,139,255,.12);box-shadow:0 0 12px rgba(61,139,255,.14);}
+      .btn-t.mini{padding:6px 9px;font-size:12px;}
+      .btn-t.accent{border-color:var(--line-strong);color:var(--cyan);}
+      .btn-live{gap:9px;min-width:118px;}
+      /* le JS d'origine met 'btn-danger' quand le live est actif */
+      .btn-live.btn-danger{border-color:var(--green)!important;color:var(--green)!important;background:rgba(70,209,127,.1)!important;}
+
+      /* barre de lecture (timeline) */
+      .slider-container{position:relative;padding-bottom:9px;flex:1;}
+      .form-range{-webkit-appearance:none;width:100%;height:4px;background:linear-gradient(90deg,var(--blue),var(--cyan));
+        border:0;outline:0;opacity:.9;cursor:pointer;}
+      .form-range:disabled{background:var(--faint);opacity:.5;}
+      .form-range::-webkit-slider-thumb{-webkit-appearance:none;width:5px;height:18px;background:var(--hi);border:0;box-shadow:0 0 8px rgba(255,255,255,.4);cursor:pointer;}
+      .form-range::-moz-range-thumb{width:5px;height:18px;background:var(--hi);border:0;border-radius:0;}
+      #damage-ticks-container,#player-damage-ticks-container{position:absolute;bottom:0;left:0;right:0;height:9px;pointer-events:none;margin:0 2px;}
+      .damage-tick{position:absolute;bottom:0;width:2px;height:100%;background:var(--red);opacity:.75;}
+      .player-damage-tick{position:absolute;bottom:-4px;width:3px;height:150%;background:var(--amber);z-index:10;box-shadow:0 0 4px var(--amber);}
+      #downsample-warning{color:var(--amber);font-size:10px;letter-spacing:.1em;}
+
+      /* scrollbars */
+      ::-webkit-scrollbar{width:8px;height:8px;}
+      ::-webkit-scrollbar-track{background:transparent;}
+      ::-webkit-scrollbar-thumb{background:var(--line-strong);border:2px solid transparent;background-clip:content-box;}
+      ::-webkit-scrollbar-thumb:hover{background:var(--blue);background-clip:content-box;}
+
+      /* dropdown / modale (Bootstrap restylé) */
+      .dropdown-menu{background:var(--panel-solid)!important;border:1px solid var(--line)!important;border-radius:0!important;backdrop-filter:var(--hud-blur);}
+      .dropdown-item{color:var(--txt)!important;font-size:12px;}
+      .dropdown-item:hover{background:rgba(61,139,255,.14)!important;color:var(--hi)!important;}
+      .modal-content{background:var(--panel-solid);border:1px solid var(--line-strong);border-radius:0;}
+      .modal-header,.modal-footer{border-color:var(--line);}
+      .modal-title{font-family:"Oswald";letter-spacing:.08em;text-transform:uppercase;color:var(--hi);}
+      .btn-close{filter:invert(1) grayscale(1) brightness(1.6);}
+      #user-display .btn{--bs-btn-color:var(--txt);}
+
+      /* labels carte joueur */
+      .player-icon-container,.damage-icon-container,.vehicle-icon-container{background:transparent!important;border:none!important;box-shadow:none!important;}
+      .player-icon-container svg path{stroke:#05080c;stroke-width:1.5;}
+      .vehicle-icon-container{position:absolute;top:-16px;left:14px;color:#e9ecef;font-size:14px;filter:drop-shadow(0 0 1px black);}
+      .player-label{background:rgba(5,8,12,.82);color:#fff;border:1px solid var(--line);border-radius:0;padding:2px 6px;font-family:"IBM Plex Mono";font-size:10.5px;font-weight:500;white-space:nowrap;letter-spacing:.03em;}
+      /* Les lignes "libelle / valeur" ne doivent pas se couper : on laisse l'infobulle
+         s'elargir au besoin plutot que de replier "2908 / 5120" sur deux lignes. */
+      .leaflet-tooltip.ff-poi-tip{white-space:nowrap;max-width:420px;width:auto;}
+      .ff-collapse-btn{cursor:pointer;color:var(--dim);font-size:13px;flex:0 0 auto;}
+      .ff-collapse-btn:hover{color:#fff;}
+      .flt-mk span{font-family:"IBM Plex Mono"!important;}
+
+      /* cookie / bandeau bas */
+      #cookie-banner{position:fixed;bottom:-200px;left:0;right:0;padding:1rem 1.5rem;z-index:1055;
+        background:var(--panel-solid);border-top:1px solid var(--line-strong);transition:transform .5s ease;}
+      #cookie-banner.show{transform:translateY(-200px);}
+      #cookie-banner .container{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:11px;color:var(--dim);}
+
+      @media(max-width:1100px){
+        .hud-right{position:static;width:auto;}
+        .brand,.top-right{min-width:0;}
+      }
+      /* Lissage FF : les marqueurs unites/vehicules glissent vers leur nouvelle position. */
+      .leaflet-marker-icon.ff-mv{transition:transform 1.8s linear;}
+      body.ff-nozoom .leaflet-marker-icon.ff-mv{transition:none;}
+    </style>
+</head>
+<body>
+
+<!-- Carte plein écran (fond immersif) -->
+<div id="map"></div>
+<div class="fx grid"></div>
+<div class="fx noise"></div>
+<div class="fx scan"></div>
+<div class="fx vig"></div>
+<div class="tricolore"></div>
+
+<!-- ===== BANDEAU DE COMMANDEMENT ===== -->
+<header class="hud hud-top">
+    <!-- Titre cliquable -> accueil (voir map.html, meme motif). -->
+    <a class="brand" href="/" style="color:inherit;text-decoration:none" title="Retour a l'accueil">
+        <div class="crest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round">
+                <path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/>
+                <path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/>
+            </svg>
+        </div>
+        <div>
+            <div class="t1 disp">PC — Situation Tactique</div>
+            <div class="t2">Théâtre&nbsp;: <b id="theatre-name">—</b></div>
+        </div>
+    </a>
+    <div class="top-center">
+        <div class="classif">Diffusion Restreinte</div>
+    </div>
+    <div class="top-right">
+        <div class="status"><span class="live-indicator" id="top-live"></span><span id="top-live-txt">Hors ligne</span></div>
+        <div class="clock"><div class="z" id="clock-z">--:--:--</div><div class="d" id="clock-d">Zulu</div></div>
+        <div id="user-display"></div>
+    </div>
+</header>
+
+<!-- ===== DOCK DROIT : Unités + Journal ===== -->
+<aside class="hud-right" id="hud-right">
+    <section class="pane bracket">
+        <div class="pane-head">
+            <h4><span class="idx">01</span>Unités</h4>
+            <div class="pane-tools">
+                <button class="btn-t mini" title="Sélectionner des marqueurs (glisser un cadre)" id="select-btn"><i class="bi bi-bounding-box"></i></button>
+                <button class="btn-t mini" title="Objectif faction" id="obj-faction-btn"><i class="bi bi-flag-fill"></i></button>
+                <button class="btn-t mini" title="Aller aux coordonnées" data-bs-toggle="modal"
+                        data-bs-target="#gotoModal"><i class="bi bi-crosshair"></i></button>
+                <i class="bi bi-dash-lg ff-collapse-btn" data-collapse="hud-right-body" title="Replier"></i>
+            </div>
+        </div>
+        <div id="hud-right-body">
+            <input type="text" id="player-search-input" class="form-control form-control-sm" placeholder="RECHERCHE UNITÉ…">
+            <div class="pane-body">
+                <div class="list-group" id="player-list">
+                    <div class="list-group-item">Sélection d'un secteur…</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aside>
+
+<!-- ===== CONSOLE BASSE : secteur + live + chronologie + crédit ===== -->
+<!-- Contrôle secteur (bas-gauche) : sélecteur + LIVE -->
+<!-- Contrôle secteur ENTIÈREMENT masqué : théâtre forcé par l'admin + live automatique.
+     Les éléments restent dans le DOM (cachés) pour ne pas casser la logique existante. -->
+<div class="hud sector-ctrl bracket" style="display:none">
+    <label class="lbl-k" for="server-select">Secteur / Théâtre</label>
+    <div class="row1">
+        <select id="server-select" class="form-select form-select-sm"></select>
+        <button id="live-mode-btn" class="btn-t btn-live"><span class="live-indicator"></span>Live</button>
+    </div>
+</div>
+
+<!-- Chronologie / replay : masquée en vue PC (sera exposée dans la vue admin).
+     Les éléments restent dans le DOM (cachés) pour ne pas casser la logique existante. -->
+<div id="chrono-hidden" style="display:none" aria-hidden="true">
+    <span id="time-label"></span>
+    <small id="downsample-warning" class="d-none"></small>
+    <button id="play-pause-btn" disabled></button>
+    <div class="slider-container">
+        <input type="range" id="time-slider" min="0" max="100" value="0" disabled>
+        <div id="damage-ticks-container"></div>
+        <div id="player-damage-ticks-container"></div>
+    </div>
+    <input type="datetime-local" id="time-range-start">
+    <input type="datetime-local" id="time-range-end">
+    <button id="apply-time-range-btn"></button>
+    <button id="reset-time-range-btn"></button>
+    <!-- Journal des événements : déplacé ici (masqué) — sera exposé dans la vue admin. -->
+    <div class="list-group" id="event-log"><div class="list-group-item">Aucun événement.</div></div>
+    <!-- Carte de chaleur : retirée du panneau (ira dans la vue admin). Boutons gardés cachés
+         pour ne pas casser les listeners JS existants. -->
+    <button id="heatmap-from-range-btn"></button>
+    <button id="heatmap-last-hour-btn"></button>
+    <button id="remove-heatmap-btn"></button>
+</div>
+
+<!-- Crédit discret, bas de page -->
+<div class="credit-foot">Moteur carte · <a href="https://reforger.armaplatform.com/workshop/65E90CB6053F2791" target="_blank" rel="noopener">GTG LiveMap</a></div>
+
+<div class="modal fade" id="gotoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Ralliement — coordonnées</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body"><label for="goto-coords-input" class="lbl-k">Coordonnées Arma (X, Z)</label>
+                <div class="input-group"><input type="text" id="goto-coords-input" class="form-control"
+                                                placeholder="ex. 6400, 6400">
+                    <button class="btn-t accent" id="goto-coords-btn">GO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Édition d'un marqueur (clic droit sur un point) -->
+<div class="modal fade" id="markerEditModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Marqueur</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="mk-edit-id">
+                <label class="lbl-k">Libellé</label>
+                <input type="text" id="mk-edit-text" class="form-control mb-2" placeholder="Nom / libellé">
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><label class="lbl-k">Type</label>
+                        <select id="mk-edit-kind" class="form-select"><option value="0">Civil</option><option value="1">Militaire</option></select></div>
+                    <div class="col-6"><label class="lbl-k">Visibilité</label>
+                        <select id="mk-edit-vis" class="form-select"><option value="0">Local</option><option value="1">Groupe</option><option value="2">Faction</option><option value="3">Global</option></select></div>
+                </div>
+                <div id="mk-edit-civil" class="mb-2">
+                    <label class="lbl-k">Icône</label>
+                    <div id="mk-icon-tabs" class="d-flex flex-wrap gap-1 mb-1"></div>
+                    <div id="mk-icon-grid" style="max-height:158px;overflow-y:auto;display:grid;grid-template-columns:repeat(8,1fr);gap:4px"></div>
+                    <input type="hidden" id="mk-edit-icon" value="0">
+                </div>
+                <div id="mk-edit-mil" class="row g-2 mb-2">
+                    <div class="col-4"><label class="lbl-k">Identité</label>
+                        <select id="mk-edit-ident" class="form-select"><option value="0">Inconnu</option><option value="1">Allié</option><option value="2">Ennemi</option><option value="3">Neutre</option></select></div>
+                    <div class="col-4"><label class="lbl-k">Dimension</label>
+                        <select id="mk-edit-dim" class="form-select"><option value="0">Aucune</option><option value="1">Sol</option><option value="2">Installation</option><option value="3">Install. air</option><option value="4">Air</option><option value="5">Équipement</option></select></div>
+                    <div class="col-4"><label class="lbl-k">Symbole</label>
+                        <select id="mk-edit-sym" class="form-select"><option value="1">Infanterie</option><option value="2">Motorisé</option><option value="4">Blindé</option><option value="8">Antichar</option><option value="16">Mortier</option><option value="32">Artillerie</option><option value="64">Aile fixe</option><option value="128">Hélico</option><option value="256">Recon</option><option value="512">Ravitaillement</option><option value="2048">Médical</option></select></div>
+                </div>
+                <label class="lbl-k">Couleur</label>
+                <div id="mk-edit-colors" class="d-flex flex-wrap gap-1 mb-2"></div>
+                <label class="lbl-k">Taille (%)</label>
+                <input type="number" id="mk-edit-size" class="form-control" value="200">
+                <div id="mk-edit-msg" class="small mt-2"></div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button class="btn-t" style="border-color:var(--red);color:var(--red)" id="mk-edit-delete"><i class="bi bi-trash"></i> Supprimer</button>
+                <div>
+                    <button class="btn-t" id="mk-edit-move" title="Cliquez puis glissez le point sur la carte"><i class="bi bi-arrows-move"></i> Déplacer</button>
+                    <button class="btn-t accent" id="mk-edit-save"><i class="bi bi-check-lg"></i> Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assigner un objectif (clic droit joueur/escouade, ou bouton faction) -->
+<div class="modal fade" id="objectiveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Assigner un objectif</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="obj-target-line" class="lbl-k mb-2"></div>
+                <div id="obj-faction-wrap" class="mb-2" style="display:none">
+                    <label class="lbl-k">Faction (clé)</label>
+                    <input type="text" id="obj-faction" class="form-control" placeholder="US">
+                </div>
+                <label class="lbl-k">Titre</label>
+                <input type="text" id="obj-name" class="form-control mb-2" placeholder="Ex. Tenir le pont">
+                <label class="lbl-k">Description</label>
+                <textarea id="obj-desc" class="form-control mb-2" rows="2" placeholder="Ex. Défendre jusqu'à 18h"></textarea>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn-t" id="obj-pick-loc"><i class="bi bi-geo-alt"></i> Choisir le lieu</button>
+                    <span id="obj-loc-txt" class="lbl-k">sans lieu</span>
+                </div>
+                <div id="obj-msg" class="small mt-2"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-t accent" id="obj-send"><i class="bi bi-flag-fill"></i> Assigner</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Menu contextuel (clic droit sur la carte / un marqueur) -->
+<div id="map-ctxmenu"></div>
+
+<div id="cookie-banner">
+    <div class="container">
+        <div><p class="mb-0">Cookies techniques nécessaires à la connexion. En utilisant ce poste, vous acceptez.</p></div>
+        <div>
+            <button class="btn-t accent" id="accept-cookies">Accepter</button>
+        </div>
+    </div>
+</div>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script src="/api/v1/cdn/map/leaflet.js"></script>
+<script src="/api/v1/cdn/map/leaflet.rotatedMarker.js"></script>
+<script src="/api/v1/cdn/map/Control.FullScreen.min.js"></script>
+<script src="/api/v1/cdn/map/leaflet.polylineDecorator.js"></script>
+<script src="/api/v1/cdn/map/leaflet-heat.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Globale Variablen & UI-Elemente ---
+        const API_BASE_URL = '/api/v1';
+        let map;
+        let playerMarkersLayer = L.layerGroup(), damageEventsLayer = L.layerGroup(), heatLayer = null,
+            markersLayer = L.layerGroup(),
+            drawingsLayer = L.layerGroup(),
+            coverageLayer = L.layerGroup(),
+            objectivesLayer = L.layerGroup(),
+            ffLayer = L.layerGroup(),
+            ffUnitLayer = L.layerGroup(),
+            ffVehLayer = L.layerGroup(),
+            gotoMarker = null;
+        let allServersData = {};
+        let keyframeTimestamps = [];
+        let damageEventsForRange = [];
+        let playerMarkerMap = new Map();
+        const nameCache = new Map();
+        // Escouades poussées par Fleet (état live). squadByGuid = jointure UID -> escouade.
+        let currentSquads = [], squadByGuid = new Map();
+        let openSquads = new Set(); // ids d'escouades dépliées (persiste entre les refresh live)
+        let rankCatalog = {}; // { "US":[{i,name}], ... } poussé par Fleet (grades)
+        let currentUser = null; // utilisateur connecté (pour l'édition des marqueurs)
+        let serverRoster = []; // tous les joueurs déjà connectés (stats), affichés même hors live
+        let playableFactions = new Set(); // factions ayant des joueurs (= jouables) -> filtre couverture radio
+        function fmtPlaytimeShort(sec){ sec=Number(sec)||0; const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60); return h>0?`${h}h${String(m).padStart(2,'0')}`:(m>0?`${m}m`:`${Math.floor(sec)}s`); }
+        // Nom du grade d'un joueur via le catalogue (join par factionKey + rank). '' si inconnu.
+        function getRankName(p){
+            if (!p || p.rank === undefined || !p.factionKey) return '';
+            const list = rankCatalog[p.factionKey];
+            if (!list) return '';
+            const r = list.find(x => x.i === p.rank);
+            return r ? r.name : '';
+        }
+        function setSquads(squads){
+            currentSquads = Array.isArray(squads) ? squads : [];
+            squadByGuid = new Map();
+            currentSquads.forEach(sq => (sq.members || []).forEach(uid => squadByGuid.set(uid, sq)));
+        }
+        let isLiveModeActive = false, isPlaying = false, isBuffering = false;
+        let liveModeTimeout, playbackInterval;
+        let frameCache = new Map();
+        let currentMapConfig = null;
+
+        // UI Elemente
+        const serverSelect = document.getElementById('server-select');
+        const timeSlider = document.getElementById('time-slider');
+        const timeLabel = document.getElementById('time-label');
+        const playerList = document.getElementById('player-list');
+        const userDisplay = document.getElementById('user-display');
+        const eventLog = document.getElementById('event-log');
+        const gotoCoordsInput = document.getElementById('goto-coords-input');
+        const gotoCoordsBtn = document.getElementById('goto-coords-btn');
+        const gotoModal = new bootstrap.Modal(document.getElementById('gotoModal'));
+        const liveModeBtn = document.getElementById('live-mode-btn');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+
+        // --- Hilfsfunktionen & Leaflet Konfiguration ---
+
+        const fetchData = async (endpoint, options = {}) => {
+            try {
+                const r = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                if (!r.ok) {
+                    let d;
+                    try {
+                        d = await r.json();
+                    } catch (e) {
+                        throw new Error(`API Error ${r.status}`)
+                    }
+                    throw new Error(d.error || `API Error ${r.status}`);
+                }
+                if (r.status === 204) return null;
+                return await r.json();
+            } catch (e) {
+                console.error(`Fetch Error for ${endpoint}:`, e.message);
+                throw e;
+            }
+        };
+
+        // Echelle du CRS : metres de jeu par pixel au zoom 0. Voir map.html.
+        const DEFAULT_TILE_SCALE = 12.501;
+
+        const makeCRS = (scale) => L.Util.extend({}, L.CRS, {
+            projection: L.Projection.LonLat,
+            transformation: new L.Transformation(1 / scale, 0, -1 / scale, 0),
+            scale(z) {
+                return Math.pow(2, z);
+            },
+            zoom(s) {
+                return Math.log(s) / Math.LN2;
+            },
+            distance(a, b) {
+                const dx = b.lng - a.lng;
+                const dy = b.lat - a.lat;
+                return Math.sqrt(dx * dx + dy * dy);
+            },
+            infinite: true
+        });
+
+        let LCRSCustomSimple = makeCRS(DEFAULT_TILE_SCALE);
+
+
+        // Tuiles XYZ standard (arma-mortar.com / Anizay) avec un CRS dont l'axe Y est
+        // negatif : la carte occupe les pixels y de -(256*2^z) a 0, donc Leaflet demande
+        // des index NEGATIFS (-2^z .. -1) alors que la source est numerotee 0 .. 2^z-1.
+        //
+        // Il faut un DECALAGE, pas un miroir. LTileLayerInvertedY fait y = -y-1, ce qui
+        // renvoie bien des index valides mais dans l'ordre inverse : la bande du haut
+        // recevait la derniere ligne de l'image -> carte en bandes horizontales melangees.
+        //   z=2 : index -4 -> 0 (haut), -3 -> 1, -2 -> 2, -1 -> 3 (bas)
+        const LTileLayerShiftedY = L.TileLayer.extend({
+            getTileUrl: function (coords) {
+                const c = L.point(coords.x, coords.y + Math.pow(2, coords.z));
+                c.z = coords.z;
+                return L.TileLayer.prototype.getTileUrl.call(this, c);
+            }
+        });
+
+        const LTileLayerInvertedY = L.TileLayer.extend({
+            getTileUrl: function (coords) {
+                coords.y = -coords.y - 1;
+                return L.TileLayer.prototype.getTileUrl.call(this, coords);
+            }
+        });
+
+        /**
+         * ★★★ NEUE ZENTRALE UMRECHNUNGSFUNKTION ★★★
+         * Wendet die vollständige Kalibrierung (Skalierung & Offset) auf rohe
+         * Arma-Koordinaten an, um die korrekte Anzeigeposition auf der Leaflet-Karte zu erhalten.
+         * Diese Funktion repliziert die Logik aus der admin.html.
+         * @param {number[]} armaCoords - Ein Array mit [ArmaX, ArmaZ].
+         * @returns {L.LatLng} Das umgerechnete und kalibrierte L.latLng Objekt für die Anzeige.
+         */
+        const armaToLeaflet = (armaCoords) => {
+            const armaLatLng = L.latLng(armaCoords[1], armaCoords[0]); // {lat: Z, lng: X}
+
+            // Wenn keine Kalibrierungsdaten vorhanden sind, nur die Basistransformation des CRS anwenden
+            if (!currentMapConfig || currentMapConfig.ScaleX === undefined) {
+                return armaLatLng;
+            }
+
+            const scaleX = currentMapConfig.ScaleX ?? 1.0;
+            const scaleY = currentMapConfig.ScaleY ?? 1.0;
+            const offsetX = currentMapConfig.OffsetX ?? 0;
+            const offsetY = currentMapConfig.OffsetY ?? 0;
+
+            // Führt die gleiche komplexe Transformation wie im Admin-Panel durch:
+            // 1. In Leaflet-interne Koordinaten projizieren
+            let projected = LCRSCustomSimple.projection.project(armaLatLng);
+            // 2. Die Basis-Transformation des CRS anwenden
+            let transformed = LCRSCustomSimple.transformation.transform(projected);
+            // 3. Die individuelle Karten-Kalibrierung (Skalierung & Offset) anwenden
+            transformed.x = (transformed.x * scaleX) + offsetX;
+            transformed.y = (transformed.y * scaleY) + offsetY;
+            // 4. Die Basis-Transformation umkehren
+            projected = LCRSCustomSimple.transformation.untransform(transformed);
+            // 5. Zurück in ein anzeigbares LatLng-Objekt projizieren
+            return LCRSCustomSimple.projection.unproject(projected);
+        };
+
+
+        // --- Kernfunktionen ---
+
+        function initMapFromConfig(mapConfig) {
+            if (map) map.remove();
+            if (!mapConfig) {
+                console.error("initMapFromConfig called without a valid mapConfig!");
+                return;
+            }
+            // WICHTIG: Die aktuelle Konfiguration muss sofort gesetzt werden,
+            // damit `armaToLeaflet` darauf zugreifen kann.
+            currentMapConfig = mapConfig;
+
+            // Le CRS depend de la carte (echelle de sa pyramide). Avant L.map().
+            LCRSCustomSimple = makeCRS(mapConfig.TileScale || DEFAULT_TILE_SCALE);
+
+            // Die Karte wird mit dem benutzerdefinierten CRS initialisiert
+            map = L.map('map', {
+                crs: LCRSCustomSimple,
+                minZoom: mapConfig.MinZoom,
+                maxZoom: mapConfig.MaxZoom,
+                fullscreenControl: true,
+                zoomControl: false,     // pas de boutons +/- (molette uniquement)
+                doubleClickZoom: false  // le double-clic sert à POSER un marqueur
+            });
+
+            // Double-clic sur une zone vide -> créer un marqueur (raccourci).
+            map.on('dblclick', (e) => {
+                if (!currentUser) { mkToast('Connexion requise pour poser un marqueur', 'err'); return; }
+                openMarkerCreate(leafletToArma(e.latlng));
+            });
+            // Clic droit sur une zone vide -> menu Nouveau marqueur / Nouvel objectif.
+            map.on('contextmenu', (e) => {
+                if (e.originalEvent) L.DomEvent.preventDefault(e.originalEvent);
+                if (suppressCtx) { suppressCtx = false; return; } // suivait un glisser de sélection
+                if (!currentUser) { mkToast('Connexion requise', 'err'); return; }
+                const coords = leafletToArma(e.latlng);
+                const oe = e.originalEvent;
+                showCtxMenu(oe.clientX, oe.clientY, [
+                    { label: 'Nouveau marqueur', icon: 'bi-geo-alt-fill', action: () => openMarkerCreate(coords) },
+                    { label: 'Nouvel objectif', icon: 'bi-flag-fill', action: () => openObjective({ objtarget: 'faction', faction: (currentSquads[0] && currentSquads[0].faction) || '', x: coords.x, y: coords.z }) }
+                ]);
+            });
+            // Clic simple pendant le choix de lieu d'un objectif.
+            map.on('click', (e) => {
+                if (!objPickingLoc) return;
+                const a = leafletToArma(e.latlng);
+                objCtx.x = a.x; objCtx.y = a.z; objPickingLoc = false;
+                document.getElementById('obj-loc-txt').textContent = `X ${a.x} · Z ${a.z}`;
+                if (objModal) objModal.show();
+            });
+
+            // Sélection rectangulaire : CLIC DROIT + glisser (pas de conflit avec la main de
+            // déplacement à gauche). Le bouton "Sélection" reste dispo pour un glisser GAUCHE.
+            map.on('mousedown', (e) => {
+                const oe = e.originalEvent;
+                if (oe.button !== 2 && !selecting) return; // droit, OU gauche si mode sélection actif
+                selStart = oe; selMoved = false;
+                selBox = document.createElement('div');
+                selBox.style.cssText = 'position:fixed;border:1px dashed var(--blue);background:rgba(61,139,255,.12);z-index:1250;pointer-events:none';
+                document.body.appendChild(selBox);
+            });
+            map.on('mousemove', (e) => {
+                if (!selStart || !selBox) return;
+                const oe = e.originalEvent;
+                const x1 = Math.min(selStart.clientX, oe.clientX), y1 = Math.min(selStart.clientY, oe.clientY);
+                selBox.style.left = x1 + 'px'; selBox.style.top = y1 + 'px';
+                selBox.style.width = Math.abs(oe.clientX - selStart.clientX) + 'px';
+                selBox.style.height = Math.abs(oe.clientY - selStart.clientY) + 'px';
+                if (Math.abs(oe.clientX - selStart.clientX) + Math.abs(oe.clientY - selStart.clientY) > 5) selMoved = true;
+            });
+            map.on('mouseup', (e) => {
+                if (!selStart) return;
+                const oe = e.originalEvent;
+                const wasRight = selStart.button === 2;
+                const moved = selMoved;
+                if (moved) {
+                    const x1 = Math.min(selStart.clientX, oe.clientX), x2 = Math.max(selStart.clientX, oe.clientX);
+                    const y1 = Math.min(selStart.clientY, oe.clientY), y2 = Math.max(selStart.clientY, oe.clientY);
+                    clearSelection();
+                    fltMarkerMap.forEach((mk, id) => {
+                        const el = mk.getElement(); if (!el) return;
+                        const r = el.getBoundingClientRect();
+                        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+                        if (cx >= x1 && cx <= x2 && cy >= y1 && cy <= y2) selectedMarkerIds.add(id);
+                    });
+                    if (wasRight) suppressCtx = true; // ne pas ouvrir le menu "nouveau marqueur" après un glisser droit
+                }
+                if (selBox) { selBox.remove(); selBox = null; }
+                selStart = null; selMoved = false;
+                if (selecting) exitSelectMode();
+                if (moved) { mkToast(`${selectedMarkerIds.size} marqueur(s) sélectionné(s) — clic droit dessus pour agir`, selectedMarkerIds.size ? 'ok' : 'info'); renderMarkers(lastMarkers); }
+            });
+
+            // Die Kartengrenzen (Bounds) müssen jetzt ebenfalls durch die Kalibrierungsfunktion
+            // umgerechnet werden, um korrekt zu funktionieren.
+            const bounds = L.latLngBounds(
+                armaToLeaflet([mapConfig.BoundsSWX, mapConfig.BoundsSWY]),
+                armaToLeaflet([mapConfig.BoundsNEX, mapConfig.BoundsNEY])
+            );
+
+            if (mapConfig.TilesURL) {
+                // Voir MapConfig.TileSchemeXYZ (meme logique que map.html).
+                const tileOpts = {
+                    noWrap: true,
+                    maxZoom: mapConfig.MaxZoom,
+                    minZoom: mapConfig.MinZoom,
+                };
+                if (mapConfig.TileSchemeXYZ) {
+                    // Inversion Y OUI, zoomReverse NON (voir map.html) : le CRS place la
+                    // carte en pixels y NEGATIFS, les tuiles XYZ sont numerotees en positif.
+                    // Sans l'inversion, le fond se decale d'une hauteur de carte.
+                    // Pas de `bounds` : filtrerait toutes les tuiles tant que non calibree.
+                    new LTileLayerShiftedY(mapConfig.TilesURL, tileOpts).addTo(map);
+                } else {
+                    tileOpts.bounds = bounds; // Kalibrierte Bounds für die Kachelebene
+                    tileOpts.zoomReverse = true;
+                    new LTileLayerInvertedY(mapConfig.TilesURL, tileOpts).addTo(map);
+                }
+            }
+
+            if (mapConfig.InitialViewLat != null && mapConfig.InitialViewLng != null && mapConfig.InitialViewZoom != null) {
+                // Die initiale Ansicht muss ebenfalls kalibriert werden.
+                const calibratedInitialView = armaToLeaflet([mapConfig.InitialViewLng, mapConfig.InitialViewLat]);
+                map.setView(calibratedInitialView, mapConfig.InitialViewZoom);
+            } else {
+                map.fitBounds(bounds);
+            }
+
+            // Ne pas enfermer la vue tant que la carte n'est pas calibree : avec des
+            // bounds faux, Leaflet recentre en boucle et on ne peut plus se deplacer.
+            if (!mapConfig.TileSchemeXYZ || mapConfig.OffsetX != null) {
+                map.setMaxBounds(bounds.pad(0.2)); // Kalibrierte Bounds als maximale Kartengrenzen
+            }
+            playerMarkersLayer.addTo(map);
+            damageEventsLayer.addTo(map);
+            coverageLayer.addTo(map);
+            drawingsLayer.addTo(map);
+            objectivesLayer.addTo(map);
+            markersLayer.addTo(map);
+            ffLayer.addTo(map);
+            ffUnitLayer.addTo(map);
+            ffVehLayer.addTo(map);
+            // Désactive la transition pendant un zoom (sinon tous les points glissent au rezoom).
+            map.on('zoomstart', () => document.body.classList.add('ff-nozoom'));
+            map.on('zoomend', () => document.body.classList.remove('ff-nozoom'));
+            createFFControl();
+        }
+
+        async function initialize() {
+            let user = null;
+            try {
+                user = await fetchData('users/me');
+            } catch (e) {
+            }
+            updateUserDisplay(user);
+            currentUser = user; // pour activer l'édition des marqueurs (clic droit) si connecté
+
+            try {
+                if (user) {
+                    const serversResponse = await fetchData('dashboard/servers');
+                    serverSelect.innerHTML = '<option selected disabled value="">Please select a server...</option>';
+                    allServersData = {};
+                    const populateGroup = (label, servers) => {
+                        if (!servers || servers.length === 0) return;
+                        const group = document.createElement('optgroup');
+                        group.label = label;
+                        servers.forEach(server => {
+                            const option = document.createElement('option');
+                            option.value = server.id;
+                            option.textContent = server.name;
+                            group.appendChild(option);
+                            allServersData[server.id] = server;
+                        });
+                        serverSelect.appendChild(group);
+                    };
+                    populateGroup('My Servers', serversResponse.owned);
+                    populateGroup('Shared With Me', serversResponse.shared);
+                    populateGroup('Admin View', serversResponse.admin);
+                } else {
+                    const publicServers = await fetchData('public/servers');
+                    serverSelect.innerHTML = '<option selected disabled value="">Please select a server...</option>';
+                    allServersData = {};
+                    const listedServers = publicServers.filter(server => server.is_listed);
+                    const group = document.createElement('optgroup');
+                    group.label = 'Public Servers';
+                    listedServers.forEach(server => {
+                        const option = document.createElement('option');
+                        option.value = server.id;
+                        option.textContent = server.name;
+                        group.appendChild(option);
+                    });
+                    serverSelect.appendChild(group);
+                    publicServers.forEach(server => {
+                        allServersData[server.id] = server;
+                    });
+                }
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const serverIdFromUrl = urlParams.get('server_id');
+                if (serverIdFromUrl && allServersData[serverIdFromUrl]) {
+                    if (!document.querySelector(`option[value="${serverIdFromUrl}"]`)) {
+                        const group = document.querySelector('optgroup') || serverSelect;
+                        const option = document.createElement('option');
+                        option.value = serverIdFromUrl;
+                        option.textContent = allServersData[serverIdFromUrl].name + " (Direct Link)";
+                        group.appendChild(option);
+                    }
+                    setTimeout(() => {
+                        serverSelect.value = serverIdFromUrl;
+                        handleServerSelection(serverIdFromUrl, urlParams.get('from'), urlParams.get('to'));
+                    }, 100);
+                } else {
+                    // Mode serveur unique : voir map.html, meme logique.
+                    let target = null;
+                    try {
+                        const act = await fetchData('public/active-server');
+                        if (act && act.id) {
+                            target = act.id;
+                            if (!allServersData[target]) allServersData[target] = act;
+                        }
+                    } catch (_) {}
+                    if (!target) {
+                        try {
+                            const pub = await fetchData('public/servers');
+                            const def = (pub || []).find(s => s.is_default);
+                            if (def) {
+                                target = def.id;
+                                if (!allServersData[target]) allServersData[target] = def;
+                            }
+                        } catch (_) {}
+                    }
+                    if (!target) {
+                        const firstOpt = serverSelect.querySelector('option[value]:not([value=""])');
+                        if (firstOpt) target = firstOpt.value;
+                    }
+                    if (target) {
+                        if (!document.querySelector(`option[value="${target}"]`)) {
+                            const group = document.querySelector('optgroup') || serverSelect;
+                            const option = document.createElement('option');
+                            option.value = target;
+                            option.textContent = (allServersData[target] && allServersData[target].name ? allServersData[target].name : 'Serveur') + ' (par défaut)';
+                            group.appendChild(option);
+                        }
+                        setTimeout(() => {
+                            serverSelect.value = target;
+                            handleServerSelection(target);
+                        }, 100);
+                    }
+                }
+            } catch (error) {
+                console.error("Initialization failed:", error);
+                serverSelect.innerHTML = '<option disabled>Error loading servers.</option>';
+            }
+        }
+
+        async function handleServerSelection(id, from = null, to = null) {
+            stopLiveMode();
+            stopPlayback();
+            frameCache.clear();
+            const serverData = allServersData[id];
+            if (!serverData) return;
+            initMapFromConfig(serverData.map_config);
+            document.getElementById('player-damage-ticks-container').innerHTML = '';
+            document.getElementById('downsample-warning').classList.add('d-none');
+
+            // Roster complet (tous les joueurs déjà connectés + stats) — affiché même hors ligne.
+            // Réservé au propriétaire/admin connecté (endpoint session).
+            serverRoster = [];
+            if (currentUser) {
+                try { serverRoster = await fetchData(`servers/${id}/roster`) || []; } catch (_) { serverRoster = []; }
+                try { rankCatalog = await fetchData(`public/ranks/${id}`) || {}; } catch (_) {}
+                updatePlayerList([]); // affiche le roster tout de suite, sans attendre le live
+            }
+
+            // LIVE AUTO : sans plage temporelle demandée, on passe direct en live (pas besoin de cliquer).
+            // Le clic n'est nécessaire QUE pour revenir dans le temps (replay via le sélecteur de plage).
+            if (!from || !to) {
+                startLiveMode();
+                return;
+            }
+
+            // REPLAY : plage demandée (comportement d'origine).
+            let ep = `public/positions/timestamps/${id}?from=${from}&to=${to}`;
+            document.getElementById('time-range-start').value = unixToDateTimeLocal(from);
+            document.getElementById('time-range-end').value = unixToDateTimeLocal(to);
+            try {
+                const data = await fetchData(ep);
+                if (!data.timestamps || !data.timestamps.length) {
+                    alert("No position data for this time range.");
+                    timeSlider.disabled = true;
+                    playPauseBtn.disabled = true;
+                    return;
+                }
+                if (data.was_downsampled) document.getElementById('downsample-warning').classList.remove('d-none');
+                keyframeTimestamps = data.timestamps;
+                const minTs = keyframeTimestamps[0], maxTs = keyframeTimestamps[keyframeTimestamps.length - 1];
+                timeSlider.min = minTs;
+                timeSlider.max = maxTs;
+                timeSlider.value = maxTs;
+                timeSlider.disabled = false;
+                playPauseBtn.disabled = false;
+                const [damageTicks, allEvents] = await Promise.all([fetchData(`public/events/timestamps/${id}?from=${minTs}&to=${maxTs}`), fetchData(`public/damage_events/range/${id}?from=${minTs}&to=${maxTs}`)]);
+                damageEventsForRange = allEvents;
+                renderDamageTicks(damageTicks, minTs, maxTs, document.getElementById('damage-ticks-container'), 'damage-tick');
+                renderEventLog([]);
+                await updateMapAndList(timeSlider.value);
+            } catch (e) {
+                console.error("Failed during server selection:", e);
+                timeSlider.disabled = true;
+                playPauseBtn.disabled = true;
+                playerList.innerHTML = '<div class="list-group-item bg-transparent">Could not load timeline data.</div>';
+            }
+        }
+
+        // --- Marqueurs Anarchy (poussés par Fleet) ---
+        function fltArgbToCss(v){ v=Number(v)||0; if(v<0) v=v>>>0; const a=(v>>>24)&255,r=(v>>>16)&255,g=(v>>>8)&255,b=v&255; return `rgba(${r},${g},${b},${(a/255).toFixed(2)})`; }
+        function fltRgbSolid(v){ v=Number(v)||0; if(v<0) v=v>>>0; const r=(v>>>16)&255,g=(v>>>8)&255,b=v&255; return `rgb(${r},${g},${b})`; } // alpha ignoré (marqueurs)
+        function fltEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+        // Couleur d'un joueur : celle de SON escouade si groupé, sinon couleur de faction.
+        function getPlayerColor(p){
+            const sq = squadByGuid.get(p.playerGuid);
+            if (sq && sq.color) return fltRgbSolid(sq.color);
+            return getFactionColor(p.faction);
+        }
+        // ===== Édition des marqueurs (clic droit) : move / edit / remove via POST /api/v1/command =====
+        const MK_PALETTE = [[255,0,236],[242,166,35],[194,100,20],[218,7,7],[4,113,20],[1,50,216],[4,139,228],[222,10,180],[72,21,90]];
+        const argbOf = (r,g,b) => (((0xFF<<24)|(r<<16)|(g<<8)|b) | 0); // ARGB signé int32
+        let mkEditModal = null, mkSelColor = -16711936, pendingMoveId = null;
+        let mkMode = 'edit', mkCreateCoords = null; // mode de la modale + coords de pose (création)
+        const fltMarkerMap = new Map(); // id -> marqueur Leaflet
+
+        // Inverse de armaToLeaflet : position Leaflet -> mètres monde.
+        function leafletToArma(latlng){
+            if (!currentMapConfig || currentMapConfig.ScaleX === undefined)
+                return { x: Math.round(latlng.lng), z: Math.round(latlng.lat) };
+            const sX=currentMapConfig.ScaleX??1, sY=currentMapConfig.ScaleY??1, oX=currentMapConfig.OffsetX??0, oY=currentMapConfig.OffsetY??0;
+            let p = LCRSCustomSimple.projection.project(latlng);
+            let t = LCRSCustomSimple.transformation.transform(p);
+            t.x=(t.x-oX)/sX; t.y=(t.y-oY)/sY;
+            p = LCRSCustomSimple.transformation.untransform(t);
+            const a = LCRSCustomSimple.projection.unproject(p);
+            return { x: Math.round(a.lng), z: Math.round(a.lat) }; // lng=X(est), lat=Z(nord)
+        }
+        async function postCommand(obj){
+            const sid = serverSelect.value;
+            if (!sid) return { ok:false, error:'Aucun serveur sélectionné' };
+            try {
+                const res = await fetch(`${API_BASE_URL}/command`, {
+                    method:'POST', credentials:'include', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify(Object.assign({ server_id: sid }, obj))
+                });
+                if (!res.ok){ const d = await res.json().catch(()=>({})); return { ok:false, error: d.error || ('HTTP '+res.status) }; }
+                return { ok:true };
+            } catch(e){ return { ok:false, error:e.message }; }
+        }
+        function mkToast(text, cls){
+            let t = document.getElementById('mk-toast');
+            if (!t){ t = document.createElement('div'); t.id='mk-toast';
+                t.style.cssText='position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:1200;padding:8px 16px;background:var(--panel-solid);border:1px solid var(--line-strong);font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:12px;';
+                document.body.appendChild(t); }
+            t.style.color = cls==='err' ? 'var(--red)' : (cls==='ok' ? 'var(--green)' : 'var(--txt)');
+            t.textContent = text; t.style.display='block';
+            clearTimeout(t._to); t._to = setTimeout(()=>{ t.style.display='none'; }, 3500);
+        }
+        // ----- Menu contextuel (clic droit) -----
+        function hideCtxMenu(){ const m = document.getElementById('map-ctxmenu'); if (m) m.style.display = 'none'; }
+        function showCtxMenu(px, py, items){
+            const m = document.getElementById('map-ctxmenu');
+            m.innerHTML = '';
+            items.forEach(it => {
+                if (it.sep) { const s = document.createElement('div'); s.className = 'ctx-sep'; m.appendChild(s); return; }
+                const b = document.createElement('button');
+                b.className = 'ctx-item' + (it.danger ? ' danger' : '');
+                b.innerHTML = `<i class="bi ${it.icon} me-2"></i>${it.label}`;
+                b.addEventListener('click', (e) => { e.stopPropagation(); hideCtxMenu(); it.action(); });
+                m.appendChild(b);
+            });
+            m.style.display = 'block';
+            const w = m.offsetWidth || 190, h = m.offsetHeight || 120;
+            m.style.left = Math.min(px, window.innerWidth - w - 6) + 'px';
+            m.style.top = Math.min(py, window.innerHeight - h - 6) + 'px';
+        }
+        document.addEventListener('click', hideCtxMenu);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideCtxMenu(); });
+
+        // ----- Sélection rectangulaire de marqueurs -----
+        let selecting = false, selStart = null, selBox = null, selMoved = false, suppressCtx = false;
+        let selectedMarkerIds = new Set();
+        function enterSelectMode(){
+            selecting = true;
+            if (map){ map.dragging.disable(); if (map.boxZoom) map.boxZoom.disable(); }
+            const el = document.getElementById('map'); if (el) el.style.cursor = 'crosshair';
+            document.getElementById('select-btn').classList.add('accent');
+            mkToast('Glissez un cadre pour sélectionner des marqueurs', 'info');
+        }
+        function exitSelectMode(){
+            selecting = false; selStart = null;
+            if (map) map.dragging.enable();
+            const el = document.getElementById('map'); if (el) el.style.cursor = '';
+            document.getElementById('select-btn').classList.remove('accent');
+            if (selBox){ selBox.remove(); selBox = null; }
+        }
+        function clearSelection(){ selectedMarkerIds = new Set(); }
+        async function removeSelection(){
+            const ids = [...selectedMarkerIds];
+            if (!ids.length) return;
+            if (!confirm(`Supprimer ${ids.length} marqueur(s) ?`)) return;
+            let ok = 0;
+            for (const id of ids){ const r = await postCommand({ type:'remove', id }); if (r.ok) ok++; }
+            clearSelection();
+            mkToast(`✓ ${ok}/${ids.length} suppression(s) envoyée(s)`, 'ok');
+        }
+
+        // Déplacer / supprimer un marqueur (utilisés par le menu contextuel).
+        function startMoveMarker(id){
+            pendingMoveId = id;
+            const lm = fltMarkerMap.get(id);
+            if (lm && lm.dragging){
+                lm.dragging.enable();
+                lm.off('dragend');
+                lm.on('dragend', async () => {
+                    const a = leafletToArma(lm.getLatLng());
+                    const movedId = pendingMoveId; pendingMoveId = null;
+                    const r = await postCommand({ type:'move', id:movedId, x:a.x, y:a.z });
+                    mkToast(r.ok ? '✓ Déplacement envoyé' : ('Erreur : '+r.error), r.ok?'ok':'err');
+                });
+                mkToast('Glissez le point à sa nouvelle position', 'info');
+            } else { mkToast('Le point deviendra déplaçable au prochain rafraîchissement', 'info'); }
+        }
+        async function removeMarker(id){
+            if (!confirm('Supprimer ce marqueur ?')) return;
+            const r = await postCommand({ type:'remove', id });
+            mkToast(r.ok ? '✓ Suppression envoyée' : ('Erreur : '+r.error), r.ok?'ok':'err');
+        }
+        function mkBuildSwatches(){
+            const box = document.getElementById('mk-edit-colors'); box.innerHTML='';
+            MK_PALETTE.forEach(([r,g,b]) => {
+                const v = argbOf(r,g,b);
+                const sw = document.createElement('button');
+                sw.type='button';
+                sw.style.cssText = `width:22px;height:22px;border:2px solid ${v===mkSelColor?'#fff':'transparent'};background:rgb(${r},${g},${b});cursor:pointer`;
+                sw.addEventListener('click', ()=>{ mkSelColor = v; mkBuildSwatches(); });
+                box.appendChild(sw);
+            });
+        }
+        // Set d'icônes marqueur civil (Anarchy/vanilla). index = champ `icon` envoyé au jeu (icône
+        // exacte en jeu) ; le rendu web utilise un glyphe libre équivalent (pas la texture du jeu).
+        const FF_MK_ICONS=[[0,"ambush","Manoeuvre"],[1,"ambush-2","Manoeuvre"],[2,"arrow-curve-large","Fleches"],[3,"arrow-curve-large-2","Fleches"],[4,"arrow-curve-large-3","Fleches"],[5,"arrow-curve-medium","Fleches"],[6,"arrow-curve-medium-2","Fleches"],[7,"arrow-curve-medium-3","Fleches"],[8,"arrow-curve-small","Fleches"],[9,"arrow-curve-small-2","Fleches"],[10,"arrow-curve-small-3","Fleches"],[11,"arrow-large","Fleches"],[12,"arrow-large-2","Fleches"],[13,"arrow-large-3","Fleches"],[14,"arrow-medium","Fleches"],[15,"arrow-medium-2","Fleches"],[16,"arrow-medium-3","Fleches"],[17,"arrow-small","Fleches"],[18,"arrow-small-2","Fleches"],[19,"arrow-small-3","Fleches"],[20,"attack","Manoeuvre"],[21,"attack-main","Manoeuvre"],[22,"circle","Points"],[23,"circle-2","Points"],[24,"contain","Manoeuvre"],[25,"contain-2","Manoeuvre"],[26,"contain-3","Manoeuvre"],[27,"cross","Marques"],[28,"cross-2","Marques"],[29,"defend","Manoeuvre"],[30,"defend-2","Manoeuvre"],[31,"destroy","Manoeuvre"],[32,"destroy-2","Manoeuvre"],[33,"direction-of-attack","Fleches"],[34,"direction-of-attack-main","Fleches"],[35,"direction-of-attack-main-planned","Fleches"],[36,"direction-of-attack-planned","Fleches"],[37,"dot","Points"],[38,"dot-2","Points"],[39,"drop-point","Manoeuvre"],[40,"drop-point-2","Manoeuvre"],[41,"entry-point","Manoeuvre"],[42,"entry-point-2","Manoeuvre"],[43,"flag","Marques"],[44,"flag-2","Marques"],[45,"flag-3","Marques"],[46,"follow-and-support","Manoeuvre"],[47,"follow-and-support-2","Manoeuvre"],[48,"fortification","Divers"],[49,"fortification-2","Divers"],[50,"heal","Divers"],[51,"help","Divers"],[52,"help-2","Divers"],[53,"join","Manoeuvre"],[54,"join-2","Manoeuvre"],[55,"join-3","Manoeuvre"],[56,"mark-exclamation","Marques"],[57,"mark-exclamation-2","Marques"],[58,"mark-exclamation-3","Marques"],[59,"mark-question","Marques"],[60,"mark-question-2","Marques"],[61,"mark-question-3","Marques"],[62,"mine-field","Divers"],[63,"mine-field-2","Divers"],[64,"mine-field-3","Divers"],[65,"mine-single","Divers"],[66,"mine-single-2","Divers"],[67,"mine-single-3","Divers"],[68,"objective-marker","Objectifs"],[69,"objective-marker-2","Objectifs"],[70,"observation-post","Recon"],[71,"observation-post-2","Recon"],[72,"pick-up","Manoeuvre"],[73,"pick-up-2","Manoeuvre"],[74,"point-of-interest","Points"],[75,"point-of-interest-2","Points"],[76,"point-of-interest-3","Points"],[77,"point-special","Points"],[78,"point-special-2","Points"],[79,"recon-outpost","Recon"],[80,"recon-outpost-2","Recon"],[81,"reconnaissance","Recon"],[82,"retain","Manoeuvre"],[83,"retain-2","Manoeuvre"],[84,"search-area","Recon"],[85,"strong-point","Manoeuvre"],[86,"strong-point-2","Manoeuvre"],[87,"target-reference-point","Objectifs"],[88,"target-reference-point-2","Objectifs"],[89,"waypoint","Fleches"],[90,"waypoint-2","Fleches"]];
+        function iconGlyph(n){
+            n = n || '';
+            if (n.startsWith('arrow') || n.startsWith('direction') || n.startsWith('waypoint')) return 'bi-arrow-up-right';
+            if (n.startsWith('ambush')) return 'bi-exclamation-diamond';
+            if (n.startsWith('attack')) return 'bi-lightning-charge';
+            if (n.startsWith('contain')) return 'bi-bounding-box';
+            if (n.startsWith('defend')) return 'bi-shield';
+            if (n.startsWith('destroy')) return 'bi-x-octagon';
+            if (n.startsWith('circle')) return 'bi-circle';
+            if (n.startsWith('dot')) return 'bi-record-fill';
+            if (n.startsWith('cross')) return 'bi-x-lg';
+            if (n.startsWith('flag')) return 'bi-flag';
+            if (n.startsWith('mark-exclamation')) return 'bi-exclamation-lg';
+            if (n.startsWith('mark-question')) return 'bi-question-lg';
+            if (n.startsWith('mine')) return 'bi-record-circle';
+            if (n.startsWith('fortification')) return 'bi-bricks';
+            if (n.startsWith('heal')) return 'bi-heart-pulse';
+            if (n.startsWith('help')) return 'bi-life-preserver';
+            if (n.startsWith('join')) return 'bi-sign-merge-left';
+            if (n.startsWith('follow')) return 'bi-arrow-right-circle';
+            if (n.startsWith('drop-point')) return 'bi-box-arrow-in-down';
+            if (n.startsWith('entry-point')) return 'bi-box-arrow-in-right';
+            if (n.startsWith('pick-up')) return 'bi-box-arrow-up';
+            if (n.startsWith('objective') || n.startsWith('target')) return 'bi-bullseye';
+            if (n.startsWith('observation') || n.startsWith('recon') || n.startsWith('search')) return 'bi-binoculars';
+            if (n.startsWith('point')) return 'bi-geo-alt';
+            if (n.startsWith('retain')) return 'bi-pin-angle';
+            if (n.startsWith('strong')) return 'bi-shield-shaded';
+            return 'bi-dot';
+        }
+        let mkIconCat = null;
+        function mkRenderIconGrid(){
+            const cats = [...new Set(FF_MK_ICONS.map(x => x[2]))];
+            const sel = parseInt(document.getElementById('mk-edit-icon').value, 10) || 0;
+            if (!mkIconCat || !cats.includes(mkIconCat)) {
+                const cur = FF_MK_ICONS.find(x => x[0] === sel);
+                mkIconCat = cur ? cur[2] : cats[0];
+            }
+            const tabs = document.getElementById('mk-icon-tabs'); tabs.innerHTML = '';
+            cats.forEach(c => {
+                const b = document.createElement('button'); b.type = 'button';
+                b.className = 'btn-t mini' + (c === mkIconCat ? ' accent' : '');
+                b.style.cssText = 'font-size:10px;padding:3px 7px'; b.textContent = c;
+                b.addEventListener('click', () => { mkIconCat = c; mkRenderIconGrid(); });
+                tabs.appendChild(b);
+            });
+            const grid = document.getElementById('mk-icon-grid'); grid.innerHTML = '';
+            FF_MK_ICONS.filter(x => x[2] === mkIconCat).forEach(([i, name]) => {
+                const b = document.createElement('button'); b.type = 'button'; b.title = name + ' (#' + i + ')';
+                b.style.cssText = `aspect-ratio:1;display:grid;place-items:center;border:1px solid ${i===sel?'var(--blue)':'var(--line)'};background:${i===sel?'rgba(61,139,255,.18)':'rgba(6,11,16,.6)'};color:${i===sel?'var(--hi)':'var(--txt)'};cursor:pointer`;
+                b.innerHTML = `<i class="bi ${iconGlyph(name)}"></i>`;
+                b.addEventListener('click', () => { document.getElementById('mk-edit-icon').value = i; mkRenderIconGrid(); });
+                grid.appendChild(b);
+            });
+        }
+        function mkToggleKind(){
+            const mil = document.getElementById('mk-edit-kind').value === '1';
+            document.getElementById('mk-edit-mil').style.display = mil ? '' : 'none';
+            document.getElementById('mk-edit-civil').style.display = mil ? 'none' : '';
+            if (!mil) mkRenderIconGrid();
+        }
+        function mkFill(o){
+            document.getElementById('mk-edit-id').value = (o.id!==undefined)?o.id:'';
+            document.getElementById('mk-edit-text').value = o.text || '';
+            document.getElementById('mk-edit-kind').value = String(o.kind||0);
+            document.getElementById('mk-edit-vis').value = String((o.vis!==undefined&&o.vis!==null)?o.vis:3);
+            document.getElementById('mk-edit-icon').value = o.icon||0;
+            document.getElementById('mk-edit-ident').value = String(o.ident||0);
+            document.getElementById('mk-edit-dim').value = String(o.dim||0);
+            document.getElementById('mk-edit-sym').value = String(o.sym||1);
+            document.getElementById('mk-edit-size').value = o.size||200;
+            mkSelColor = (o.color!==undefined&&o.color!==null) ? (o.color|0) : -16711936;
+            document.getElementById('mk-edit-msg').textContent='';
+            mkBuildSwatches(); mkToggleKind();
+            if (!mkEditModal) mkEditModal = new bootstrap.Modal(document.getElementById('markerEditModal'));
+        }
+        function mkSetMode(mode){
+            mkMode = mode;
+            const create = (mode === 'create'), batch = (mode === 'batch');
+            document.querySelector('#markerEditModal .modal-title').textContent = create ? 'Nouveau marqueur' : (batch ? `Éditer la sélection (${selectedMarkerIds.size})` : 'Marqueur');
+            document.getElementById('mk-edit-delete').style.display = (create || batch) ? 'none' : '';
+            document.getElementById('mk-edit-move').style.display = (create || batch) ? 'none' : '';
+            document.getElementById('mk-edit-save').innerHTML = create ? '<i class="bi bi-plus-lg"></i> Créer' : (batch ? '<i class="bi bi-check-lg"></i> Appliquer à la sélection' : '<i class="bi bi-check-lg"></i> Enregistrer');
+        }
+        function openMarkerBatch(){
+            if (!currentUser){ mkToast('Connexion requise', 'err'); return; }
+            if (!selectedMarkerIds.size){ mkToast('Aucune sélection', 'err'); return; }
+            mkFill({ kind:1, vis:3, icon:0, ident:0, dim:0, sym:1, size:200, color:-16711936, text:'' });
+            mkSetMode('batch'); mkEditModal.show();
+        }
+        function openMarkerEdit(m){
+            if (!currentUser){ mkToast('Connexion requise pour éditer', 'err'); return; }
+            mkFill(m); mkSetMode('edit'); mkEditModal.show();
+        }
+        function openMarkerCreate(coords){
+            if (!currentUser){ mkToast('Connexion requise pour poser un marqueur', 'err'); return; }
+            mkCreateCoords = coords;
+            mkFill({ kind:0, vis:3, icon:0, ident:0, dim:0, sym:1, size:200, color:-16711936, text:'' });
+            mkSetMode('create'); mkEditModal.show();
+        }
+
+        // ===== Objectifs (tâche menu J) : POST /command type:objective =====
+        let objModal = null, objCtx = null, objPickingLoc = false;
+        function openObjective(ctx){
+            if (!currentUser){ mkToast('Connexion requise pour assigner un objectif', 'err'); return; }
+            objCtx = Object.assign({ objtarget:'player', uid:'', id:0, faction:'', x:0, y:0, label:'' }, ctx);
+            const line = objCtx.objtarget==='player' ? ('Cible — Joueur : ' + (objCtx.label||objCtx.uid))
+                       : objCtx.objtarget==='squad' ? ('Cible — Escouade : ' + (objCtx.label||('#'+objCtx.id)))
+                       : 'Cible — Faction';
+            document.getElementById('obj-target-line').textContent = line;
+            document.getElementById('obj-faction-wrap').style.display = (objCtx.objtarget==='faction') ? '' : 'none';
+            document.getElementById('obj-faction').value = objCtx.faction || '';
+            document.getElementById('obj-name').value = '';
+            document.getElementById('obj-desc').value = '';
+            document.getElementById('obj-loc-txt').textContent = (objCtx.x || objCtx.y) ? `X ${objCtx.x} · Z ${objCtx.y}` : 'sans lieu';
+            document.getElementById('obj-msg').textContent = '';
+            if (!objModal) objModal = new bootstrap.Modal(document.getElementById('objectiveModal'));
+            objModal.show();
+        }
+
+        // Couverture radio (fog) : un cercle par faction (centre HQ, rayon en mètres monde).
+        // Cercle approximé en polygone -> robuste au CRS custom.
+        function worldCirclePts(cx, cz, r, n){
+            n = n || 64; const pts = [];
+            for (let i=0; i<n; i++){ const a = 2*Math.PI*i/n; pts.push(armaToLeaflet([cx + r*Math.cos(a), cz + r*Math.sin(a)])); }
+            return pts;
+        }
+        let factionColorMap = {}; // factionKey -> couleur de faction (déduite des positions)
+        function factionColor(fk){
+            return factionColorMap[fk] || '#39c2d1';
+        }
+        // ===== COUCHE FF ADMIN (état Freedom Fighters + Réoccupation) =====
+        let ffShowEnemies = true, ffShowCivils = true, ffShowVehicles = true, ffShowZones = true, ffShowPlayers = true, ffShowDiag = true, ffShowKills = true, ffShowFobs = true, ffLast = null;
+        // Territoires et front couvrent toute la carte : masques par defaut pour ne pas
+        // noyer le reste. La menace, elle, est ponctuelle -> visible d'emblee.
+        let ffShowTerr = false, ffShowFront = false, ffShowThreat = true;
+        // Cache des territoires : le jeu n'envoie leur geometrie que dans les envois
+        // COMPLETS (terrFull=1) et, entre deux, uniquement les noeuds dont le camp ou le
+        // statut de frontiere a change. On conserve donc l'etat ici et on fusionne, sinon
+        // la carte se viderait a chaque tick differentiel.
+        let ffTerrCache = {};
+        let ffPlayerByUid = {};
+        const FF_ROLE_COL = { PLAYER:'#3d8bff', ENEMY:'#e2483a', SUPPORTING:'#39c2d1', AMBIENT:'#8a8f98', NONE:'#7c8894', UNDEFINED:'#5a6470' };
+        // Faux snapshot de démonstration (Everon), remplacé par les vraies données du jeu quand elles arrivent.
+        const FF_MOCK = {
+            ts:0, summary:{playerPct:38, enemyPct:57},
+            pois:[
+                {id:'t1', type:'town', name:'Montignac', x:6400, z:6100, role:'PLAYER', subtype:'TOWN', capture:0},
+                {id:'t2', type:'town', name:'Saint-Pierre', x:7300, z:6600, role:'ENEMY', subtype:'CITY', capture:0},
+                {id:'t3', type:'town', name:'Le Moulin', x:6900, z:5600, role:'NONE', subtype:'VILLAGE', capture:0.45},
+                {id:'b1', type:'base', name:'Base Alpha', x:5900, z:6800, role:'PLAYER', capture:0},
+                {id:'b2', type:'base', name:'Garnison Est', x:7800, z:6200, role:'ENEMY', capture:0, garrison:12},
+                {id:'f1', type:'factory', name:'Usine Nord', x:6600, z:7200, role:'ENEMY', capture:0, garrison:8},
+                {id:'r1', type:'radio', name:'Relais Colline', x:7100, z:6900, role:'PLAYER', capture:0, garrison:3},
+                {id:'c1', type:'checkpoint', name:'MCP Arleville', x:7050, z:6300, role:'ENEMY', garrison:7},
+                {id:'c2', type:'checkpoint', name:'MCP Beauregard', x:6700, z:6500, role:'ENEMY', garrison:5}
+            ],
+            battles:[ {x:6900, z:5600, attacker:'USSR', points:120, name:'Le Moulin', state:'active'} ],
+            counterattacks:[
+                {targetName:'Base Alpha', targetX:5900, targetZ:6800, state:'artillery', triggerIn:280, strength:1.8,
+                 recon:{state:3, x:6250, z:6750, route:[[6600,6300],[6450,6500],[6300,6650],[6250,6750]]}}
+            ],
+            patrols:[
+                {x:7050, z:6400, state:'active', fromX:7800, fromZ:6200, targetX:6400, targetZ:6100,
+                 route:[[7800,6200],[7500,6300],[7050,6400],[6700,6250]]}
+            ],
+            radio:[
+                {x:7800, z:6200, radius:2600, role:'ENEMY', operable:true},
+                {x:5900, z:6800, radius:2200, role:'PLAYER', operable:true}
+            ],
+            zones:[
+                {tag:'battle', pts:[[6700,5400],[7100,5400],[7100,5800],[6700,5800]]},
+                {tag:'poi', pts:[[7600,6000],[8000,6000],[8000,6400],[7600,6400]]}
+            ],
+            units:[
+                {x:6950,z:5620,role:'ENEMY'},{x:6880,z:5560,role:'ENEMY'},{x:6920,z:5680,role:'ENEMY'},
+                {x:7810,z:6210,role:'ENEMY'},{x:7760,z:6250,role:'ENEMY'},
+                {x:6420,z:6120,role:'AMBIENT'},{x:6390,z:6080,role:'AMBIENT'},{x:7320,z:6620,role:'AMBIENT'}
+            ],
+            vehicles:[
+                {x:7050,z:6390,role:'ENEMY'},{x:7790,z:6180,role:'ENEMY'},{x:5920,z:6820,role:'PLAYER'}
+            ]
+        };
+        const FF_POI_ICON = { town:'bi-buildings-fill', base:'bi-shield-shaded', factory:'bi-gear-fill', radio:'bi-broadcast-pin', checkpoint:'bi-sign-stop-fill' };
+
+        // ---- Panneaux deplacables + etat (position/replie) persistes en localStorage ----
+        const FF_PANELS_KEY = 'ffAdminPanels';
+        function ffLoadPanels(){ try { return JSON.parse(localStorage.getItem(FF_PANELS_KEY)) || {}; } catch (e) { return {}; } }
+        function ffSavePanels(o){ try { localStorage.setItem(FF_PANELS_KEY, JSON.stringify(o)); } catch (e) {} }
+        function ffPanelState(id){ return ffLoadPanels()[id] || {}; }
+        function ffSetPanelState(id, patch){ const o = ffLoadPanels(); o[id] = Object.assign(o[id] || {}, patch); ffSavePanels(o); }
+
+        function ffMakeDraggable(panel, header){
+            if (!header) return;
+            header.style.cursor = 'move';
+            let sx, sy, ox, oy, dragging = false;
+            header.addEventListener('mousedown', (e) => {
+                if (e.target.closest('button, input, select, a, .ff-collapse-btn')) return; // pas depuis un controle
+                dragging = true;
+                const r = panel.getBoundingClientRect();
+                panel.style.left = r.left + 'px'; panel.style.top = r.top + 'px';
+                panel.style.right = 'auto'; panel.style.bottom = 'auto';
+                sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top;
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                let nx = ox + (e.clientX - sx), ny = oy + (e.clientY - sy);
+                nx = Math.max(0, Math.min(window.innerWidth - 40, nx));
+                ny = Math.max(0, Math.min(window.innerHeight - 30, ny));
+                panel.style.left = nx + 'px'; panel.style.top = ny + 'px';
+            });
+            document.addEventListener('mouseup', () => {
+                if (!dragging) return;
+                dragging = false;
+                document.body.style.userSelect = '';
+                ffSetPanelState(panel.id, { left: parseInt(panel.style.left, 10), top: parseInt(panel.style.top, 10) });
+            });
+        }
+
+        function ffRegisterPanel(panel, header, bodyId){
+            if (!panel || !header) return;
+            ffMakeDraggable(panel, header);
+            const st = ffPanelState(panel.id);
+            if (st.left != null && st.top != null){
+                panel.style.left = st.left + 'px'; panel.style.top = st.top + 'px';
+                panel.style.right = 'auto'; panel.style.bottom = 'auto';
+            }
+            if (st.collapsed && bodyId){
+                const b = document.getElementById(bodyId);
+                if (b) b.style.display = 'none';
+                const btn = panel.querySelector('.ff-collapse-btn');
+                if (btn){ btn.className = 'bi ff-collapse-btn bi-plus-lg'; btn.title = 'Déplier'; }
+            }
+        }
+
+        function createFFControl(){
+            if (document.getElementById('ff-ctrl')) return;
+            const d = document.createElement('div');
+            d.id = 'ff-ctrl';
+            d.style.cssText = 'background:rgba(6,11,16,.9);border:1px solid var(--line);padding:9px 11px;font-family:\'IBM Plex Mono\',monospace;font-size:12px;color:var(--txt)';
+            d.innerHTML = `<div style="font-family:Oswald;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-size:.7rem;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span style="flex:1"><i class="bi bi-funnel-fill"></i> Filtres FF — admin</span><i class="bi bi-dash-lg ff-collapse-btn" data-collapse="ff-ctrl-body" title="Replier"></i></div>
+                <div id="ff-ctrl-body">
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-enemies" checked> <span style="color:#e2483a">&#9632;</span> Ennemis</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-civils" checked> <span style="color:#e8e8e8">&#9632;</span> Civils</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-veh" checked> <i class="bi bi-truck"></i> Véhicules</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-zones" checked> Zones de guerre</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-terr"> <span style="color:#7aa3c4">&#9632;</span> Territoires</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-front"> <span style="color:#ffcc00">&#9612;</span> Ligne de front</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-threat" checked> <span style="color:#c04ae2">&#9632;</span> Menace adaptative</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-players" checked> <span style="color:#3d8bff">&#9632;</span> Joueurs</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-diag" checked> <i class="bi bi-bar-chart-line"></i> Stats (diag)</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-kills" checked> <span style="color:#ff5555"><i class="bi bi-crosshair"></i></span> Killfeed</label>
+                <label style="cursor:pointer;display:block"><input type="checkbox" id="ff-f-fobs" checked> <span style="color:#4db8ff"><i class="bi bi-house-gear-fill"></i></span> FOB / constructions</label>
+                <div id="ff-sum" class="mt-1" style="color:var(--dim)"></div>
+                <div id="ff-eco" style="font-size:11px;margin-top:3px"></div>
+                <div id="ff-reocc" style="color:#ffb020;font-size:11px;margin-top:3px"></div>
+                <button id="ff-roster-btn" class="btn btn-outline-secondary btn-sm mt-2" style="width:100%"><i class="bi bi-list-ul"></i> Unités vivantes</button>
+                <button id="ff-cat-btn" class="btn btn-outline-secondary btn-sm mt-2" style="width:100%"><i class="bi bi-journal-text"></i> Reference FF (catalogue)</button>
+                </div>`;
+            ffDockAdd(d);
+
+            // Panneau de STATS FF (contenu du Diag Menu du Workbench) - haut droite.
+            const dg = document.createElement('div');
+            dg.id = 'ff-diag';
+            dg.style.cssText = 'background:rgba(6,11,16,.92);border:1px solid var(--line);padding:9px 11px;font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--txt);max-height:66vh;overflow:auto;min-width:210px';
+            dg.innerHTML = `<div style="font-family:Oswald;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-size:.7rem;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span style="flex:1"><i class="bi bi-bar-chart-line-fill"></i> Stats FF (diag)</span><i class="bi bi-dash-lg ff-collapse-btn" data-collapse="ff-diag-body" title="Replier"></i></div><div id="ff-diag-body"></div>`;
+            ffDockAdd(dg);
+
+            // Panneau KILLFEED (morts recentes : qui tue qui) - bas droite.
+            const kf = document.createElement('div');
+            kf.id = 'ff-kill';
+            kf.style.cssText = 'background:rgba(6,11,16,.92);border:1px solid var(--line);padding:9px 11px;font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--txt);max-height:40vh;overflow:auto;min-width:220px;max-width:300px';
+            kf.innerHTML = `<div style="font-family:Oswald;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-size:.7rem;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span style="flex:1"><span style="color:#ff5555"><i class="bi bi-crosshair"></i></span> Killfeed</span><i class="bi bi-dash-lg ff-collapse-btn" data-collapse="ff-kill-body" title="Replier"></i></div><div id="ff-kill-body"></div>`;
+            ffDockAdd(kf);
+
+            // Panneau INFO (clic sur une IA ennemie ou un joueur) - haut droite.
+            const inf = document.createElement('div');
+            inf.id = 'ff-info';
+            inf.style.cssText = 'display:none;background:rgba(6,11,16,.96);border:1px solid var(--line-strong);padding:11px 13px;font-family:\'IBM Plex Mono\',monospace;font-size:12px;color:var(--txt);width:270px;max-height:70vh;overflow:auto';
+            inf.innerHTML = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px"><b id="ff-info-title" style="flex:1;font-family:Oswald;text-transform:uppercase;letter-spacing:.06em;font-size:14px">Info</b><i class="bi bi-dash-lg ff-collapse-btn" data-collapse="ff-info-body" title="Replier"></i><button id="ff-info-close" class="btn btn-secondary btn-sm" style="padding:0 8px;line-height:1.4">&times;</button></div><div id="ff-info-body"></div>`;
+            ffDockAdd(inf);
+            document.getElementById('ff-info-close').addEventListener('click', () => inf.style.display = 'none');
+
+            // Repli / depli des panneaux (chevron dans la barre de titre).
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('.ff-collapse-btn');
+                if (!btn) return;
+                e.stopPropagation();
+                const body = document.getElementById(btn.dataset.collapse);
+                if (!body) return;
+                const willHide = body.style.display !== 'none';
+                body.style.display = willHide ? 'none' : '';
+                btn.className = 'bi ff-collapse-btn ' + (willHide ? 'bi-plus-lg' : 'bi-dash-lg');
+                btn.title = willHide ? 'Déplier' : 'Replier';
+                const panel = btn.closest('[id]');
+                if (panel) ffSetPanelState(panel.id, { collapsed: willHide });
+            });
+
+            // Rendre les panneaux deplacables + restaurer position/etat sauvegardes.
+            [['ff-diag','ff-diag-body'],['ff-kill','ff-kill-body'],['ff-info','ff-info-body'],['ff-ctrl','ff-ctrl-body'],['hud-right','hud-right-body']].forEach(pair => {
+                const panel = document.getElementById(pair[0]);
+                if (!panel) return;
+                const header = panel.querySelector('.pane-head') || panel.firstElementChild;
+                ffRegisterPanel(panel, header, pair[1]);
+            });
+
+            // Overlay du catalogue de reference FF (capture unique, endpoint /ffcatalog).
+            const ov = document.createElement('div');
+            ov.id = 'ffcat';
+            ov.style.cssText = 'display:none;position:fixed;inset:5% 6%;z-index:1300;background:rgba(6,11,16,.97);border:1px solid var(--line-strong);padding:16px;overflow:auto;font-family:\'IBM Plex Mono\',monospace;font-size:12px;color:var(--txt)';
+            ov.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-family:Oswald;text-transform:uppercase;letter-spacing:.08em">Catalogue de reference FF (par faction)</b><button id="ffcat-close" class="btn btn-secondary btn-sm">Fermer</button></div><div id="ffcat-body">chargement...</div>`;
+            document.body.appendChild(ov);
+            document.getElementById('ffcat-close').addEventListener('click', () => ov.style.display = 'none');
+            document.getElementById('ff-cat-btn').addEventListener('click', async () => {
+                ov.style.display = 'block';
+                const body = document.getElementById('ffcat-body');
+                body.innerHTML = 'chargement...';
+                try {
+                    const d = await fetchData(`servers/${serverSelect.value}/ffcatalog`);
+                    const facs = (d && d.factions) || [];
+                    if (!facs.length) { body.innerHTML = '<span style="color:var(--dim)">Aucun catalogue capture (envoye une fois au demarrage du jeu). Relance une partie.</span>'; return; }
+                    const list = (arr) => (arr && arr.length) ? arr.map(x => `<div style="color:var(--txt)">${fltEsc(x)}</div>`).join('') : '<span style="color:var(--dim)">-</span>';
+                    body.innerHTML = facs.map(f => `
+                        <div style="margin-bottom:16px;border-left:2px solid var(--blue);padding-left:10px">
+                            <div style="font-family:Oswald;font-size:15px;color:var(--hi)">${fltEsc(f.key||'?')}</div>
+                            <div class="row">
+                                <div class="col-md-4"><div style="color:var(--blue);text-transform:uppercase;font-size:.7rem;margin:6px 0">Personnages (${(f.characters||[]).length})</div>${list(f.characters)}</div>
+                                <div class="col-md-4"><div style="color:var(--blue);text-transform:uppercase;font-size:.7rem;margin:6px 0">Vehicules (${(f.vehicles||[]).length})</div>${list(f.vehicles)}</div>
+                                <div class="col-md-4"><div style="color:var(--blue);text-transform:uppercase;font-size:.7rem;margin:6px 0">Items (${(f.items||[]).length})</div>${list(f.items)}</div>
+                            </div>
+                        </div>`).join('');
+                } catch (e) { body.innerHTML = '<span class="text-danger">Erreur : ' + fltEsc(e.message) + ' (droits admin requis)</span>'; }
+            });
+
+            const reFF = () => renderFFState();
+            document.getElementById('ff-f-enemies').addEventListener('change', e => { ffShowEnemies = e.target.checked; reFF(); });
+            document.getElementById('ff-f-civils').addEventListener('change', e => { ffShowCivils = e.target.checked; reFF(); });
+            document.getElementById('ff-f-veh').addEventListener('change', e => { ffShowVehicles = e.target.checked; reFF(); });
+            document.getElementById('ff-f-zones').addEventListener('change', e => { ffShowZones = e.target.checked; reFF(); });
+            document.getElementById('ff-f-terr').addEventListener('change', e => { ffShowTerr = e.target.checked; reFF(); });
+            document.getElementById('ff-f-front').addEventListener('change', e => { ffShowFront = e.target.checked; reFF(); });
+            document.getElementById('ff-f-threat').addEventListener('change', e => { ffShowThreat = e.target.checked; reFF(); });
+            document.getElementById('ff-f-players').addEventListener('change', e => {
+                ffShowPlayers = e.target.checked;
+                if (ffShowPlayers) { if (map && !map.hasLayer(playerMarkersLayer)) playerMarkersLayer.addTo(map); }
+                else { if (map && map.hasLayer(playerMarkersLayer)) map.removeLayer(playerMarkersLayer); }
+            });
+            document.getElementById('ff-f-diag').addEventListener('change', e => {
+                ffShowDiag = e.target.checked;
+                const p = document.getElementById('ff-diag'); if (p) p.style.display = ffShowDiag ? '' : 'none';
+            });
+            document.getElementById('ff-f-kills').addEventListener('change', e => {
+                ffShowKills = e.target.checked;
+                const p = document.getElementById('ff-kill'); if (p) p.style.display = ffShowKills ? '' : 'none';
+                reFF();
+            });
+            document.getElementById('ff-f-fobs').addEventListener('change', e => { ffShowFobs = e.target.checked; reFF(); });
+            document.getElementById('ff-roster-btn').addEventListener('click', ffRosterToggle);
+        }
+
+        // Lissage : reutilise les marqueurs d'un tick a l'autre (matching par proximite, meme role)
+        // + transition CSS (.ff-mv) -> les points GLISSENT vers leur nouvelle position au lieu de sauter.
+        let ffUnitStore = [], ffVehStore = [];
+        function ffSmooth(layer, store, items, makeMk, updateMk){
+            const used = store.map(() => false);
+            const TH2 = 60 * 60; // au-dela de 60 m d'un tick a l'autre = nouvelle unite
+            (items || []).forEach(it => {
+                let best = -1, bd = TH2;
+                for (let i = 0; i < store.length; i++){
+                    if (used[i] || store[i].role !== it.role) continue;
+                    const dx = store[i].x - it.x, dz = store[i].z - it.z, d = dx*dx + dz*dz;
+                    if (d < bd){ bd = d; best = i; }
+                }
+                if (best >= 0){
+                    used[best] = true;
+                    store[best].mk.setLatLng(armaToLeaflet([it.x, it.z]));
+                    store[best].x = it.x; store[best].z = it.z; store[best].keep = true;
+                    if (updateMk) updateMk(store[best].mk, it);
+                } else {
+                    const mk = makeMk(it); mk.addTo(layer);
+                    if (updateMk) updateMk(mk, it);
+                    store.push({mk, role: it.role, x: it.x, z: it.z, keep: true});
+                }
+            });
+            for (let i = store.length - 1; i >= 0; i--){
+                if (!store[i].keep){ layer.removeLayer(store[i].mk); store.splice(i, 1); }
+                else store[i].keep = false;
+            }
+        }
+        function ffUnitIcon(role){
+            let col = '#e2483a';
+            if (role === 'AMBIENT') col = '#e8e8e8';
+            else if (role === 'NONE') col = '#8a8f98';
+            return L.divIcon({className:'ff-mv', iconSize:[9,9], iconAnchor:[4,4],
+                html:`<div style="width:9px;height:9px;border-radius:50%;background:${col};box-shadow:0 0 2px #000,0 0 2px #000"></div>`});
+        }
+        function ffVehIcon(role){
+            let col = '#e2483a';
+            if (role === 'PLAYER') col = '#3d8bff';
+            else if (role === 'AMBIENT') col = '#e8e8e8';
+            else if (role === 'NONE' || role === 'UNDEFINED') col = '#8a8f98';
+            return L.divIcon({className:'ff-mv', iconSize:[14,14], iconAnchor:[7,7],
+                html:`<i class="bi bi-truck" style="color:${col};font-size:12px;text-shadow:0 0 3px #000,0 0 3px #000"></i>`});
+        }
+
+        // Nettoie un nom (cle de loc #..., prefab court, CamelCase, underscores) -> lisible.
+        function ffNiceName(s){
+            s = String(s || '');
+            if (s.startsWith('#')) s = s.split(/[-\/]/).pop();
+            return s.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').trim();
+        }
+
+        // Tooltip d'une IA ennemie : ce que le GM voit (type/vie/arme/groupe/equipement).
+        function ffUnitTooltip(it){
+            let h = `<div style="min-width:150px"><b style="color:#e2483a;font-size:12px">${fltEsc(ffNiceName(it.type) || 'Ennemi')}</b>`;
+            const rows = [];
+            if (it.hp != null) { const c = it.hp > 50 ? '#3fb950' : (it.hp > 20 ? '#ffb020' : '#e2483a'); rows.push(`<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--dim)">Vie</span><b style="color:${c}">${it.hp}%</b></div>`); }
+            if (it.weapon) rows.push(`<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--dim)">Arme</span><b>${fltEsc(ffNiceName(it.weapon))}</b></div>`);
+            if (it.group) rows.push(`<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--dim)">Groupe</span><b>${fltEsc(ffNiceName(it.group))}</b></div>`);
+            if (rows.length) h += `<div style="font-size:11px;margin-top:3px">${rows.join('')}</div>`;
+            if (it.gear && it.gear.length){
+                h += `<div style="margin-top:4px;padding-top:3px;border-top:1px solid rgba(255,255,255,.12);font-size:10px">`
+                   + `<div style="color:var(--dim);text-transform:uppercase;font-size:9px">Equipement</div>`
+                   + it.gear.map(g => `<div>${fltEsc(ffNiceName(g))}</div>`).join('') + `</div>`;
+            }
+            return h + '</div>';
+        }
+
+        // Panneau d'info a droite (clic sur une IA ennemie ou un joueur).
+        // ================= PANNEAU "UNITES VIVANTES" =================
+        // Liste filtrable de tout ce qui vit sur la carte, pour retrouver une unite sans
+        // la chercher a l'oeil : joueurs, IA ennemies/civiles, vehicules.
+        // Les donnees viennent du MEME snapshot que la carte (ffLast) : aucune requete
+        // supplementaire, et la liste se rafraichit au rythme des marqueurs.
+        let ffRosterOpen = false, ffRosterQ = '', ffRosterKind = 'all', ffRosterRole = 'all';
+
+        function ffRosterEnsure(){
+            if (document.getElementById('ff-roster')) return;
+            const d = document.createElement('div');
+            d.id = 'ff-roster';
+            d.style.cssText = "background:rgba(6,11,16,.95);border:1px solid var(--line);padding:9px 11px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt);max-height:46vh;display:none;flex-direction:column";
+            d.innerHTML = `
+                <div style="font-family:Oswald;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-size:.7rem;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+                    <span style="flex:1"><i class="bi bi-list-ul"></i> Unités vivantes</span>
+                    <span id="ff-roster-count" style="color:var(--dim)"></span>
+                    <i class="bi bi-x-lg" id="ff-roster-close" style="cursor:pointer" title="Fermer"></i>
+                </div>
+                <input id="ff-roster-q" placeholder="Rechercher (nom, type, arme...)" style="width:100%;background:#0b1016;border:1px solid var(--line);color:var(--txt);padding:3px 6px;margin-bottom:5px;font-family:inherit;font-size:11px">
+                <div style="display:flex;gap:4px;margin-bottom:4px">
+                    <select id="ff-roster-kind" style="flex:1;background:#0b1016;border:1px solid var(--line);color:var(--txt);font-size:11px;padding:2px">
+                        <option value="all">Tout</option>
+                        <option value="player">Joueurs</option>
+                        <option value="ai">IA</option>
+                        <option value="veh">Véhicules</option>
+                    </select>
+                    <select id="ff-roster-role" style="flex:1;background:#0b1016;border:1px solid var(--line);color:var(--txt);font-size:11px;padding:2px">
+                        <option value="all">Tous camps</option>
+                        <option value="PLAYER">Nous</option>
+                        <option value="ENEMY">Ennemi</option>
+                        <option value="AMBIENT">Civil</option>
+                    </select>
+                </div>
+                <div id="ff-roster-body" style="overflow:auto;flex:1"></div>`;
+            ffDockAdd(d);
+
+            document.getElementById('ff-roster-close').onclick = () => { ffRosterOpen = false; d.style.display = 'none'; };
+            document.getElementById('ff-roster-q').addEventListener('input', e => { ffRosterQ = e.target.value.toLowerCase(); ffRosterRender(); });
+            document.getElementById('ff-roster-kind').addEventListener('change', e => { ffRosterKind = e.target.value; ffRosterRender(); });
+            document.getElementById('ff-roster-role').addEventListener('change', e => { ffRosterRole = e.target.value; ffRosterRender(); });
+        }
+
+        function ffRosterToggle(){
+            ffRosterEnsure();
+            ffRosterOpen = !ffRosterOpen;
+            document.getElementById('ff-roster').style.display = ffRosterOpen ? 'flex' : 'none';
+            if (ffRosterOpen) ffRosterRender();
+        }
+
+        // Liste unifiee construite depuis le snapshot courant.
+        function ffRosterRows(){
+            const s = (ffLast && typeof ffLast === 'object') ? ffLast : {};
+            const rows = [];
+            (s.players || []).forEach(p => rows.push({
+                kind:'player', role:'PLAYER', name:p.name || '?',
+                sub: p.inVehicle ? ('en véhicule · ' + (p.veh || '')) : 'à pied',
+                x:p.x, z:p.z
+            }));
+            (s.units || []).forEach(u => rows.push({
+                kind:'ai', role:u.role || 'ENEMY', name:u.type || 'IA',
+                sub: [u.weapon, u.group, (u.hp != null ? u.hp + '%' : null)].filter(Boolean).join(' · '),
+                x:u.x, z:u.z
+            }));
+            (s.vehicles || []).forEach(v => rows.push({
+                kind:'veh', role:v.role || 'UNDEFINED', name:v.type || 'Véhicule',
+                sub: [
+                    (v.crew ? v.crew + ' à bord' : 'vide'),
+                    (v.seats || null),
+                    (v.hp != null ? v.hp + '%' : null),
+                    (v.spd ? v.spd + ' km/h' : null)
+                ].filter(Boolean).join(' · '),
+                x:v.x, z:v.z, player:!!v.hasPlayer
+            }));
+            return rows;
+        }
+
+        function ffRosterRender(){
+            if (!ffRosterOpen) return;
+            const body = document.getElementById('ff-roster-body');
+            if (!body) return;
+            const col = r => r.role === 'PLAYER' ? '#3d8bff' : (r.role === 'AMBIENT' ? '#e8e8e8' : ((r.role === 'NONE' || r.role === 'UNDEFINED') ? '#8a8f98' : '#e2483a'));
+            const ico = r => r.kind === 'veh' ? 'bi-truck' : (r.kind === 'player' ? 'bi-person-fill' : 'bi-person');
+
+            let rows = ffRosterRows();
+            if (ffRosterKind !== 'all') rows = rows.filter(r => r.kind === ffRosterKind);
+            if (ffRosterRole !== 'all') rows = rows.filter(r => r.role === ffRosterRole);
+            if (ffRosterQ) rows = rows.filter(r => ((r.name || '') + ' ' + (r.sub || '')).toLowerCase().includes(ffRosterQ));
+
+            // Joueurs d'abord, puis vehicules habites : ce qu'un admin cherche en priorite.
+            rows.sort((a, b) => (b.kind === 'player') - (a.kind === 'player') || (b.player === true) - (a.player === true));
+
+            document.getElementById('ff-roster-count').textContent = rows.length;
+            if (!rows.length){ body.innerHTML = '<div style="color:var(--dim)">Aucune unité.</div>'; return; }
+
+            // Plafond d'affichage : jusqu'a 600 IA sont envoyees, en lister 400 suffit
+            // largement une fois les filtres appliques et evite de figer la page.
+            const shown = rows.slice(0, 400);
+            body.innerHTML = shown.map((r, i) =>
+                '<div class="ff-roster-row" data-i="' + i + '" style="cursor:pointer;padding:2px 3px;border-bottom:1px solid rgba(255,255,255,.05)">' +
+                '<i class="bi ' + ico(r) + '" style="color:' + col(r) + '"></i> <b>' + fltEsc(r.name) + '</b>' +
+                (r.player ? ' <span style="color:#3d8bff">•</span>' : '') +
+                '<div style="color:var(--dim);padding-left:15px">' + fltEsc(r.sub || '') + '</div></div>').join('');
+
+            // Clic = recentrer la carte sur l'unite, sans toucher au zoom courant.
+            body.querySelectorAll('.ff-roster-row').forEach(el => {
+                el.onclick = () => {
+                    const r = shown[+el.dataset.i];
+                    if (r && r.x != null && r.z != null) map.panTo(armaToLeaflet([r.x, r.z]));
+                };
+            });
+        }
+
+        // Colonne unique pour TOUS les panneaux FF. Ils etaient auparavant ancres
+        // independamment aux quatre coins de l'ecran (filtres en bas a gauche, stats en
+        // haut a gauche, killfeed en bas a droite, unites en haut a droite) : ils se
+        // chevauchaient et masquaient la carte. Ici ils s'empilent, et la colonne defile
+        // si le contenu depasse la hauteur de l'ecran.
+        function ffDock(){
+            let dk = document.getElementById('ff-dock');
+            if (dk) return dk;
+            dk = document.createElement('div');
+            dk.id = 'ff-dock';
+            dk.style.cssText = 'position:fixed;top:70px;left:14px;bottom:14px;z-index:1200;width:322px;'
+                + 'display:flex;flex-direction:column;gap:8px;overflow-y:auto;overflow-x:hidden;'
+                + 'padding-right:4px;pointer-events:none';
+            document.body.appendChild(dk);
+            // adoption differee : #hud-right existe deja dans le DOM, mais ffDock()
+            // peut etre appele avant que tout le script soit initialise.
+            setTimeout(ffDockAdoptNative, 0);
+            return dk;
+        }
+        // Les panneaux eux-memes restent cliquables (le dock, lui, laisse passer les
+        // clics vers la carte dans ses zones vides).
+        function ffDockAdd(el){
+            el.style.pointerEvents = 'auto';
+            el.style.flex = '0 0 auto';
+            ffDock().appendChild(el);
+        }
+
+        // Le panneau natif de la carte (Unités + Journal) etait un <aside> ancre a
+        // droite : il chevauchait la colonne. On le fait entrer dans le dock, en tete,
+        // pour n'avoir qu'un seul bloc a l'ecran.
+        function ffDockAdoptNative(){
+            const hr = document.getElementById('hud-right');
+            if (!hr || hr.parentElement === ffDock()) return;
+            hr.style.pointerEvents = 'auto';
+            hr.style.flex = '0 0 auto';
+            ffDock().insertBefore(hr, ffDock().firstChild);
+        }
+
+        function openFFInfo(title, html){
+            const inf = document.getElementById('ff-info'); if (!inf) return;
+            document.getElementById('ff-info-title').textContent = title;
+            document.getElementById('ff-info-body').innerHTML = html;
+            inf.style.display = '';
+        }
+        // Corps commun : vie / arme / groupe / equipement (depuis un objet {hp,weapon,group,gear}).
+        function ffEntityPanelHtml(it){
+            if (!it) return '<span style="color:var(--dim)">détails indisponibles (hors zone de scan ou vient de se connecter)</span>';
+            const rows = [];
+            if (it.type) rows.push(['Type', fltEsc(ffNiceName(it.type))]);
+            if (it.hp != null){ const c = it.hp > 50 ? '#3fb950' : (it.hp > 20 ? '#ffb020' : '#e2483a'); rows.push(['Vie', `<b style="color:${c}">${it.hp}%</b>`]); }
+            if (it.weapon) rows.push(['Arme', fltEsc(ffNiceName(it.weapon))]);
+            if (it.group) rows.push(['Groupe', fltEsc(ffNiceName(it.group))]);
+            if (it.veh) rows.push(['Véhicule', fltEsc(ffNiceName(it.veh))]);
+            let h = rows.map(r => `<div style="display:flex;justify-content:space-between;gap:12px;line-height:1.8"><span style="color:var(--dim)">${r[0]}</span><span style="text-align:right">${r[1]}</span></div>`).join('');
+            if (it.gear && it.gear.length){
+                h += `<div style="margin-top:7px;padding-top:5px;border-top:1px solid rgba(255,255,255,.14)"><div style="color:var(--dim);text-transform:uppercase;font-size:9px;margin-bottom:3px">Equipement</div>`
+                   + it.gear.map(g => `<div style="line-height:1.6">• ${fltEsc(ffNiceName(g))}</div>`).join('') + `</div>`;
+            }
+            return h || '<span style="color:var(--dim)">Pas de détails</span>';
+        }
+        function ffPlayerInfoPanel(p, det){
+            let h = `<div style="color:var(--dim);font-size:10px;margin-bottom:6px;text-transform:uppercase">Joueur${p && p.inVehicle ? ' · en véhicule' : ''}</div>`;
+            // Grade + XP viennent des positions Fleet (p.rank / p.xp), resolus par getRankName.
+            const rows = [];
+            const rn = (typeof getRankName === 'function') ? getRankName(p) : '';
+            const rankLabel = rn || ((p && p.rank != null && p.rank > 0) ? ('Gr.' + p.rank) : '');
+            if (rankLabel) rows.push(['Grade', `<b style="color:var(--amber)">${fltEsc(rankLabel)}</b>`]);
+            if (p && p.xp != null && p.xp > 0) rows.push(['XP', '<b>' + p.xp + '</b>']);
+            if (rows.length){
+                h += `<div style="font-size:12px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.14)">`
+                   + rows.map(r => `<div style="display:flex;justify-content:space-between;gap:12px;line-height:1.8"><span style="color:var(--dim)">${r[0]}</span><span>${r[1]}</span></div>`).join('')
+                   + `</div>`;
+            }
+            return h + ffEntityPanelHtml(det);
+        }
+        // Tooltip / panneau d'un vehicule : type / etat / equipage / camp.
+        function ffVehTooltip(it){
+            const R = ({PLAYER:'Résistance', ENEMY:'Ennemi', SUPPORTING:'Allié', AMBIENT:'Civil', NONE:'Neutre'})[it.role] || it.role;
+            let h = `<div style="min-width:130px"><b style="font-size:12px">${fltEsc(ffNiceName(it.type) || 'Véhicule')}</b>`
+                  + `<div style="font-size:10px;color:var(--dim);text-transform:uppercase">${fltEsc(R)}</div>`;
+            const rows = [];
+            if (it.hp != null){ const c = it.hp > 50 ? '#3fb950' : (it.hp > 20 ? '#ffb020' : '#e2483a'); rows.push(`<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--dim)">État</span><b style="color:${c}">${it.hp}%</b></div>`); }
+            if (it.crew != null) rows.push(`<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:var(--dim)">Équipage</span><b>${it.crew}</b></div>`);
+            if (rows.length) h += `<div style="font-size:11px;margin-top:3px">${rows.join('')}</div>`;
+            return h + '</div>';
+        }
+        function ffVehPanel(it){ return ffVehTooltip(it); }
+
+        // FOB joueur : nom + stockage + liste des constructions (type + supply).
+        function ffCatLabel(c){ return ({0:'Divers', 1:'Stockage', 2:'Garage', 3:'Poste de commandement'})[c] || ''; }
+        function ffFobLine(label, val, c){ return `<div style="display:flex;justify-content:space-between;gap:12px;line-height:1.7"><span style="color:var(--dim)">${label}</span><b${c ? ` style="color:${c}"` : ''}>${val}</b></div>`; }
+        function ffFobTooltip(f){
+            const nb = (f.buildings || []).length;
+            let h = `<div style="min-width:150px"><b style="color:#4db8ff;font-size:12px">${fltEsc(ffNiceName(f.name) || 'FOB')}</b>`
+                  + `<div style="font-size:10px;color:var(--dim);text-transform:uppercase">FOB joueur · ${nb} construction${nb > 1 ? 's' : ''}</div>`;
+            if (f.supplies != null && f.supplies >= 0) h += `<div style="font-size:11px;margin-top:3px">${ffFobLine('Ravitaillement', f.supplies + (f.suppliesMax > 0 ? (' / ' + f.suppliesMax) : ''), '#58a6ff')}</div>`;
+            return h + '</div>';
+        }
+        function ffFobPanel(f){
+            let h = `<div style="color:var(--dim);font-size:10px;margin-bottom:6px;text-transform:uppercase">FOB joueur</div>`;
+            const rows = [];
+            if (f.supplies != null && f.supplies >= 0) rows.push(ffFobLine('Ravitaillement', f.supplies + (f.suppliesMax > 0 ? (' / ' + f.suppliesMax) : ''), '#58a6ff'));
+            if (f.fuel != null && f.fuel >= 0) rows.push(ffFobLine('Carburant', f.fuel + (f.fuelMax > 0 ? (' / ' + f.fuelMax) : ''), '#e0a030'));
+            if (rows.length) h += `<div style="font-size:12px">${rows.join('')}</div>`;
+            const bs = f.buildings || [];
+            h += `<div style="margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.14)"><div style="color:var(--dim);text-transform:uppercase;font-size:9px;margin-bottom:3px">Constructions (${bs.length})</div>`;
+            if (!bs.length) h += '<span style="color:var(--dim)">aucune</span>';
+            else h += bs.map(b => {
+                const nm = ffNiceName(b.type) || ffCatLabel(b.cat) || 'Bâtiment';
+                const hasStore = (b.suppliesMax != null && b.suppliesMax > 0) || (b.supplies != null && b.supplies >= 0);
+                const sup = hasStore ? ` <span style="color:#58a6ff">${b.supplies >= 0 ? b.supplies : 0}${b.suppliesMax > 0 ? ('/' + b.suppliesMax) : ''}</span>` : '';
+                return `<div style="line-height:1.7">• ${fltEsc(nm)}${sup}</div>`;
+            }).join('');
+            return h + '</div>';
+        }
+
+        // Effets de ville FF : cle de loc (#JWK-...-XXX) -> libelle FR lisible.
+        const FF_EFFECT_LABEL = {
+            CurfewInEffect:'Couvre-feu', MartialLawInEffect:'Loi martiale',
+            CivilianExtorted:'Civil extorque', Explosion:'Explosion', Gunfire:'Coups de feu',
+            OccupierKilled:'Occupant tue', PlayerKilled:'Joueur tue', PrisonBreak:'Evasion',
+            PropagandaPosters:'Propagande', ResistanceReportedCall:'Resistance signalee',
+            ResistanceSighted:'Resistance reperee', SuppliesDonation:'Don de ravito',
+            VehicleHijack:'Vehicule detourne', VehicleHijacked:'Vehicule detourne'
+        };
+        function ffEffectLabel(key){
+            let k = String(key || '').replace(/^#/, '');
+            const seg = k.split('-').pop();           // dernier segment = nom de l'effet
+            if (FF_EFFECT_LABEL[seg]) return FF_EFFECT_LABEL[seg];
+            return seg.replace(/([a-z])([A-Z])/g, '$1 $2'); // fallback : CamelCase -> "Camel Case"
+        }
+
+        // Rich POI tooltip mirroring FF's in-game map info panel.
+        function ffPoiTooltip(p, col, gar){
+            const R = ({PLAYER:'Résistance', ENEMY:'Ennemi', SUPPORTING:'Allié', AMBIENT:'Civil', NONE:'Neutre'})[p.role] || p.role;
+            let h = `<div style="min-width:190px;white-space:nowrap"><b style="color:${col};font-size:13px">${fltEsc(p.name || p.type)}</b>`
+                  + `<div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px">${fltEsc(p.type)} · ${fltEsc(R)}`
+                  + `${p.border ? ' · <span style="color:#ffb020">⚔ ligne de front</span>' : ''}</div>`;
+            const line = (label, val, c) => `<div style="display:flex;justify-content:space-between;gap:12px;font-size:11px;white-space:nowrap"><span style="color:var(--dim)">${label}</span><b style="white-space:nowrap${c?`;color:${c}`:''}">${val}</b></div>`;
+            const box = [];
+            if (gar) box.push(line('Garnison', p.garrison + ' unités', '#e2483a'));
+            if (p.pop != null && p.pop > 0) box.push(line('Population', p.pop));
+            if (p.supporters != null) box.push(line('Sympathisants', p.supporters, '#3fb950'));
+            if (p.hostiles != null && p.hostiles > 0) box.push(line('Hostiles', p.hostiles, '#e2483a'));
+            if (p.threat != null && p.threat > 0) box.push(line('Menace', p.threat + '%', '#ffb020'));
+            if (p.supplies != null) box.push(line('Ravitaillement', p.supplies + (p.suppliesMax ? ' / ' + p.suppliesMax : ''), '#58a6ff'));
+            if (box.length) h += `<div style="margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.12)">${box.join('')}</div>`;
+            if (p.effects && p.effects.length){
+                // Regroupe les doublons -> "Libelle ×N", trie par frequence.
+                const agg = {};
+                p.effects.forEach(e => { const l = ffEffectLabel(e); agg[l] = (agg[l] || 0) + 1; });
+                const badges = Object.keys(agg).sort((a,b) => agg[b] - agg[a]).map(l =>
+                    `<span style="display:inline-block;background:rgba(226,72,58,.18);color:#ff7a6b;border-radius:3px;padding:1px 6px;margin:3px 3px 0 0;font-size:10px;white-space:nowrap">${fltEsc(l)}${agg[l] > 1 ? ' <b>×' + agg[l] + '</b>' : ''}</span>`
+                ).join('');
+                h += `<div style="margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.12)">`
+                   + `<div style="font-size:9px;color:var(--dim);text-transform:uppercase">Effets actifs</div>${badges}</div>`;
+            }
+            return h + '</div>';
+        }
+
+        // Une ligne de killfeed : <tueur> ✳ <victime> (couleurs par role) + temps ecoule.
+        function ffKillRow(k, nowTs){
+            const vc = FF_ROLE_COL[k.vrole] || FF_ROLE_COL.NONE;
+            const kc = FF_ROLE_COL[k.krole] || FF_ROLE_COL.NONE;
+            let ago = '';
+            if (nowTs != null && k.t != null){ const s = Math.max(0, Math.round((nowTs - k.t)/1000)); ago = s < 60 ? (s + 's') : (Math.round(s/60) + 'min'); }
+            return `<div style="display:flex;align-items:center;gap:5px;line-height:1.7">`
+                 + `<b style="color:${kc}">${fltEsc(k.kil || '?')}</b>`
+                 + `<i class="bi bi-crosshair" style="color:#ff5555;font-size:11px"></i>`
+                 + `<b style="color:${vc}">${fltEsc(k.vic || '?')}</b>`
+                 + (ago ? `<span style="color:var(--dim);margin-left:auto;font-size:10px">${ago}</span>` : '')
+                 + `</div>`;
+        }
+
+        function renderFFState(state){
+            if (state !== undefined) ffLast = state;   // memorise pour re-render sur toggle de filtre
+            if (typeof ffRosterRender === 'function') ffRosterRender(); // liste d'unites au meme rythme
+            ffLayer.clearLayers();
+            const s = (ffLast && typeof ffLast === 'object') ? ffLast : {};
+
+            // Index des details joueurs (par UID) pour le panneau au clic sur un marqueur Fleet.
+            ffPlayerByUid = {};
+            (s.players || []).forEach(pl => { if (pl.uid) ffPlayerByUid[pl.uid] = pl; });
+
+            // Chaque section isolee : un plantage dans l'une n'empeche pas les autres (ex. unites).
+            const FFsec = (name, fn) => { try { fn(); } catch (e) { console.error('[FF] section', name, e); } };
+            console.log('[FF] render', {mock:s===FF_MOCK, pois:(s.pois||[]).length, units:(s.units||[]).length, vehicles:(s.vehicles||[]).length, zones:(s.zones||[]).length});
+
+            // Territoires : fusion du differentiel dans le cache, AVANT tout dessin.
+            FFsec('territory', () => {
+                if (s.terrFull) ffTerrCache = {};
+                (s.zones || []).forEach(z => {
+                    if (z.tag !== 'territory' || !z.id) return;
+                    const prev = ffTerrCache[z.id] || {};
+                    // Un envoi differentiel n'a pas de `pts` : on garde ceux deja connus.
+                    ffTerrCache[z.id] = {
+                        pts: Array.isArray(z.pts) ? z.pts : prev.pts,
+                        role: z.role, border: z.border
+                    };
+                });
+
+                Object.values(ffTerrCache).forEach(t => {
+                    if (!Array.isArray(t.pts) || t.pts.length < 3) return;
+                    const ll = t.pts.map(pt => armaToLeaflet([pt[0], pt[1]]));
+                    if (ffShowTerr) {
+                        const tcol = FF_ROLE_COL[t.role] || FF_ROLE_COL.NONE;
+                        L.polygon(ll, {color:tcol, weight:1, opacity:.35, fillColor:tcol,
+                            fillOpacity:.06, interactive:false}).addTo(ffLayer);
+                    }
+                    // Le front se dessine meme si les territoires sont masques : c'est
+                    // l'info la plus utile et elle se suffit a elle-meme.
+                    if (ffShowFront && t.border) {
+                        L.polygon(ll, {color:'#ffcc00', weight:2.5, opacity:.85,
+                            fill:false, interactive:false}).addTo(ffLayer);
+                    }
+                });
+            });
+
+            FFsec('zones', () => (s.zones || []).forEach(z => {
+                if (z.tag === 'territory') return; // deja traite via le cache
+                if (!Array.isArray(z.pts) || z.pts.length < 3) return;
+                const latlngs = z.pts.map(pt => armaToLeaflet([pt[0], pt[1]]));
+
+                // --- Menace adaptative (tag "threat") ---
+                if (z.tag === 'threat') {
+                    if (!ffShowThreat) return;
+                    const armor = z.armor || 0, air = z.air || 0;
+                    // La jauge dominante donne la couleur : violet pour l'antichar,
+                    // cyan pour le sol-air. L'opacite suit le niveau, pour qu'un coup
+                    // d'oeil suffise a reperer les secteurs vraiment chauds.
+                    const isAir = air > armor;
+                    const lvl = Math.max(armor, air) / 100;
+                    const col = isAir ? '#39c2d1' : '#c04ae2';
+                    L.polygon(latlngs, {color:col, weight:2, opacity:.7, fillColor:col,
+                        fillOpacity: 0.08 + 0.35 * lvl, dashArray:'4 4'}).addTo(ffLayer)
+                        .bindTooltip(
+                            `<b>Menace adaptative</b><br>` +
+                            `<span style="color:#c04ae2">&#9632;</span> Blindé : ${armor}%<br>` +
+                            `<span style="color:#39c2d1">&#9632;</span> Aérien : ${air}%<br>` +
+                            `<span style="opacity:.7">Renforts ${isAir ? 'sol-air' : 'antichar'} plus probables ici</span>`,
+                            {direction:'top', className:'player-label'});
+                    return;
+                }
+
+                // --- Zones de guerre FF (battle / poi), comportement d'origine ---
+                if (!ffShowZones) return;
+                const isBattle = z.tag === 'battle';
+                const col = isBattle ? '#e2483a' : '#e0912f';
+                L.polygon(latlngs, {color:col, weight:1.5, opacity:.55, fillColor:col, fillOpacity: isBattle?0.12:0.06, dashArray: isBattle?'':'5 5', interactive:false}).addTo(ffLayer);
+            }));
+
+            FFsec('pois', () => (s.pois || []).forEach(p => {
+                if (p.x == null || p.z == null) return;
+                const col = FF_ROLE_COL[p.role] || FF_ROLE_COL.NONE;
+                const ll = armaToLeaflet([p.x, p.z]);
+                const ico = FF_POI_ICON[p.type] || 'bi-geo-alt-fill';
+                const gar = (p.garrison != null && p.garrison > 0);
+                L.marker(ll, {icon: L.divIcon({className:'ff-poi', iconSize:[18,18], iconAnchor:[9,9],
+                    html:`<i class="bi ${ico}" style="color:${col};font-size:15px;text-shadow:0 0 3px #000,0 0 3px #000"></i>`})}).addTo(ffLayer)
+                    .bindTooltip(ffPoiTooltip(p, col, gar), {direction:'top', className:'player-label ff-poi-tip'});
+                if (gar && p.role === 'ENEMY') {
+                    L.marker(ll, {icon: L.divIcon({className:'ff-gar', iconSize:[16,16], iconAnchor:[-8,4],
+                        html:`<span style="color:#e2483a;font-family:Oswald;font-weight:600;font-size:11px;text-shadow:0 0 3px #000,0 0 3px #000">${p.garrison}</span>`}), interactive:false}).addTo(ffLayer);
+                }
+            }));
+
+            // FOB joueurs : marqueur cliquable -> panneau listant les constructions + stockage.
+            FFsec('fobs', () => { if (ffShowFobs) (s.fobs || []).forEach(f => {
+                if (f.x == null || f.z == null) return;
+                const nb = (f.buildings || []).length;
+                // La couleur suit le CAMP, comme partout ailleurs sur la carte.
+                // Avant : bleu fixe pour tous -> chaque site gérable (JWK_PlayerManagedSite)
+                // passait pour une FOB amie, y compris ceux que personne n'a capturés.
+                // Le jeu envoie bien f.role, il n'était simplement pas lu ici.
+                let fcol = '#e2483a';                                   // ennemi par défaut
+                if (f.role === 'PLAYER') fcol = '#3d8bff';              // à nous
+                else if (f.role === 'AMBIENT') fcol = '#e8e8e8';
+                else if (f.role === 'NONE' || f.role === 'UNDEFINED') fcol = '#8a8f98'; // libre
+                const mk = L.marker(armaToLeaflet([f.x, f.z]), {icon: L.divIcon({className:'ff-fob', iconSize:[20,20], iconAnchor:[10,10],
+                    html:`<i class="bi bi-house-gear-fill" style="color:${fcol};font-size:16px;text-shadow:0 0 3px #000,0 0 3px #000"></i>`})}).addTo(ffLayer);
+                mk.bindTooltip(ffFobTooltip(f), {direction:'top', className:'player-label ff-poi-tip'});
+                mk.on('click', () => openFFInfo(ffNiceName(f.name) || 'FOB', ffFobPanel(f)));
+            }); });
+
+            FFsec('battles', () => (s.battles || []).forEach(b => {
+                if (b.x == null) return;
+                L.polygon(worldCirclePts(b.x, b.z, 350), {color:'#e2483a', weight:2, dashArray:'5 5', fillColor:'#e2483a', fillOpacity:.06, interactive:false}).addTo(ffLayer);
+                L.marker(armaToLeaflet([b.x, b.z]), {icon: L.divIcon({className:'ff-bt', iconSize:[20,20], iconAnchor:[10,10],
+                    html:`<i class="bi bi-fire" style="color:#e2483a;font-size:16px;text-shadow:0 0 3px #000"></i>`})}).addTo(ffLayer)
+                    .bindTooltip(`<b style="color:#e2483a">Bataille ${fltEsc(b.name||'')}</b><br>${fltEsc(b.attacker||'')} · points ${b.points||0}/200`, {direction:'top', className:'player-label'});
+            }));
+
+            FFsec('counterattacks', () => (s.counterattacks || []).forEach(ca => {
+                if (ca.targetX == null) return;
+                const mins = (ca.triggerIn != null) ? ('T-' + Math.max(0, Math.round(ca.triggerIn/60)) + 'min') : '';
+                L.marker(armaToLeaflet([ca.targetX, ca.targetZ]), {icon: L.divIcon({className:'ff-ca', iconSize:[22,22], iconAnchor:[11,11],
+                    html:`<i class="bi bi-exclamation-triangle-fill" style="color:#ffb020;font-size:18px;text-shadow:0 0 4px #000,0 0 4px #000"></i>`})}).addTo(ffLayer)
+                    .bindTooltip(`<b style="color:#ffb020">Contre-attaque ${fltEsc(ca.targetName||'')}</b><br>${fltEsc(ca.state||'')} ${mins}${ca.strength?(' · force x'+ca.strength):''}`, {direction:'top', className:'player-label'});
+                const rc = ca.recon;
+                if (rc && rc.x != null) {
+                    L.circleMarker(armaToLeaflet([rc.x, rc.z]), {radius:5, color:'#ffd060', weight:2, fillColor:'#ffd060', fillOpacity:.6}).addTo(ffLayer);
+                    if (Array.isArray(rc.route) && rc.route.length > 1)
+                        L.polyline(rc.route.map(pt => armaToLeaflet([pt[0], pt[1]])), {color:'#ffd060', weight:1.5, dashArray:'3 5', opacity:.7, interactive:false}).addTo(ffLayer);
+                }
+            }));
+
+            FFsec('patrols', () => (s.patrols || []).forEach(p => {
+                if (p.x == null) return;
+                L.marker(armaToLeaflet([p.x, p.z]), {icon: L.divIcon({className:'ff-pt', iconSize:[16,16], iconAnchor:[8,8],
+                    html:`<i class="bi bi-person-walking" style="color:#e08030;font-size:14px;text-shadow:0 0 3px #000"></i>`})}).addTo(ffLayer)
+                    .bindTooltip(`Patrouille (${fltEsc(p.state||'')})`, {direction:'top', className:'player-label'});
+                if (Array.isArray(p.route) && p.route.length > 1)
+                    L.polyline(p.route.map(pt => armaToLeaflet([pt[0], pt[1]])), {color:'#e08030', weight:1.2, dashArray:'2 6', opacity:.5, interactive:false}).addTo(ffLayer);
+            }));
+
+            FFsec('radio', () => (s.radio || []).forEach(r => {
+                if (!r.radius || r.radius <= 0) return;
+                const col = (r.role === 'ENEMY') ? '#e2483a' : '#3d8bff';
+                L.polygon(worldCirclePts(r.x, r.z, r.radius), {color:col, weight:1, opacity:.4, fillColor:col, fillOpacity:.04, dashArray:'2 6', interactive:false}).addTo(ffLayer);
+            }));
+
+            // Garnisons ennemies : cercle du rayon de patrouille (ou l'IA peut aller).
+            FFsec('garrisons', () => (s.garrisons || []).forEach(g => {
+                if (!ffShowEnemies || g.x == null || !g.range || g.range <= 0) return;
+                L.polygon(worldCirclePts(g.x, g.z, g.range), {color:'#e2483a', weight:1, opacity:.3, fillColor:'#e2483a', fillOpacity:.03, dashArray:'3 7', interactive:false}).addTo(ffLayer)
+                    .bindTooltip(`Garnison : ${g.size||0} unites · patrouille ${g.range}m`, {sticky:true, className:'player-label'});
+            }));
+
+            // Unites + vehicules : calques persistants + lissage (glissent au lieu de sauter).
+            FFsec('units', () => {
+                const us = (s.units || []).filter(u => u.x != null && ((u.role === 'ENEMY') ? ffShowEnemies : ffShowCivils));
+                ffSmooth(ffUnitLayer, ffUnitStore, us,
+                    it => {
+                        const mk = L.marker(armaToLeaflet([it.x, it.z]), {icon: ffUnitIcon(it.role), interactive: it.role === 'ENEMY'});
+                        if (it.role === 'ENEMY') mk.on('click', () => { const d = mk._ffData || it; openFFInfo(ffNiceName(d.type) || 'Ennemi', ffEntityPanelHtml(d)); });
+                        return mk;
+                    },
+                    (mk, it) => {
+                        if (it.role !== 'ENEMY') return;
+                        mk._ffData = it;
+                        const html = ffUnitTooltip(it);
+                        if (mk.getTooltip()) mk.setTooltipContent(html);
+                        else mk.bindTooltip(html, {direction:'top', className:'player-label ff-poi-tip'});
+                    });
+            });
+            FFsec('vehicles', () => {
+                // hasPlayer -> deja represente par le marqueur joueur Fleet (badge vehicule) : on ne double pas.
+                const vs = ffShowVehicles ? (s.vehicles || []).filter(v => v.x != null && !v.hasPlayer) : [];
+                ffSmooth(ffVehLayer, ffVehStore, vs,
+                    it => {
+                        const mk = L.marker(armaToLeaflet([it.x, it.z]), {icon: ffVehIcon(it.role), interactive: true});
+                        mk.on('click', () => { const d = mk._ffData || it; openFFInfo(ffNiceName(d.type) || 'Véhicule', ffVehPanel(d)); });
+                        return mk;
+                    },
+                    (mk, it) => {
+                        mk._ffData = it;
+                        const html = ffVehTooltip(it);
+                        if (mk.getTooltip()) mk.setTooltipContent(html);
+                        else mk.bindTooltip(html, {direction:'top', className:'player-label ff-poi-tip'});
+                    });
+            });
+
+            // Resume + compteurs (diagnostic).
+            const sumEl = document.getElementById('ff-sum');
+            if (sumEl) {
+                const mp = (s.summary && s.summary.enemyManpower) ? ` · <span style="color:#e2483a">Manpower ${s.summary.enemyManpower}</span>` : '';
+                const cnt = ` <span style="color:var(--dim)">[u:${(s.units||[]).length} v:${(s.vehicles||[]).length} z:${(s.zones||[]).length}]</span>`;
+                sumEl.innerHTML = (s.summary ? `Joueurs ${Math.round(s.summary.playerPct||0)}% · Ennemi ${Math.round(s.summary.enemyPct||0)}%${mp}` : '') + cnt;
+            }
+
+            // Encart ECONOMIE : stocks et vitesses de generation sur les sites TENUS.
+            // `prod` et `fuelProd` sont MESURES par le jeu (FFRX_ProductionTracker), pas
+            // estimes : ils valent 0 tant qu'une heure de jeu complete ne s'est pas
+            // ecoulee depuis le demarrage du serveur -- ce n'est pas une panne.
+            const ecoEl = document.getElementById('ff-eco');
+            if (ecoEl) {
+                const q = s.summary || {};
+                if (q.suppliesMax == null && q.supplies == null) {
+                    ecoEl.innerHTML = '';
+                } else {
+                    const pc = (a, b) => (b > 0 ? Math.round((a / b) * 100) : 0);
+                    ecoEl.innerHTML =
+                        `<div style="color:#ffb020"><i class="bi bi-box-seam"></i> Supplies `
+                        + `<b>${q.supplies || 0}</b><span style="color:var(--dim)">/${q.suppliesMax || 0} (${pc(q.supplies, q.suppliesMax)}%)</span>`
+                        + (q.prod ? ` · <b>+${q.prod}</b>/h` : ' · <span style="color:var(--dim)">+0/h</span>')
+                        + `<span style="color:var(--dim)"> · ${q.factories || 0}/${q.factoriesTotal || 0} usines</span></div>`
+                        + `<div style="color:#7fd4ff"><i class="bi bi-fuel-pump"></i> Fuel `
+                        + `<b>${q.fuel || 0}</b><span style="color:var(--dim)">/${q.fuelMax || 0} (${pc(q.fuel, q.fuelMax)}%)</span>`
+                        + (q.fuelProd ? ` · <b>+${q.fuelProd}</b>/h` : ' · <span style="color:var(--dim)">+0/h</span>')
+                        + `<span style="color:var(--dim)"> · ${q.fuelStations || 0}/${q.fuelStationsTotal || 0} stations</span></div>`;
+                }
+            }
+            // Encart Reoccupation : contre-attaques planifiees + patrouilles + prochaine echeance.
+            const reoccEl = document.getElementById('ff-reocc');
+            if (reoccEl) {
+                const cas = s.counterattacks || [], pat = s.patrols || [];
+                if (!cas.length && !pat.length) {
+                    reoccEl.innerHTML = '<span style="color:var(--dim)"><i class="bi bi-shield-check"></i> Reocc : rien de planifie</span>';
+                } else {
+                    let txt = `<i class="bi bi-exclamation-triangle-fill"></i> Reocc : ${cas.length} contre-att. · ${pat.length} patrouille(s)`;
+                    const withEta = cas.filter(c => c.triggerIn != null).sort((a,b) => a.triggerIn - b.triggerIn);
+                    if (withEta.length) {
+                        const n = withEta[0];
+                        txt += `<br>prochaine : ${fltEsc(n.targetName||'?')} <b>T-${Math.max(0, Math.round(n.triggerIn/60))}min</b>`;
+                    }
+                    reoccEl.innerHTML = txt;
+                }
+            }
+            // Panneau STATS FF (contenu du Diag Menu) : progression campagne + liste label/valeur.
+            const diagEl = document.getElementById('ff-diag-body');
+            if (diagEl) {
+                const cp = (s.summary && s.summary.campaignPct != null && s.summary.campaignPct >= 0)
+                    ? `<div style="color:var(--green);font-family:Oswald;font-size:14px;margin-bottom:6px">Campagne ${s.summary.campaignPct}%</div>` : '';
+                const rows = (s.diag || []).map(d => `<div style="display:flex;justify-content:space-between;gap:14px;line-height:1.5"><span style="color:var(--dim)">${fltEsc(d.l)}</span><span>${fltEsc(d.v)}</span></div>`).join('');
+                diagEl.innerHTML = cp + (rows || '<span style="color:var(--dim)">en attente de donnees...</span>');
+            }
+
+            // ---- Killfeed : panneau + marqueurs de mort sur la carte ----
+            const kills = s.kills || [];
+            const kfEl = document.getElementById('ff-kill-body');
+            if (kfEl) {
+                kfEl.innerHTML = kills.length
+                    ? kills.slice(-25).reverse().map(k => ffKillRow(k, s.ts)).join('')
+                    : '<span style="color:var(--dim)">aucun mort recent</span>';
+            }
+            if (ffShowKills) FFsec('kills', () => kills.slice(-15).forEach(k => {
+                if (k.x == null || k.z == null) return;
+                L.marker(armaToLeaflet([k.x, k.z]), {icon: L.divIcon({className:'ff-kill-mk', iconSize:[14,14], iconAnchor:[7,7],
+                    html:`<i class="bi bi-x-circle-fill" style="color:#ff5555;font-size:11px;text-shadow:0 0 3px #000,0 0 3px #000"></i>`})}).addTo(ffLayer)
+                    .bindTooltip(ffKillRow(k, s.ts), {direction:'top', className:'player-label'});
+            }));
+        }
+
+        function renderCoverage(cov){
+            coverageLayer.clearLayers();
+            if(!Array.isArray(cov)) return;
+            cov.forEach(c => {
+                if (!c.radius || c.radius <= 0) return;
+                // N'afficher que les factions JOUABLES (celles ayant des joueurs). Si on ne
+                // connaît encore aucune faction jouable, on n'affiche rien (évite les HQ IA/civils).
+                if (!playableFactions.has(c.faction)) return;
+                // Couleur de FACTION : celle envoyée par Fleet si présente, sinon déduite des positions.
+                const col = c.color ? fltRgbSolid(c.color) : factionColor(c.faction);
+                L.polygon(worldCirclePts(c.x, c.z, c.radius), {
+                    color: col, weight: 1.5, opacity: 0.6, fillColor: col, fillOpacity: 0.08, dashArray: '4 4', interactive: false
+                }).addTo(coverageLayer);
+            });
+        }
+
+        // Objectifs actifs poussés par Fleet -> marqueur drapeau + popup (titre/description).
+        function renderObjectives(objs){
+            objectivesLayer.clearLayers();
+            if(!Array.isArray(objs)) return;
+            objs.forEach(o => {
+                if (!o.x && !o.z) return; // sans lieu -> pas sur la carte
+                const col = o.faction ? factionColor(o.faction) : 'var(--amber)';
+                const html = `<div style="position:relative"><i class="bi bi-flag-fill" style="font-size:22px;color:${col};text-shadow:0 0 3px #000,0 0 3px #000"></i></div>`;
+                const mk = L.marker(armaToLeaflet([o.x, o.z]), {icon: L.divIcon({className:'obj-mk', iconSize:[22,22], iconAnchor:[3,20], html})}).addTo(objectivesLayer);
+                const title = o.name ? `<div style="font-weight:600;color:${col}">${fltEsc(o.name)}</div>` : '';
+                const desc = o.desc ? `<div class="mt-1">${fltEsc(o.desc)}</div>` : '';
+                const fac = o.faction ? `<div class="text-muted" style="font-size:10px">Objectif ${fltEsc(o.faction)}${o.state ? ' · fait' : ''}</div>` : '';
+                mk.bindTooltip(`<div style="font-family:'IBM Plex Mono',monospace;font-size:12px">${title}${fac}${desc}<div class="mt-1"><small class="text-muted">clic droit pour agir</small></div></div>`, {direction:'top', className:'player-label'});
+                // Clic droit -> marquer fait / supprimer (commandes obj_done / obj_remove).
+                mk.on('contextmenu', (e) => {
+                    if (e.originalEvent) { L.DomEvent.preventDefault(e.originalEvent); L.DomEvent.stopPropagation(e.originalEvent); }
+                    if (!currentUser) { mkToast('Connexion requise', 'err'); return; }
+                    const oe = e.originalEvent;
+                    showCtxMenu(oe.clientX, oe.clientY, [
+                        { label: 'Marquer comme fait', icon: 'bi-check2-circle', action: () => objCommand('obj_done', o.id) },
+                        { sep: true },
+                        { label: 'Supprimer l\'objectif', icon: 'bi-trash', danger: true, action: () => { if (confirm('Supprimer cet objectif ?')) objCommand('obj_remove', o.id); } }
+                    ]);
+                });
+            });
+        }
+        async function objCommand(type, id){
+            const r = await postCommand({ type, id });
+            mkToast(r.ok ? (type === 'obj_done' ? '✓ Objectif marqué fait' : '✓ Suppression envoyée') : ('Erreur : ' + r.error), r.ok ? 'ok' : 'err');
+        }
+
+        // Dessins (crayons Anarchy) poussés par Fleet -> polylignes/polygones.
+        function renderDrawings(drawings){
+            drawingsLayer.clearLayers();
+            if(!Array.isArray(drawings)) return;
+            const W = [1,2,4,6,9]; // 5 épaisseurs (m_iWidthIdx 0..4)
+            drawings.forEach(d => {
+                const pts = d.pts || [];
+                if (pts.length < 4) return; // au moins 2 points
+                const latlngs = [];
+                for (let i=0; i+1<pts.length; i+=2) latlngs.push(armaToLeaflet([pts[i], pts[i+1]]));
+                const color = fltRgbSolid(d.color);
+                const weight = W[Math.max(0, Math.min(4, d.w||1))];
+                const shape = d.fill
+                    ? L.polygon(latlngs, {color, weight, fillColor:color, fillOpacity:0.22})
+                    : L.polyline(latlngs, {color, weight, opacity:0.9});
+                shape.addTo(drawingsLayer);
+                // Clic droit sur un dessin -> Supprimer (commande draw_remove, appliquée en jeu par Fleet).
+                shape.on('contextmenu', (e) => {
+                    if (e.originalEvent) { L.DomEvent.preventDefault(e.originalEvent); L.DomEvent.stopPropagation(e.originalEvent); }
+                    if (!currentUser) { mkToast('Connexion requise', 'err'); return; }
+                    const oe = e.originalEvent;
+                    showCtxMenu(oe.clientX, oe.clientY, [
+                        { label: 'Supprimer le dessin', icon: 'bi-trash', danger: true, action: () => removeDrawing(d.id) }
+                    ]);
+                });
+            });
+        }
+        async function removeDrawing(id){
+            if (!confirm('Supprimer ce dessin ?')) return;
+            const r = await postCommand({ type: 'draw_remove', id });
+            mkToast(r.ok ? '✓ Suppression envoyée' : ('Erreur : ' + r.error), r.ok ? 'ok' : 'err');
+        }
+
+        let lastMarkers = []; // dernier état des marqueurs (pour re-render après sélection)
+        function renderMarkers(markers){
+            markersLayer.clearLayers();
+            fltMarkerMap.clear();
+            if(!Array.isArray(markers)) return;
+            lastMarkers = markers;
+            markers.forEach(m => {
+                const ll = armaToLeaflet([m.x, m.z]);
+                const col = fltArgbToCss(m.color);
+                const shape = (m.kind===1) ? 'transform:rotate(45deg);' : 'border-radius:50%;';
+                const label = m.text ? `<span style="position:absolute;left:18px;top:-2px;white-space:nowrap;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;font-size:12px;">${fltEsc(m.text)}</span>` : '';
+                const ring = selectedMarkerIds.has(m.id) ? 'outline:3px solid var(--blue);outline-offset:2px;' : '';
+                const html = `<div style="width:14px;height:14px;border:2px solid #fff;background:${col};${shape}box-shadow:0 0 4px #000;${ring}"></div>${label}`;
+                const isMoving = (m.id === pendingMoveId);
+                const mk = L.marker(ll, {icon: L.divIcon({className:'flt-mk', iconSize:[14,14], iconAnchor:[7,7], html}), draggable: isMoving}).addTo(markersLayer);
+                fltMarkerMap.set(m.id, mk);
+                // Popup : « posé par <author> le <created> » (date/heure figée côté serveur).
+                let info = '';
+                if (m.author) info += `<div>posé par <b>${fltEsc(m.author)}</b></div>`;
+                if (m.created) info += `<div class="text-muted">le ${new Date(m.created * 1000).toLocaleString('fr-FR')}</div>`;
+                const title = m.text ? `<div style="font-weight:600;margin-bottom:3px">${fltEsc(m.text)}</div>` : '';
+                mk.bindPopup(`<div style="font-family:'IBM Plex Mono',monospace;font-size:12px">${title}${info || '<div class="text-muted">—</div>'}<div class="mt-1"><small class="text-muted">clic droit pour éditer</small></div></div>`);
+                // Clic droit sur un marqueur existant -> menu Éditer / Déplacer / Supprimer.
+                mk.on('contextmenu', (e) => {
+                    if (e.originalEvent) { L.DomEvent.preventDefault(e.originalEvent); L.DomEvent.stopPropagation(e.originalEvent); }
+                    if (!currentUser) { mkToast('Connexion requise pour éditer', 'err'); return; }
+                    const oe = e.originalEvent;
+                    // Clic droit sur un marqueur de la SÉLECTION -> actions de lot.
+                    if (selectedMarkerIds.size > 1 && selectedMarkerIds.has(m.id)) {
+                        showCtxMenu(oe.clientX, oe.clientY, [
+                            { label: `Éditer la sélection (${selectedMarkerIds.size})`, icon: 'bi-pencil', action: () => openMarkerBatch() },
+                            { label: `Supprimer la sélection (${selectedMarkerIds.size})`, icon: 'bi-trash', danger: true, action: () => removeSelection() },
+                            { sep: true },
+                            { label: 'Désélectionner', icon: 'bi-x-lg', action: () => { clearSelection(); renderMarkers(lastMarkers); } }
+                        ]);
+                        return;
+                    }
+                    showCtxMenu(oe.clientX, oe.clientY, [
+                        { label: 'Éditer', icon: 'bi-pencil', action: () => openMarkerEdit(m) },
+                        { label: 'Déplacer', icon: 'bi-arrows-move', action: () => startMoveMarker(m.id) },
+                        { sep: true },
+                        { label: 'Supprimer', icon: 'bi-trash', danger: true, action: () => removeMarker(m.id) }
+                    ]);
+                });
+                if (isMoving){
+                    mkToast('Glissez le point à sa nouvelle position', 'info');
+                    mk.on('dragend', async () => {
+                        const a = leafletToArma(mk.getLatLng());
+                        const r = await postCommand({ type:'move', id:m.id, x:a.x, y:a.z });
+                        pendingMoveId = null;
+                        mkToast(r.ok ? '✓ Déplacement envoyé' : ('Erreur : '+r.error), r.ok?'ok':'err');
+                    });
+                }
+            });
+        }
+
+        // RP radio / brouillard de guerre : opacité selon couverture + ancienneté de la position.
+        function radioOpacity(p){
+            if (p.radio === undefined || p.radio === null) return 1.0; // pas d'info radio -> plein
+            if (p.radio >= 2) return 1.0;                              // liaison HQ -> plein
+            const age = (Date.now() / 1000) - (p.lastSeen || 0);       // s depuis la dernière position connue
+            const FADE_START = 30, FADE_END = 180;
+            if (age <= FADE_START) return (p.radio === 1) ? 0.7 : 0.6; // RECEIVE un peu plus visible
+            if (age >= FADE_END) return 0.0;                           // disparu (fog)
+            return 0.6 * (1 - (age - FADE_START) / (FADE_END - FADE_START));
+        }
+        // Petit indicateur de signal radio.
+        function radioIcon(p){
+            if (p.radio === undefined || p.radio === null) return '';
+            const map = {3:['bi-reception-4','var(--green)','Liaison complète'],2:['bi-reception-3','var(--green)','Émission'],1:['bi-reception-1','var(--amber)','Réception seule'],0:['bi-reception-0','var(--red)','Hors radio']};
+            const r = map[p.radio] || map[0];
+            return `<i class="bi ${r[0]}" style="color:${r[1]}" title="${r[2]}"></i>`;
+        }
+
+        function renderPositions(positions) {
+            playerMarkersLayer.clearLayers();
+            playerMarkerMap.clear();
+            const currentSliderTimestamp = parseInt(timeSlider.value, 10);
+            const STALE_THRESHOLD_SECONDS = 300;
+            const visiblePositions = (positions || []).filter(p => isLiveModeActive || (currentSliderTimestamp - p.eventTimestamp) < STALE_THRESHOLD_SECONDS);
+
+            visiblePositions.forEach(p => {
+                const op = radioOpacity(p);
+                if (op <= 0) return; // disparu (fog) -> pas de marqueur
+                const frozen = (p.radio !== undefined && p.radio !== null && p.radio < 2);
+                const leafletCoords = armaToLeaflet([p.absolutePosX, p.absolutePosZ]);
+                const displayName = nameCache.get(p.playerGuid) || p.playerGuid;
+                const color = getPlayerColor(p);
+                const svgStyle = frozen ? 'style="stroke:#fff;stroke-width:1;stroke-dasharray:2 2"' : '';
+                let htmlContent = `<div class="position-relative" style="opacity:${op.toFixed(2)}"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="${color}" ${svgStyle} d="M12 2 L20 22 L12 17 L4 22 Z" /></svg>`;
+                if (p.inVehicle) {
+                    htmlContent += `<div class="vehicle-icon-container" style="top: -18px; left: 0px;"><i class="bi bi-car-front-fill"></i></div>`;
+                }
+                htmlContent += `</div>`;
+                const icon = L.divIcon({
+                    className: 'player-icon-container',
+                    html: htmlContent,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+                const marker = L.marker(leafletCoords, {
+                    icon: icon,
+                    rotationAngle: p.rotationX,
+                    rotationOrigin: 'center center'
+                });
+                marker.setOpacity(op);
+                const vehicleIconHTML = p.inVehicle ? '<i class="bi bi-car-front-fill"></i> ' : '';
+                const rn = getRankName(p);
+                const rankPrefix = rn ? `<b style="color:var(--amber)">${fltEsc(rn)}</b> ` : '';
+                // Libellé en SURVOL (pas permanent) : sur la carte on ne garde que l'icône
+                // directionnelle ; au survol -> détail + horodatage de la dernière position.
+                const ts = p.lastSeen || p.eventTimestamp || 0;
+                const tsStr = ts ? new Date(ts * 1000).toLocaleString('fr-FR') : '';
+                const line2 = tsStr
+                    ? `<div style="font-size:10px;color:var(--dim);font-weight:400">${frozen ? 'dernière position connue' : 'position live'} · ${tsStr}</div>`
+                    : '';
+                marker.bindTooltip(
+                    `<div style="font-weight:600">${rankPrefix}${vehicleIconHTML}${displayName}</div>${line2}`,
+                    { direction: 'top', className: 'player-label', opacity: 1 }
+                );
+                marker.on('click', () => { highlightPlayer(p.playerGuid); openFFInfo((nameCache.get(p.playerGuid) || displayName || 'Joueur'), ffPlayerInfoPanel(p, ffPlayerByUid[p.playerGuid])); });
+                marker.on('contextmenu', (e) => { if (e.originalEvent) L.DomEvent.preventDefault(e.originalEvent); openObjective({ objtarget:'player', uid:p.playerGuid, label: nameCache.get(p.playerGuid)||p.playerGuid }); });
+                playerMarkersLayer.addLayer(marker);
+                playerMarkerMap.set(p.playerGuid, marker);
+            });
+            // Déconnectés récents (< 3 min) -> marqueur grisé à leur dernière position connue.
+            if (isLiveModeActive) renderOfflineMarkers(new Set(visiblePositions.map(p => p.playerGuid)));
+            updatePlayerList(visiblePositions);
+            resolveAndApplyNames(positions);
+        }
+
+        function renderOfflineMarkers(liveGuids){
+            const nowSec = Date.now() / 1000;
+            (serverRoster || []).forEach(r => {
+                if (!r.playerGuid || liveGuids.has(r.playerGuid) || r.online || r.left) return;
+                if ((nowSec - (r.lastSeen || 0)) >= 180) return;       // > 3 min -> retiré
+                if (!r.lastPosX && !r.lastPosZ) return;                // pas de dernière position
+                const name = nameCache.get(r.playerGuid) || r.name || r.playerGuid;
+                const html = `<div class="position-relative" style="opacity:.45"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#8a97a5" stroke="#fff" stroke-width="1" stroke-dasharray="2 2" d="M12 2 L20 22 L12 17 L4 22 Z" /></svg></div>`;
+                const marker = L.marker(armaToLeaflet([r.lastPosX, r.lastPosZ]), {
+                    icon: L.divIcon({ className: 'player-icon-container', html, iconSize: [24, 24], iconAnchor: [12, 12] })
+                });
+                marker.setOpacity(0.5);
+                marker.bindTooltip(`<div style="font-weight:600">${fltEsc(name)}</div><div style="font-size:10px;color:var(--dim)">déconnecté · ${new Date((r.lastSeen || 0) * 1000).toLocaleTimeString('fr-FR')}</div>`, { direction: 'top', className: 'player-label' });
+                playerMarkersLayer.addLayer(marker);
+            });
+        }
+
+        async function createHeatmapForInterval(start, end) {
+            if (!map) return;
+            removeHeatmap();
+            const id = serverSelect.value, endpoint = `public/heatmap?server_id=${id}&start=${start}&end=${end}`;
+            try {
+                const heatPoints = await fetchData(endpoint);
+                if (heatPoints && heatPoints.length > 0) {
+                    const latLngs = heatPoints.map(p => {
+                        const latLng = armaToLeaflet([p[1], p[0]]); // p[1] is X, p[0] is Z
+                        return [latLng.lat, latLng.lng, p[2]]; // Heatmap expects [lat, lng, intensity]
+                    });
+                    heatLayer = L.heatLayer(latLngs, {
+                        radius: 5,
+                        blur: 10,
+                        gradient: {0.1: 'blue', 0.2: 'lime', 0.3: 'yellow', 0.4: 'orange', 0.5: 'red'}
+                    }).addTo(map);
+                } else {
+                    alert("No data for heatmap.");
+                }
+            } catch (e) {
+            }
+        }
+
+        function handleGoToCoords() {
+            if (!map) return;
+            const parts = gotoCoordsInput.value.replace(/\s/g, '').split(',');
+            if (parts.length !== 2) {
+                alert("Invalid format. Use 'X, Z'");
+                return;
+            }
+            const x = parseFloat(parts[0]), z = parseFloat(parts[1]);
+            if (isNaN(x) || isNaN(z)) {
+                alert("Invalid coordinates.");
+                return;
+            }
+            const target = armaToLeaflet([x, z]);
+            map.flyTo(target, map.getMaxZoom() - 1);
+            if (gotoMarker) map.removeLayer(gotoMarker);
+            gotoMarker = L.circleMarker(target, {
+                radius: 10,
+                color: '#ffc107',
+                fillColor: '#ffc107',
+                fillOpacity: 0.5
+            }).addTo(map);
+            setTimeout(() => {
+                if (gotoMarker) {
+                    map.removeLayer(gotoMarker);
+                    gotoMarker = null;
+                }
+            }, 5000);
+            gotoModal.hide();
+        }
+
+        function stopPlayback() {
+            if (isPlaying || isBuffering) {
+                clearInterval(playbackInterval);
+                isBuffering = false;
+                isPlaying = false;
+                playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+            }
+        }
+
+        async function bufferFrames() { /* ... unverändert ... */
+        }
+
+        function renderEventLog(filteredEvents) {
+            eventLog.innerHTML = '';
+            if (!filteredEvents || filteredEvents.length === 0) {
+                eventLog.innerHTML = '<div class="list-group-item bg-transparent">No events to display. Select a player to see their specific events.</div>';
+                return;
+            }
+            filteredEvents.sort((a, b) => new Date(b.EventTimestamp) - new Date(a.EventTimestamp));
+            filteredEvents.forEach(eventData => {
+                const item = document.createElement('a');
+                item.href = "#";
+                item.className = 'list-group-item list-group-item-action bg-transparent event-log-item';
+                const killer = nameCache.get(eventData.KillerGUID) || 'Unknown';
+                const victim = nameCache.get(eventData.VictimGUID) || 'Unknown';
+                const weapon = eventData.WeaponName;
+                const ffClass = eventData.IsFriendlyFire ? 'text-info' : 'text-danger';
+                const distance = Math.round(eventData.Distance);
+                const hitZone = eventData.HitZone;
+                item.innerHTML = `<small>${new Date(eventData.EventTimestamp).toLocaleTimeString()}:</small> <span class="fw-bold">${killer}</span> hit <span class="${ffClass} fw-bold">${victim}</span> with <span class="fw-bold">${weapon}</span>.<br><small class="text-muted">↳ Hit Zone: <strong>${hitZone}</strong>, Distance: <strong>${distance}m</strong></small>`;
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    stopPlayback();
+                    stopLiveMode();
+                    const targetTimestamp = new Date(eventData.EventTimestamp).getTime() / 1000;
+                    const closestTimestamp = keyframeTimestamps.reduce((prev, curr) => (Math.abs(curr - targetTimestamp) < Math.abs(prev - targetTimestamp) ? curr : prev));
+                    timeSlider.value = closestTimestamp;
+                    highlightPlayer(eventData.VictimGUID);
+                    updateMapAndList(closestTimestamp);
+                });
+                eventLog.appendChild(item);
+            });
+        }
+
+        function startLiveMode() {
+            if (isLiveModeActive) return;
+            const serverId = serverSelect.value;
+            if (!serverId) return;
+            stopPlayback();
+            isLiveModeActive = true;
+            liveModeBtn.classList.remove('btn-outline-secondary');
+            liveModeBtn.classList.add('btn-danger');
+            liveModeBtn.querySelector('.live-indicator').classList.add('active');
+            timeSlider.disabled = true;
+            playPauseBtn.disabled = true;
+            timeLabel.textContent = "LIVE";
+            const liveLoop = async () => {
+                if (!isLiveModeActive) return;
+                try {
+                    // Bascule auto de carte : si le jeu a changé de terrain (Fleet a mis à jour la
+                    // carte du serveur), on réinitialise la carte web avant de dessiner.
+                    try {
+                        const cm = await fetchData(`public/servers/${serverId}/current-map`);
+                        if (cm && cm.ID && currentMapConfig && cm.ID !== currentMapConfig.ID) {
+                            if (allServersData[serverId]) allServersData[serverId].map_config = cm;
+                            initMapFromConfig(cm);
+                        }
+                    } catch (_) {}
+
+                    const positions = await fetchData(`public/positions/latest/${serverId}`);
+                    try { setSquads(await fetchData(`public/squads/${serverId}`)); } catch (_) { setSquads([]); }
+                    try { rankCatalog = await fetchData(`public/ranks/${serverId}`) || {}; } catch (_) { rankCatalog = {}; }
+                    if (currentUser) { try { serverRoster = await fetchData(`servers/${serverId}/roster`) || []; } catch (_) {} }
+                    renderPositions(positions);
+                    const markers = await fetchData(`public/markers/${serverId}`);
+                    renderMarkers(markers);
+                    try { renderDrawings(await fetchData(`public/drawings/${serverId}`)); } catch (_) { renderDrawings([]); }
+                    // Factions JOUABLES = celles ayant des joueurs (roster + live + escouades).
+                    const pf = new Set();
+                    (serverRoster || []).forEach(r => { if (r.factionKey) pf.add(r.factionKey); });
+                    (positions || []).forEach(p => {
+                        if (p.factionKey) { pf.add(p.factionKey); if (p.faction) factionColorMap[p.factionKey] = getFactionColor(p.faction); }
+                    });
+                    currentSquads.forEach(s => { if (s.faction) pf.add(s.faction); });
+                    playableFactions = pf;
+                    try { renderCoverage(await fetchData(`public/coverage/${serverId}`)); } catch (_) { renderCoverage([]); }
+                    try { renderObjectives(await fetchData(`public/objectives/${serverId}`)); } catch (_) { renderObjectives([]); }
+                    // État FF/Réoccupation (admin/propriétaire ; 403 sinon -> démo/vide). Cf. TASK_FFSTATE_SENDER.
+                    try { renderFFState(await fetchData(`servers/${serverId}/ffstate`)); } catch (_) { renderFFState(null); }
+                } catch (e) {
+                    console.error("Live update failed:", e);
+                } finally {
+                    if (isLiveModeActive) {
+                        liveModeTimeout = setTimeout(liveLoop, 2000);
+                    }
+                }
+            };
+            liveLoop();
+        }
+
+        function stopLiveMode() {
+            if (!isLiveModeActive) return;
+            clearTimeout(liveModeTimeout);
+            isLiveModeActive = false;
+            setSquads([]); // pas d'escouades historiques en relecture -> liste à plat
+            rankCatalog = {}; // grades non dispo en relecture
+            drawingsLayer.clearLayers(); // dessins = état live
+            coverageLayer.clearLayers(); // couverture = état live
+            objectivesLayer.clearLayers(); // objectifs = état live
+            ffLayer.clearLayers(); // état FF/Réoccupation = live
+            ffUnitLayer.clearLayers(); ffVehLayer.clearLayers(); ffUnitStore = []; ffVehStore = [];
+            liveModeBtn.classList.add('btn-outline-secondary');
+            liveModeBtn.classList.remove('btn-danger');
+            liveModeBtn.querySelector('.live-indicator').classList.remove('active');
+            if (keyframeTimestamps.length > 0) {
+                timeSlider.disabled = false;
+                playPauseBtn.disabled = false;
+            }
+            if (timeSlider.value) {
+                updateMapAndList(timeSlider.value);
+            }
+        }
+
+        function startPlayback() {
+            if (isPlaying || isBuffering) {
+                stopPlayback();
+                return;
+            }
+            stopLiveMode();
+            isBuffering = true;
+            playPauseBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            if (parseInt(timeSlider.value, 10) >= keyframeTimestamps[keyframeTimestamps.length - 1]) {
+                timeSlider.value = keyframeTimestamps[0];
+            }
+            bufferFrames().then(() => {
+                if (!isBuffering) return;
+                isBuffering = false;
+                isPlaying = true;
+                playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+                playbackInterval = setInterval(() => {
+                    const currentValue = parseInt(timeSlider.value, 10);
+                    const currentIndex = keyframeTimestamps.findIndex(ts => ts >= currentValue);
+                    if (currentIndex === -1 || currentIndex >= keyframeTimestamps.length - 1) {
+                        stopPlayback();
+                        return;
+                    }
+                    const nextTimestamp = keyframeTimestamps[currentIndex + 1];
+                    timeSlider.value = nextTimestamp;
+                    const cachedData = frameCache.get(nextTimestamp);
+                    if (cachedData) {
+                        renderPositions(cachedData.positions);
+                        renderDamageEvents(cachedData.damageEvents);
+                        timeLabel.textContent = new Date(nextTimestamp * 1000).toLocaleString();
+                    } else {
+                        updateMapAndList(nextTimestamp);
+                    }
+                }, 200); // Standard playback speed
+            });
+        }
+
+        async function updateMapAndList(ts) {
+            if (!ts || isNaN(ts)) return;
+            if (frameCache.has(ts)) {
+                const cachedData = frameCache.get(ts);
+                renderPositions(cachedData.positions);
+                renderDamageEvents(cachedData.damageEvents);
+                timeLabel.textContent = new Date(ts * 1000).toLocaleString();
+                return;
+            }
+            const id = serverSelect.value;
+            const iso = new Date(parseInt(ts, 10) * 1000).toISOString();
+            timeLabel.textContent = new Date(parseInt(ts, 10) * 1000).toLocaleString();
+            const posEp = `public/positions/${id}/${iso}`;
+            try {
+                const positions = await fetchData(posEp);
+                const currentTimestamp = parseInt(ts, 10);
+                const eventsForThisFrame = damageEventsForRange.filter(e => {
+                    const eventTs = new Date(e.EventTimestamp).getTime() / 1000;
+                    return eventTs <= currentTimestamp && eventTs > (currentTimestamp - 2);
+                });
+                renderPositions(positions);
+                renderDamageEvents(eventsForThisFrame);
+            } catch (e) {
+                console.error("Failed to update map and list", e);
+                renderPositions([]);
+                renderDamageEvents([]);
+            }
+        }
+
+        async function highlightPlayer(guid) {
+            const marker = playerMarkerMap.get(guid);
+            if (marker) map.flyTo(marker.getLatLng(), map.getZoom());
+            document.querySelectorAll('#player-list .list-group-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.guid === guid);
+            });
+            const playerSpecificEvents = damageEventsForRange.filter(e => e.KillerGUID === guid || e.VictimGUID === guid);
+            renderEventLog(playerSpecificEvents);
+            try {
+                const playerEventTimestamps = playerSpecificEvents.map(e => new Date(e.EventTimestamp).getTime() / 1000);
+                renderDamageTicks(playerEventTimestamps, timeSlider.min, timeSlider.max, document.getElementById('player-damage-ticks-container'), 'player-damage-tick');
+            } catch (e) {
+                console.error(`Could not load events for player ${guid}`, e);
+                document.getElementById('player-damage-ticks-container').innerHTML = '';
+                renderEventLog([]);
+            }
+        }
+
+        function updatePlayerList(pos) {
+            playerList.innerHTML = '';
+
+            const nm = g => (nameCache.get(g) || g);
+            const byName = (a, b) => nm(a.playerGuid).toUpperCase().localeCompare(nm(b.playerGuid).toUpperCase());
+
+            // Un élément joueur (indent = imbriqué sous une escouade).
+            const makePlayerItem = (p, indent) => {
+                const item = document.createElement('a');
+                item.href = "#";
+                item.className = 'list-group-item list-group-item-action bg-transparent';
+                item.dataset.guid = p.playerGuid;
+                if (indent) item.style.paddingLeft = '24px';
+                const vehicleIcon = p.inVehicle ? '<i class="bi bi-car-front-fill ms-2"></i>' : '';
+                // Grade devant le nom : nom du grade si résolu, sinon le numéro en repli (Gr.N).
+                let rankLabel = getRankName(p);
+                if (!rankLabel && p.rank !== undefined && p.rank !== null && p.rank > 0) rankLabel = 'Gr.' + p.rank;
+                const rankBadge = rankLabel ? `<span class="rank-badge">${fltEsc(rankLabel)}</span>` : '';
+                // Lien vers la fiche soldat : une icône distincte, PAS le pseudo lui-même.
+                // L'élément entier est déjà un <a> qui centre la carte sur le joueur ; rendre le
+                // nom cliquable volerait ce clic, qui est l'usage principal de cette liste.
+                const sidSheet = serverSelect.value;
+                const sheet = sidSheet ? `<a class="soldier-sheet ms-2" href="/soldier?uid=${encodeURIComponent(p.playerGuid)}&server=${encodeURIComponent(sidSheet)}" title="Fiche soldat"><i class="bi bi-person-badge"></i></a>` : '';
+                item.innerHTML = `<span class="list-dot" style="background-color:${getPlayerColor(p)};"></span>${rankBadge} ${fltEsc(nm(p.playerGuid))} ${vehicleIcon} <span class="ms-auto">${radioIcon(p)}${sheet}</span>`;
+                // stopPropagation : sans ça le clic remonterait au <a> parent, dont le handler
+                // appelle preventDefault() — la navigation n'aurait jamais lieu.
+                const sheetEl = item.querySelector('.soldier-sheet');
+                if (sheetEl) sheetEl.addEventListener('click', (e) => e.stopPropagation());
+                item.addEventListener('click', (e) => { e.preventDefault(); highlightPlayer(p.playerGuid); });
+                item.addEventListener('contextmenu', (e) => { e.preventDefault(); openObjective({ objtarget:'player', uid:p.playerGuid, label: nm(p.playerGuid) }); });
+                playerList.appendChild(item);
+                return item;
+            };
+            // En-tête d'escouade REPLIABLE (classe distincte -> ignoré par le filtre de recherche).
+            // key = clé d'ouverture ; toggleable = true pour un vrai drop-down.
+            const makeSquadHeader = (label, sub, key, toggleable, color) => {
+                const h = document.createElement('div');
+                h.className = 'squad-head';
+                if (color) h.style.borderLeftColor = fltRgbSolid(color);
+                const dot = color ? `<span class="squad-dot" style="background:${fltRgbSolid(color)}"></span>` : '';
+                const open = !toggleable || openSquads.has(key);
+                const chev = toggleable ? `<i class="bi bi-chevron-right squad-chev${open ? ' open' : ''}"></i>` : '';
+                h.innerHTML = `${chev}${dot}<i class="bi bi-people-fill me-2"></i>${fltEsc(label)}${sub ? ` <span class="squad-sub">· ${fltEsc(sub)}</span>` : ''}`;
+                if (toggleable) {
+                    h.classList.add('clickable');
+                    h.addEventListener('click', () => {
+                        if (openSquads.has(key)) openSquads.delete(key); else openSquads.add(key);
+                        const nowOpen = openSquads.has(key);
+                        h.querySelector('.squad-chev').classList.toggle('open', nowOpen);
+                        (h._members || []).forEach(el => el.style.display = nowOpen ? '' : 'none');
+                    });
+                }
+                playerList.appendChild(h);
+                return h;
+            };
+
+            const posByGuid = new Map(pos.map(p => [p.playerGuid, p]));
+            const rendered = new Set();
+
+            // 1) Escouades d'abord (uniquement celles ayant ≥1 joueur présent), joueurs imbriqués + drop-down.
+            if (currentSquads.length) {
+                const squads = [...currentSquads].sort((a, b) =>
+                    (a.faction || '').localeCompare(b.faction || '') || (a.name || '').localeCompare(b.name || ''));
+                squads.forEach(sq => {
+                    const members = (sq.members || []).map(uid => posByGuid.get(uid)).filter(Boolean);
+                    if (!members.length) return;
+                    members.sort((a, b) => {
+                        if (a.playerGuid === sq.leader) return -1;
+                        if (b.playerGuid === sq.leader) return 1;
+                        return byName(a, b);
+                    });
+                    const key = 'sq' + sq.id;
+                    const header = makeSquadHeader(sq.name || sq.callsign || 'Escouade', `${sq.faction || ''} · ${members.length}`, key, true, sq.color);
+                    header.addEventListener('contextmenu', (e) => { e.preventDefault(); openObjective({ objtarget:'squad', id: sq.id, label: sq.name || sq.callsign || ('#'+sq.id) }); });
+                    const isOpen = openSquads.has(key);
+                    header._members = members.map(p => {
+                        const el = makePlayerItem(p, true);
+                        if (!isOpen) el.style.display = 'none';
+                        rendered.add(p.playerGuid);
+                        return el;
+                    });
+                });
+            }
+
+            // 2) Joueurs isolés (hors escouade) — triés faction puis nom (non repliable).
+            const rest = pos.filter(p => !rendered.has(p.playerGuid)).sort((a, b) =>
+                a.faction.name.toUpperCase().localeCompare(b.faction.name.toUpperCase()) || byName(a, b));
+            if (rest.length && rendered.size) makeSquadHeader('Isolés', String(rest.length), null, false);
+            rest.forEach(p => { makePlayerItem(p, false); rendered.add(p.playerGuid); });
+
+            // 3) HORS LIGNE : joueurs partis DEPUIS MOINS DE 3 MIN (au-delà on les retire pour
+            //    ne pas polluer le panneau tactique ; le roster complet reste dans l'admin Effectifs).
+            const nowSec = Date.now() / 1000;
+            const OFFLINE_KEEP = 180;
+            const offline = (serverRoster || [])
+                .filter(r => r.playerGuid && !rendered.has(r.playerGuid) && !r.left && (nowSec - (r.lastSeen || 0)) < OFFLINE_KEEP)
+                .sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+            if (offline.length) {
+                makeSquadHeader('Hors ligne', String(offline.length), null, false);
+                offline.forEach(r => {
+                    const cat = (r.factionKey && rankCatalog[r.factionKey]) || [];
+                    const rr = cat.find(x => x.i === r.rank);
+                    const rankName = rr ? rr.name : (r.rank > 0 ? ('Gr.' + r.rank) : '');
+                    const rankBadge = rankName ? `<span class="rank-badge">${fltEsc(rankName)}</span>` : '';
+                    const item = document.createElement('a');
+                    item.href = '#';
+                    item.className = 'list-group-item list-group-item-action bg-transparent';
+                    item.style.opacity = '0.55';
+                    item.innerHTML = `<span class="list-dot" style="background:#43566a"></span>${rankBadge} ${fltEsc(r.name || r.playerGuid)} <span class="ms-auto text-muted" style="font-size:10px"><i class="bi bi-clock-history"></i> ${fmtPlaytimeShort(r.playtimeSeconds)}</span>`;
+                    item.addEventListener('contextmenu', (e) => { e.preventDefault(); openObjective({ objtarget: 'player', uid: r.playerGuid, label: r.name || r.playerGuid }); });
+                    playerList.appendChild(item);
+                });
+            }
+
+            if (!playerList.children.length) {
+                playerList.innerHTML = '<div class="list-group-item bg-transparent">Aucune unité.</div>';
+            }
+        }
+
+        async function resolveAndApplyNames(positions) {
+            const guids = positions.map(p => p.playerGuid).filter(Boolean);
+            const resolve = [...new Set(guids)].filter(g => !nameCache.has(g));
+            if (resolve.length === 0) {
+                updateRenderedNames();
+                return;
+            }
+            try {
+                const nameMap = await fetchData('public/players/names', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({guids: resolve})
+                });
+                for (const [g, n] of Object.entries(nameMap)) {
+                    if (n) nameCache.set(g, n);
+                }
+                updateRenderedNames();
+            } catch (e) {
+                console.error("Error fetching names:", e);
+            }
+        }
+
+        function updateRenderedNames() {
+            playerMarkerMap.forEach((m, g) => {
+                if (nameCache.has(g)) {
+                    const tooltipContent = m.getTooltip().getContent();
+                    const newContent = tooltipContent.replace(g, nameCache.get(g));
+                    m.setTooltipContent(newContent);
+                }
+            });
+            playerList.querySelectorAll('.list-group-item').forEach(i => {
+                const g = i.dataset.guid;
+                if (g && nameCache.has(g)) {
+                    const dotSpan = i.querySelector('span.list-dot');
+                    const vehicleIconHTML = i.querySelector('i') ? i.querySelector('i').outerHTML : '';
+                    i.innerHTML = `${dotSpan.outerHTML} ${nameCache.get(g)} ${vehicleIconHTML}`;
+                }
+            });
+        }
+
+        function renderDamageEvents(events) {
+            damageEventsLayer.clearLayers();
+            if (!events || !events.length) return;
+            events.forEach(d => {
+                const killerMarker = playerMarkerMap.get(d.KillerGUID);
+                const victimMarker = playerMarkerMap.get(d.VictimGUID);
+                if (!killerMarker || !victimMarker) return;
+                const victimLatLng = victimMarker.getLatLng();
+                const killerLatLng = killerMarker.getLatLng();
+                const color = d.IsFriendlyFire ? '#3498db' : '#e74c3c';
+                const line = L.polyline([killerLatLng, victimLatLng], {
+                    color: color,
+                    weight: 2,
+                    opacity: .8
+                }).addTo(damageEventsLayer);
+                L.polylineDecorator(line, {
+                    patterns: [{
+                        offset: '100%',
+                        repeat: 0,
+                        symbol: L.Symbol.arrowHead({
+                            pixelSize: 12,
+                            polygon: false,
+                            pathOptions: {stroke: true, weight: 2, color: color, opacity: 1}
+                        })
+                    }]
+                }).addTo(damageEventsLayer);
+                const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="${color}"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>`,
+                    icon = L.divIcon({
+                        className: 'damage-icon-container',
+                        html: svg,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                const distance = Math.round(d.Distance);
+                const popupContent = `<b>Hit!</b><br><b>Attacker:</b> ${nameCache.get(d.KillerGUID) || d.KillerGUID}<br><b>Victim:</b> ${nameCache.get(d.VictimGUID) || d.VictimGUID}<br><b>Weapon:</b> ${d.WeaponName}<br><b>Hit Zone:</b> ${d.HitZone}<br><b>Distance:</b> ${distance}m`;
+                L.marker(victimLatLng, {icon: icon}).bindPopup(popupContent).addTo(damageEventsLayer);
+            });
+        }
+
+        function renderDamageTicks(timestamps, min, max, container, className) {
+            container.innerHTML = '';
+            const dur = max - min;
+            if (dur <= 0) return;
+            const tickPositions = new Set();
+            const timelineWidth = timeSlider.offsetWidth;
+            timestamps.forEach(ts => {
+                if (ts >= min && ts <= max) {
+                    const percentage = ((ts - min) / dur);
+                    const pixelPosition = Math.floor(percentage * timelineWidth);
+                    tickPositions.add(pixelPosition);
+                }
+            });
+            tickPositions.forEach(pixelPos => {
+                const t = document.createElement('div');
+                t.className = className;
+                t.style.left = `${pixelPos}px`;
+                container.appendChild(t);
+            });
+        }
+
+        const removeHeatmap = () => {
+            if (heatLayer) map.removeLayer(heatLayer);
+            heatLayer = null;
+        };
+        const getFactionColor = (f) => {
+            if (!f || f.colorR === undefined) return '#ffc107';
+            const r = Math.round(f.colorR * 255), g = Math.round(f.colorG * 255), b = Math.round(f.colorB * 255);
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        };
+        const unixToDateTimeLocal = (unix) => {
+            const d = new Date(unix * 1000);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().slice(0, 16);
+        };
+        const updateUserDisplay = (user) => {
+            if (user && user.id) {
+                userDisplay.innerHTML = `<div class="dropdown"><a href="#" class="d-block link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><img src="${user.avatar}" alt="${user.username}" width="32" height="32" class="rounded-circle"><span class="ms-2 d-none d-md-inline">${user.username}</span></a><ul class="dropdown-menu dropdown-menu-dark text-small"><li><a class="dropdown-item" href="/dashboard.html">Dashboard</a></li><li><a class="dropdown-item active" href="/map.html">Live Map</a></li>${user.account_type === 'admin' ? '<li><a class="dropdown-item" href="/admin.html"><i class="bi bi-shield-lock me-1"></i>Admin</a></li>' : ''}<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/auth/logout">Logout</a></li></ul></div>`;
+            } else {
+                userDisplay.innerHTML = '<a href="/auth/discord/login" class="btn btn-outline-light">Login</a>';
+            }
+        };
+
+        // --- Event Listeners ---
+        serverSelect.addEventListener('change', e => {
+            const id = e.target.value;
+            const url = new URL(window.location);
+            url.searchParams.set('server_id', id);
+            url.searchParams.delete('from');
+            url.searchParams.delete('to');
+            window.history.pushState({}, '', url);
+            document.getElementById('time-range-start').value = '';
+            document.getElementById('time-range-end').value = '';
+            handleServerSelection(id);
+        });
+        timeSlider.addEventListener('input', e => {
+            stopLiveMode();
+            stopPlayback();
+            timeLabel.textContent = new Date(parseInt(e.target.value, 10) * 1000).toLocaleString();
+        });
+        timeSlider.addEventListener('change', e => updateMapAndList(e.target.value));
+        liveModeBtn.addEventListener('click', () => {
+            if (isLiveModeActive) {
+                stopLiveMode();
+            } else {
+                startLiveMode();
+            }
+        });
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying || isBuffering) {
+                stopPlayback();
+            } else {
+                startPlayback();
+            }
+        });
+        document.getElementById('apply-time-range-btn').addEventListener('click', () => {
+            stopLiveMode();
+            stopPlayback();
+            const sVal = document.getElementById('time-range-start').value,
+                eVal = document.getElementById('time-range-end').value;
+            if (!sVal || !eVal) return;
+            const from = Math.floor(new Date(sVal).getTime() / 1000), to = Math.floor(new Date(eVal).getTime() / 1000);
+            if (from >= to) return;
+            const id = serverSelect.value;
+            if (!id) return;
+            const url = new URL(window.location);
+            url.searchParams.set('server_id', id);
+            url.searchParams.set('from', from);
+            url.searchParams.set('to', to);
+            window.history.pushState({}, '', url);
+            handleServerSelection(id, from, to);
+        });
+        document.getElementById('reset-time-range-btn').addEventListener('click', () => {
+            stopLiveMode();
+            stopPlayback();
+            const id = serverSelect.value;
+            if (!id) return;
+            document.getElementById('time-range-start').value = '';
+            document.getElementById('time-range-end').value = '';
+            const url = new URL(window.location);
+            url.searchParams.set('server_id', id);
+            url.searchParams.delete('from');
+            url.searchParams.delete('to');
+            window.history.pushState({}, '', url);
+            handleServerSelection(id);
+        });
+        document.getElementById('heatmap-from-range-btn').addEventListener('click', () => {
+            const start = timeSlider.min, end = timeSlider.max;
+            if (!start || !end || start >= end) return;
+            createHeatmapForInterval(start, end);
+        });
+        document.getElementById('heatmap-last-hour-btn').addEventListener('click', () => {
+            const end = parseInt(timeSlider.value, 10), start = end - 3600;
+            createHeatmapForInterval(start, end);
+        });
+        document.getElementById('remove-heatmap-btn').addEventListener('click', removeHeatmap);
+        document.getElementById('player-search-input').addEventListener('input', e => {
+            const t = e.target.value.toLowerCase();
+            playerList.querySelectorAll('.list-group-item').forEach(i => {
+                i.style.display = i.textContent.toLowerCase().includes(t) ? '' : 'none';
+            });
+        });
+        gotoCoordsBtn.addEventListener('click', handleGoToCoords);
+        gotoCoordsInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') handleGoToCoords();
+        });
+
+        // --- Édition marqueur : boutons de la modale ---
+        document.getElementById('mk-edit-kind').addEventListener('change', mkToggleKind);
+        document.getElementById('mk-edit-save').addEventListener('click', async () => {
+            const msg = document.getElementById('mk-edit-msg');
+            const fields = {
+                kind: parseInt(document.getElementById('mk-edit-kind').value, 10),
+                vis: parseInt(document.getElementById('mk-edit-vis').value, 10),
+                icon: parseInt(document.getElementById('mk-edit-icon').value, 10) || 0,
+                ident: parseInt(document.getElementById('mk-edit-ident').value, 10) || 0,
+                dim: parseInt(document.getElementById('mk-edit-dim').value, 10) || 0,
+                sym: parseInt(document.getElementById('mk-edit-sym').value, 10) || 0,
+                color: mkSelColor,
+                size: parseInt(document.getElementById('mk-edit-size').value, 10) || 200,
+                rot: 0,
+                text: document.getElementById('mk-edit-text').value,
+                ch: -1
+            };
+            // Mode LOT : applique l'édition à tous les marqueurs sélectionnés.
+            if (mkMode === 'batch') {
+                const ids = [...selectedMarkerIds];
+                msg.textContent = 'Envoi...'; msg.className = 'small mt-2 text-info';
+                let ok = 0;
+                for (const id of ids) { const r = await postCommand(Object.assign({ type: 'edit', id }, fields)); if (r.ok) ok++; }
+                msg.textContent = `✓ ${ok}/${ids.length} marqueur(s) mis à jour`; msg.className = 'small mt-2 text-success';
+                setTimeout(() => { if (mkEditModal) mkEditModal.hide(); }, 900);
+                return;
+            }
+            let cmd;
+            if (mkMode === 'create') {
+                if (!mkCreateCoords) { msg.textContent = 'Coordonnées manquantes'; msg.className = 'small mt-2 text-danger'; return; }
+                cmd = Object.assign({ type: 'place', x: mkCreateCoords.x, y: mkCreateCoords.z }, fields);
+            } else {
+                cmd = Object.assign({ type: 'edit', id: parseInt(document.getElementById('mk-edit-id').value, 10) }, fields);
+            }
+            msg.textContent = 'Envoi...'; msg.className = 'small mt-2 text-info';
+            const r = await postCommand(cmd);
+            if (r.ok) {
+                msg.textContent = (mkMode === 'create' ? '✓ Marqueur posé' : '✓ Ordre envoyé') + ' (appliqué en jeu au prochain tick ~5 s)';
+                msg.className = 'small mt-2 text-success';
+                if (mkMode === 'create') setTimeout(() => { if (mkEditModal) mkEditModal.hide(); }, 800);
+            } else { msg.textContent = 'Erreur : ' + r.error; msg.className = 'small mt-2 text-danger'; }
+        });
+        document.getElementById('mk-edit-delete').addEventListener('click', async () => {
+            const id = parseInt(document.getElementById('mk-edit-id').value, 10);
+            if (!confirm('Supprimer ce marqueur ?')) return;
+            const msg = document.getElementById('mk-edit-msg');
+            const r = await postCommand({ type: 'remove', id });
+            if (r.ok) { msg.textContent = '✓ Suppression envoyée'; msg.className = 'small mt-2 text-success'; setTimeout(() => { if (mkEditModal) mkEditModal.hide(); }, 700); }
+            else { msg.textContent = 'Erreur : ' + r.error; msg.className = 'small mt-2 text-danger'; }
+        });
+        document.getElementById('mk-edit-move').addEventListener('click', () => {
+            pendingMoveId = parseInt(document.getElementById('mk-edit-id').value, 10);
+            if (mkEditModal) mkEditModal.hide();
+            const lm = fltMarkerMap.get(pendingMoveId);
+            if (lm && lm.dragging) {
+                lm.dragging.enable();
+                lm.off('dragend');
+                lm.on('dragend', async () => {
+                    const a = leafletToArma(lm.getLatLng());
+                    const movedId = pendingMoveId; pendingMoveId = null;
+                    const r = await postCommand({ type: 'move', id: movedId, x: a.x, y: a.z });
+                    mkToast(r.ok ? '✓ Déplacement envoyé' : ('Erreur : ' + r.error), r.ok ? 'ok' : 'err');
+                });
+                mkToast('Glissez le point à sa nouvelle position', 'info');
+            } else { mkToast('Le point deviendra déplaçable au prochain rafraîchissement', 'info'); }
+        });
+
+        // --- Objectif : boutons ---
+        document.getElementById('obj-faction-btn').addEventListener('click', () => {
+            openObjective({ objtarget: 'faction', faction: (currentSquads[0] && currentSquads[0].faction) || '' });
+        });
+        document.getElementById('select-btn').addEventListener('click', () => {
+            if (!currentUser) { mkToast('Connexion requise', 'err'); return; }
+            if (selecting) exitSelectMode(); else enterSelectMode();
+        });
+        document.getElementById('obj-pick-loc').addEventListener('click', () => {
+            objPickingLoc = true;
+            if (objModal) objModal.hide();
+            mkToast('Cliquez sur la carte pour situer l\'objectif', 'info');
+        });
+        document.getElementById('obj-send').addEventListener('click', async () => {
+            const msg = document.getElementById('obj-msg');
+            const name = document.getElementById('obj-name').value.trim();
+            if (!name) { msg.textContent = 'Titre requis'; msg.className = 'small mt-2 text-danger'; return; }
+            const cmd = { type: 'objective', objtarget: objCtx.objtarget, objname: name, objdesc: document.getElementById('obj-desc').value, x: objCtx.x || 0, y: objCtx.y || 0 };
+            if (objCtx.objtarget === 'player') cmd.uid = objCtx.uid;
+            else if (objCtx.objtarget === 'squad') cmd.id = objCtx.id;
+            else if (objCtx.objtarget === 'faction') cmd.faction = document.getElementById('obj-faction').value.trim();
+            msg.textContent = 'Envoi...'; msg.className = 'small mt-2 text-info';
+            const r = await postCommand(cmd);
+            if (r.ok) { msg.textContent = '✓ Objectif assigné (visible en jeu au prochain tick ~5 s)'; msg.className = 'small mt-2 text-success'; setTimeout(() => { if (objModal) objModal.hide(); }, 900); }
+            else { msg.textContent = 'Erreur : ' + r.error; msg.className = 'small mt-2 text-danger'; }
+        });
+        document.getElementById('accept-cookies').addEventListener('click', () => {
+            const d = new Date();
+            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+            document.cookie = "cookie_consent=true;expires=" + d.toUTCString() + ";path=/";
+            document.getElementById('cookie-banner').classList.remove('show');
+        });
+        if (!(`; ${document.cookie}`.includes(`; cookie_consent=`))) {
+            setTimeout(() => {
+                document.getElementById('cookie-banner').classList.add('show');
+            }, 500);
+        }
+
+        initialize();
+    });
+</script>
+
+<!-- Couche HUD : horloge Zulu, miroir état LIVE, nom du théâtre (n'altère pas la logique existante) -->
+<script>
+(function(){
+  const z=document.getElementById('clock-z'), d=document.getElementById('clock-d');
+  function tick(){ const t=new Date(); const p=n=>String(n).padStart(2,'0');
+    if(z) z.textContent=p(t.getUTCHours())+':'+p(t.getUTCMinutes())+':'+p(t.getUTCSeconds());
+    if(d) d.textContent=p(t.getUTCDate())+' · Zulu'; }
+  tick(); setInterval(tick,1000);
+
+  // Voyant "connexion" = VRAI flux (positions reçues récemment), pas juste "mode live".
+  const btn=document.getElementById('live-mode-btn');
+  const dot=document.getElementById('top-live'), txt=document.getElementById('top-live-txt');
+  const sel=document.getElementById('server-select'), th=document.getElementById('theatre-name');
+  function setStat(cls,label){ if(dot){ dot.classList.remove('active','wait'); if(cls) dot.classList.add(cls);} if(txt) txt.textContent=label; }
+  async function checkFlux(){
+    const live = btn && btn.classList.contains('btn-danger');   // mode live actif ?
+    if(!live){ setStat('', 'Différé'); return; }                // en replay
+    const sid = sel && sel.value;
+    if(!sid){ setStat('', 'Hors ligne'); return; }
+    try{
+      const r = await fetch('/api/v1/public/positions/latest/'+sid, {cache:'no-store'});
+      const a = await r.json();
+      const now = Math.floor(Date.now()/1000);
+      const fresh = Array.isArray(a) && a.some(p => (now - (p.eventTimestamp||0)) < 20);
+      if(fresh) setStat('active','En ligne'); else setStat('wait','En attente');
+    }catch(e){ setStat('', 'Hors ligne'); }
+  }
+  checkFlux(); setInterval(checkFlux, 3000);
+
+  // Nom du théâtre = serveur sélectionné
+  function setTheatre(){ if(sel&&th&&sel.selectedOptions.length) th.textContent = sel.selectedOptions[0].textContent.trim() || '—'; }
+  if(sel){ sel.addEventListener('change', setTheatre); setInterval(setTheatre, 1500); }
+})();
+</script>
+</body>
+</html>

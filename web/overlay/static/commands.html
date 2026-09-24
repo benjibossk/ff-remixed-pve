@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commandes admin — Intranet Tactique</title>
+    <meta name="description" content="Aide-mémoire des commandes chat du scénario FF - REMIXED - PVE.">
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
+        .searchbar{max-width:420px;}
+        .cat-title{font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:.9rem;color:var(--dim);margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+        .cat-title .bi{color:var(--blue);}
+        .cmd{display:flex;align-items:flex-start;gap:12px;background:var(--panel);border:1px solid var(--line);padding:11px 14px;margin-bottom:8px;}
+        .cmd:hover{border-color:var(--line-strong);}
+        .cmd-key{font-family:"IBM Plex Mono";font-size:14px;color:var(--amber);white-space:nowrap;flex:0 0 auto;cursor:pointer;}
+        .cmd-key:hover{text-decoration:underline;}
+        .cmd-arg{color:var(--dim);}
+        .cmd-body{flex:1;}
+        .cmd-desc{font-size:.9rem;color:var(--txt);}
+        .cmd-type{font-family:"Oswald";text-transform:uppercase;font-size:9px;letter-spacing:.05em;padding:1px 7px;border:1px solid;white-space:nowrap;flex:0 0 auto;margin-top:2px;}
+        .t-admin{color:var(--green);border-color:var(--green);}
+        .t-dev{color:#7aa3c4;border-color:#3a4a5a;}
+        /* Ouvertes à TOUS les joueurs, pas seulement aux admins. */
+        .t-player{color:#e0a33a;border-color:#e0a33a;}
+        .copied{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--green);color:var(--green);padding:8px 16px;font-family:"IBM Plex Mono";font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:1100;}
+        .copied.show{opacity:1;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="fx-grid"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            <span class="fw-bold">Commandes admin</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/admin.html" class="btn btn-outline-light btn-sm"><i class="bi bi-shield-lock me-1"></i>Admin</a>
+            <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-house"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="container" style="padding-top:90px;padding-bottom:60px;">
+    <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
+    <h1 class="display-6 fw-bold mb-1">Commandes chat</h1>
+    <p class="text-muted mb-3" style="max-width:680px">Les commandes se tapent dans le <b>chat en jeu</b> (préfixe <code>#</code>). Clique une commande pour la copier. Le badge indique qui peut l'utiliser : <span class="cmd-type t-admin d-inline-block">Admin</span> = exploitation, réservé au rôle Administrateur (<code>#login</code>) · <span class="cmd-type t-dev d-inline-block">Dev/Test</span> = test/débogage, admin aussi · <span class="cmd-type t-player d-inline-block">Joueur</span> = <b>ouverte à tout le monde</b>.</p>
+    <input type="text" class="form-control searchbar mb-2" id="search" placeholder="Rechercher une commande…">
+    <div id="list"></div>
+</main>
+
+<div class="copied" id="copied">Copié</div>
+
+<footer class="footer mt-5 py-4">
+    <div class="container text-center credit-foot">
+        <span>Moteur carte · <a href="https://reforger.armaplatform.com/workshop/65E90CB6053F2791" target="_blank" rel="noopener">GTG LiveMap</a></span>
+    </div>
+</footer>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    // ===== COMMANDES (miroir des ScrServerCommand du mod — à maintenir) =====
+    // type: admin (exploitation) | dev (test/debug). arg: argument optionnel.
+    const CATS = [
+      { name:"Exploitation & campagne", icon:"bi-sliders", cmds:[
+        { k:"placefob", arg:"", type:"admin", d:"Replace la FOB de départ À TA POSITION (au sol) et supprime la FOB aléatoire générée. Pour le début d'une nouvelle campagne." },
+        { k:"setsupply", arg:"<n>", type:"admin", d:"Règle les supplies du bâtiment/véhicule FF le plus proche qui a un stockage (FOB, usine, dépôt…)." },
+        { k:"build", arg:"", type:"admin", d:"Ouvre le menu de construction FF. Réservé au COMMANDEMENT (KILO), au GÉNIE (ECHO) et aux admins — ce sont eux qui choisissent quoi construire et où. Les autres joueurs peuvent seulement aider à monter un bâtiment déjà posé, à la pelle. Depuis le 24/09 une simple pelle en main ne suffit plus : c'était un contournement de l'époque où la touche J était cassée." },
+        { k:"demandes", arg:"", type:"admin", d:"État-major : ouvre la validation des demandes de procurement (à la demande, au lieu d'un pop-up)." },
+      ]},
+      { name:"Grades & progression", icon:"bi-award", cmds:[
+        { k:"promote", arg:"<playerId | nom>", type:"admin", d:"Monte un joueur d'un grade. La cible se donne par playerId ou par un bout de pseudo (insensible à la casse) ; si deux pseudos correspondent, la commande refuse et renvoie vers #ranks. Le grade est enregistré par UID et survit à la déconnexion et au redémarrage." },
+        { k:"demote", arg:"<playerId | nom>", type:"admin", d:"Descend un joueur d'un grade. Mêmes règles de ciblage que #promote." },
+        { k:"setrank", arg:"<playerId | nom> <0..8>", type:"admin", d:"Pose un grade exact : 0 Renégat · 1 Soldat · 2 Caporal · 3 Sergent · 4 Lieutenant · 5 Capitaine · 6 Commandant · 7 Colonel · 8 Général. Le grade est le DERNIER argument (le pseudo peut contenir des espaces)." },
+        { k:"ranks", arg:"", type:"admin", d:"Liste les joueurs connectés : playerId, pseudo, grade et temps de jeu. Sert surtout à récupérer un playerId quand deux pseudos se ressemblent." },
+        { k:"xp", arg:"", type:"player", d:"Affiche TON grade, ton XP, les bornes de ton palier et ton temps de jeu. Rappel : Soldat s'obtient automatiquement après 30 min de jeu ; au-delà l'XP se fige en haut du palier jusqu'à une promotion manuelle." },
+      ]},
+      { name:"Diagnostic en jeu", icon:"bi-clipboard-pulse", cmds:[
+        { k:"pelle", arg:"", type:"player", d:"Explique pourquoi TU ne peux pas construire : outil en main gauche présent ou non, pelle reconnue par FF ou non (une pelle vanilla ne compte pas), zone de construction, et nombre d'objets réellement constructibles ici. Le détail part dans le log serveur." },
+        { k:"census", arg:"[groupes|soldats|vehicules]", type:"admin", d:"Sort le recensement des spawns ennemis (types de groupe, soldats, véhicules et leurs proportions). Le tableau complet va dans le log serveur ; le chat reçoit le top 5. Publié aussi sur la page Recensement du site." },
+        { k:"help", arg:"[0-4]", type:"admin", d:"Liste les commandes admin EN JEU, par rubrique. Sans argument : l'index des rubriques. ⚠️ Cette liste est tenue à la main — la classe ScrServerCommand du jeu n'expose aucun registre énumérable. Toute nouvelle commande doit être ajoutée à DEUX endroits : FFRX_Help.c et cette page." },
+        { k:"camp", arg:"[go]", type:"admin", d:"Anti-camping : état de ta cellule (tirs comptés / seuil, durée / seuil, sourdine restante, palier atteint) et surtout les DEUX verrous invisibles — terrain ami (si oui, rien ne part jamais) et présence d'un ennemi à portée d'oreille (400 m). « #camp go » déclenche la riposte ici en sautant les seuils : le délai de compte rendu, le floutage de position et l'escalade sont conservés. Chaque « go » monte d'un palier (drone → équipe détournée → groupe monté)." },
+        { k:"menace", arg:"", type:"admin", d:"État de la menace adaptative : jauges « blindé » et « aérien » par zone, et part de groupes ennemis recevant un spécialiste antichar ou sol-air. Sert à vérifier que le socle et l'intensité produisent bien des spécialistes." },
+        { k:"nvg", arg:"", type:"admin", d:"Vision nocturne ennemie : combien d'ennemis ont été tirés au sort porteurs d'une optique NV, la proportion obtenue face au réglage, et la perception des autres la nuit." },
+        { k:"tracante", arg:"", type:"admin", d:"Traçantes : combien de tirs traçants ont réellement trahi une position, et le bonus de repérage appliqué." },
+        { k:"radiointel", arg:"", type:"admin", d:"Renseignement radio en attente : les rapports de Réoccupation ne s'affichent plus en jeu, ils sont interceptés et doivent être collectés sur une tour radio tenue. Cette commande dit ce qui est en attente." },
+      ]},
+      { name:"Économie, logistique & intel (test)", icon:"bi-box-seam", cmds:[
+        { k:"resupply", arg:"", type:"dev", d:"Force l'arrivée immédiate d'un navire de ravitaillement marine près de la FOB." },
+        { k:"airresupply", arg:"", type:"dev", d:"Force un ravitaillement AÉRIEN ennemi maintenant (un hélico vole vers un point ennemi le renforcer/ravitailler)." },
+        { k:"vbied", arg:"", type:"dev", d:"Lance une voiture piégée ROULANTE sur toi — distincte des épaves piégées statiques : celle-ci fonce, s'identifie et se neutralise au tir (viser le conducteur)." },
+        { k:"intro", arg:"", type:"dev", d:"Rejoue la cinématique d'introduction. Utile pour la tester sans repartir d'un compte neuf — elle est normalement réservée aux joueurs sous 500 XP." },
+        { k:"spawncache", arg:"", type:"dev", d:"Spawne une cache/camp ennemi gardé (JOB_ENEMY_CAMP) et donne sa grille." },
+        { k:"testintel", arg:"", type:"dev", d:"Tuyaute la grille du checkpoint ennemi le plus proche (test de l'intel texte)." },
+        { k:"tipmines", arg:"", type:"dev", d:"Révèle le champ de mines ennemi le plus proche : hint texte + marqueur carte local." },
+        { k:"testproc", arg:"", type:"dev", d:"Affiche la notif d'alerte état-major (test du procurement)." },
+      ]},
+      { name:"Menace & guerre asymétrique (test)", icon:"bi-exclamation-triangle", cmds:[
+        { k:"spawnaa", arg:"", type:"dev", d:"Spawne un soldat AA (Igla) anti-hélico près de toi." },
+        { k:"spawnat", arg:"", type:"dev", d:"Spawne un soldat AT (Javelin) près de toi." },
+        { k:"spawnbomber", arg:"", type:"dev", d:"Spawne un kamikaze civil (veste explosive) près de toi." },
+        { k:"revealspy", arg:"", type:"dev", d:"Démasque le civil le plus proche en espion : il bascule ennemi et dégaine." },
+        { k:"trapcar", arg:"", type:"dev", d:"Piège la voiture civile la plus proche (mine AP enterrée dessous)." },
+        { k:"radiosites", arg:"", type:"dev", d:"État des sites radio : combien existent sur la carte, combien sont opérables (antenne debout), et combien sont tenus par la résistance. Une antenne détruite rend son site inopérable." },
+        { k:"balise", arg:"", type:"dev", d:"Balises GPS : combien sont actuellement allumées sur la carte. Rappel : 2 h d'autonomie à pleine charge, rechargeable avec une batterie de drone." },
+        { k:"epaves", arg:"", type:"dev", d:"Carcasses de véhicules piégées : combien d'épaves ont été repérées sur la carte au démarrage, et combien portent encore une charge armée. Pendant la première minute la réponse indique que le balayage est en cours." },
+        { k:"ied", arg:"[go]", type:"dev", d:"État des IED dispersés à l'avance sur les points d'intérêt de la carte : combien sont posés, le plafond, et combien de lieux candidats existent. « go » force un semis immédiat au lieu d'attendre le complément automatique (toutes les 15 min)." },
+        { k:"regeneratemines", arg:"", type:"dev", d:"Régénère les champs de mines ennemis (routes + bases)." },
+      ]},
+      { name:"Civils & RPG (test)", icon:"bi-people", cmds:[
+        { k:"civname", arg:"", type:"dev", d:"Affiche l'identité (nom) + le niveau de confiance du civil le plus proche." },
+        { k:"civtrust", arg:"<delta>", type:"dev", d:"Modifie la confiance du civil le plus proche (ex. +15 ou -10)." },
+        { k:"frisk", arg:"", type:"dev", d:"Fouille le civil le plus proche : démasque un espion armé, sinon petit malus de confiance." },
+      ]},
+    ];
+
+    function render(q) {
+        q = (q||'').toLowerCase().trim();
+        const host = document.getElementById('list');
+        host.innerHTML = CATS.map(cat => {
+            const cmds = cat.cmds.filter(c => !q || c.k.includes(q) || c.d.toLowerCase().includes(q));
+            if (!cmds.length) return '';
+            return `<div class="cat-title"><i class="bi ${cat.icon}"></i>${esc(cat.name)}</div>` +
+              cmds.map(c => `
+                <div class="cmd">
+                    <span class="cmd-key" data-copy="#${esc(c.k)}${c.arg?' '+esc(c.arg):''}">#${esc(c.k)} ${c.arg?`<span class="cmd-arg">${esc(c.arg)}</span>`:''}</span>
+                    <span class="cmd-body"><span class="cmd-desc">${esc(c.d)}</span></span>
+                    <span class="cmd-type t-${c.type}">${c.type==='admin'?'Admin':(c.type==='player'?'Joueur':'Dev/Test')}</span>
+                </div>`).join('');
+        }).join('') || `<div class="text-muted p-3">Aucune commande ne correspond.</div>`;
+        host.querySelectorAll('[data-copy]').forEach(el => el.addEventListener('click', () => copy(el.dataset.copy)));
+    }
+
+    function copy(txt) {
+        navigator.clipboard?.writeText(txt);
+        const t = document.getElementById('copied');
+        t.textContent = 'Copié : ' + txt; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 1200);
+    }
+
+    document.getElementById('search').addEventListener('input', e => render(e.target.value));
+    render('');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+$grp JWK_CheckpointEntity : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ masterCheckpoint37 {
+  coords 4717.55 136.51 7021.668
+  angles 0 -106.41 0
+  m_iRange 50
+  {
+   $grp SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    {
+     coords -18.383 0.021 -20.665
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.013 0
+       angles 0.384 0 0.089
+      }
+     }
+    }
+    {
+     coords 15.639 0.345 -17.385
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.179 0
+       angles 2.825 0 5.965
+      }
+     }
+    }
+   }
+   $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    {
+     coords -13.164 -0.32 19.201
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 -0.067 0
+       angles 1.762 0 9.433
+      }
+     }
+    }
+    {
+     coords 9.932 0.661 17.436
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.265 0
+       angles 1.51 0 7.953
+      }
+     }
+    }
+   }
+  }
+ }
+ masterCheckpoint38 {
+  coords 5088.987 135.05 6975.552
+  angles 0 167.661 0
+  m_iRange 50
+  {
+   $grp SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    {
+     coords -18.384 -2.375 -20.665
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 -0.196 0
+       angles 3.792 0 9.085
+      }
+     }
+    }
+    {
+     coords -2.221 -0.348 -18.529
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.306 0
+       angles 3.85 0 7.638
+      }
+     }
+    }
+   }
+   $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    {
+     coords -17.004 -2.855 10.028
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 -0.051 0
+       angles 3.211 0 10.427
+      }
+     }
+    }
+    {
+     coords 12.203 0.445 12.873
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.05 0
+       angles -3.333 0 10.534
+      }
+     }
+    }
+   }
+  }
+ }
+}
+JWK_TownEntity JWK_TownController_68EAC40D49B655AD : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_BattleSubjectComponent "{64B72BB65D41DFD9}" {
+   m_fEnemyMultiplier 1.1
+  }
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Musakhan"
+  }
+ }
+ coords 4953.048 140.69 7062.336
+ m_iTownRange 170
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 4954.984 144.283 7058.947
+ Points {
+  ShapePoint "{68EAC40DBE199F47}" {
+   Position -25.969 -2.982 -119.876
+  }
+  ShapePoint "{68EAC40DBEBBBD50}" {
+   Position -117.321 -10.593 -99.538
+  }
+  ShapePoint "{68EAC40DBD7DDD0D}" {
+   Position -170.667 -9.893 -75.56
+  }
+  ShapePoint "{68EAC40DBD3D66DF}" {
+   Position -201.237 -7.74 -48.411
+  }
+  ShapePoint "{68EAC40DBDF06CDA}" {
+   Position -203.239 -7.966 6.174
+  }
+  ShapePoint "{68EAC40DBDBCD3CD}" {
+   Position -171.585 -6.421 87.396
+  }
+  ShapePoint "{68EAC40DBC513F2A}" {
+   Position -117.436 -5.672 136.429
+  }
+  ShapePoint "{68EAC40DBC1580A2}" {
+   Position -79.938 -6.235 168.78
+  }
+  ShapePoint "{68EAC40DBCC231CE}" {
+   Position -21.453 -5.685 180.571
+  }
+  ShapePoint "{68EAC40DBC8599C2}" {
+   Position 58.104 -5.067 155.079
+  }
+  ShapePoint "{68EAC40DBB45F187}" {
+   Position 106.322 -5.652 77.265
+  }
+  ShapePoint "{68EAC40DBB1E0BBA}" {
+   Position 121.374 -7.695 -7.208
+  }
+  ShapePoint "{68EAC40DBBDA3898}" {
+   Position 123.71 -6.941 -55.538
+  }
+  ShapePoint "{68EAC40DBA50AE9B}" {
+   Position 65.505 -5.663 -109.784
+  }
+  ShapePoint "{68EAC40DBADD2D8E}" {
+   Position 12.403 -5.821 -123.021
+  }
+ }
+}

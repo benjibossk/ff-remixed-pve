@@ -1,0 +1,18 @@
+GenericEntity : "{DC625458E7EA246D}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE_base.et" {
+ ID "0000000000000001"
+ components {
+  JWK_ConstructionToolItemComponent "{6FFA10C0A0B10001}" {
+  }
+  SCR_CampaignBuildingGadgetToolComponent "{5D60B36CF6E1B018}" {
+   m_eAnimVariable ADRIANOV
+   m_eUseMask FROM_ACTION
+   m_iConstructionValue 10
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    SCR_EquipItemAction "{6324CBA5C4E3ADBB}" : "{068D8D646964D12A}Prefabs/Characters/Core/Actions/EquipGadgetAction.conf" {
+    }
+   }
+  }
+ }
+}

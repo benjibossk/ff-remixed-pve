@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civils — Fichier de renseignement</title>
+    <meta name="description" content="Civils rencontrés, confiance, contrôles d'identité et espions démasqués.">
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
+
+        .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px;}
+        .kpi{background:var(--panel);border:1px solid var(--line);padding:11px 13px;}
+        .kpi b{display:block;font-family:"Oswald";font-size:1.5rem;line-height:1.1;color:var(--hi);}
+        .kpi span{font-family:"IBM Plex Mono";font-size:9.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;}
+        .kpi.bad b{color:var(--red);} .kpi.good b{color:var(--green);} .kpi.warn b{color:var(--amber);}
+
+        .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--amber);padding:11px 14px;margin-bottom:20px;font-size:.83rem;color:var(--dim);}
+        .note b{color:var(--txt);}
+
+        .zones{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+        .zchip{font-family:"IBM Plex Mono";font-size:10px;border:1px solid var(--line);color:var(--dim);padding:3px 8px;cursor:pointer;}
+        .zchip:hover{border-color:var(--blue);color:var(--txt);}
+        .zchip.on{border-color:var(--blue);background:rgba(61,139,255,.14);color:var(--txt);}
+
+        table.civ{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);}
+        table.civ th{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.72rem;color:var(--dim);
+            text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;}
+        table.civ td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;vertical-align:middle;}
+        table.civ tr:hover td{background:rgba(61,139,255,.05);}
+        .cname{font-family:"Oswald";letter-spacing:.02em;color:var(--txt);}
+        .ckey{font-family:"IBM Plex Mono";font-size:9.5px;color:#4a5666;}
+        .zone{font-family:"IBM Plex Mono";font-size:10px;border:1px solid var(--line);color:var(--dim);padding:1px 6px;}
+
+        /* Jauge de confiance : rouge -> ambre -> vert, lue d'un coup d'oeil. */
+        .tw{display:flex;align-items:center;gap:8px;min-width:150px;}
+        .tbar{flex:1;height:5px;background:rgba(255,255,255,.08);position:relative;}
+        .tfill{height:100%;}
+        .tval{font-family:"IBM Plex Mono";font-size:10px;min-width:30px;text-align:right;}
+        .tmid{position:absolute;left:50%;top:-2px;width:1px;height:9px;background:rgba(255,255,255,.25);}
+
+        .badge-f{font-family:"IBM Plex Mono";font-size:10px;border:1px solid var(--line);color:var(--dim);padding:1px 6px;}
+        .badge-s{font-family:"IBM Plex Mono";font-size:10px;border:1px solid var(--red);color:var(--red);padding:1px 6px;}
+        .muted{color:#4a5666;}
+        .stamp{font-family:"IBM Plex Mono";font-size:10px;color:var(--dim);margin-bottom:14px;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="fx-grid"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
+            <span class="fw-bold">Civils</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/" class="btn btn-outline-light btn-sm"><i class="bi bi-house"></i></a>
+            <div id="user-display"></div>
+        </div>
+    </div>
+</nav>
+
+<main class="container" style="padding-top:88px;padding-bottom:50px;max-width:1150px">
+    <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
+    <h1 class="display-6 fw-bold mb-1">Fichier des civils</h1>
+    <p class="text-muted mb-3" style="max-width:700px">
+        Les civils avec qui la résistance a <b>réellement interagi</b> : dialogue, extorsion,
+        contrôle d'identité. Leur confiance et leur historique <b>survivent aux redémarrages</b>.
+    </p>
+
+    <div class="note">
+        <b>Ce qu'est un « civil » ici.</b> Chaque <b>zone</b> (carré d'1 km) possède une liste
+        d'<b>habitants</b>. Quand la résistance croise un civil, il reçoit l'identité d'un habitant
+        de sa zone qui n'est pas déjà incarné — les mêmes visages reviennent donc dans leur village,
+        avec leur mémoire.
+        <br><br>
+        <b>Ce que ça ne garantit pas.</b> Le jeu (FF) reste maître de l'apparition des civils : on ne
+        peut pas promettre qu'un habitant donné soit présent à un instant donné, ni qu'un même groupe
+        se reforme. Ce qui est garanti : un civil croisé dans une zone est <b>toujours quelqu'un de
+        cette zone</b>. Un nom qui réapparaît n'est donc pas un bug — c'est le but.
+    </div>
+
+    <div id="body"><div class="text-center text-muted p-5"><div class="spinner-border"></div></div></div>
+</main>
+
+<footer class="footer mt-5 py-4">
+    <div class="container text-center credit-foot">
+        <span>Moteur carte · <a href="https://reforger.armaplatform.com/workshop/65E90CB6053F2791" target="_blank" rel="noopener">GTG LiveMap</a></span>
+        <div class="mt-2"><a href="/privacy.html" class="mx-2">Confidentialité</a></div>
+    </div>
+</footer>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const API = '/api/v1';
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+    let DATA = null, zoneFilter = '';
+
+    // Rouge sous 35, ambre entre 35 et 65, vert au-dessus : les mêmes seuils que le serveur
+    // utilise pour classer hostile / neutre / ami. Garder les deux alignés.
+    const trustColor = t => t < 35 ? 'var(--red)' : (t > 65 ? 'var(--green)' : 'var(--amber)');
+
+    function trustCell(t){
+        const v = Math.max(0, Math.min(100, t));
+        return `<div class="tw">
+            <div class="tbar"><div class="tfill" style="width:${v}%;background:${trustColor(t)}"></div><div class="tmid"></div></div>
+            <div class="tval" style="color:${trustColor(t)}">${Math.round(t)}</div>
+        </div>`;
+    }
+
+    function render(){
+        const box = document.getElementById('body');
+        if (!DATA || DATA.empty){
+            box.innerHTML = `<div class="alert alert-secondary">
+                Aucun fichier reçu pour l'instant. Le serveur de jeu l'envoie <b>toutes les 5 minutes</b>,
+                et seulement s'il contient au moins un civil rencontré.</div>`;
+            return;
+        }
+
+        const t = DATA.totals || {};
+        const zones = DATA.zones || {};
+        const rows = (DATA.entries || []).filter(e => !zoneFilter || e.zn === zoneFilter);
+
+        const zoneChips = Object.keys(zones).sort().map(z =>
+            `<span class="zchip ${z === zoneFilter ? 'on' : ''}" data-z="${esc(z)}">${esc(z)} · ${zones[z]}</span>`).join('');
+
+        box.innerHTML = `
+            <div class="stamp">Dernier envoi : ${DATA.received_at ? new Date(DATA.received_at).toLocaleString('fr-FR') : '—'}</div>
+
+            <div class="kpis">
+                <div class="kpi"><b>${t.known || 0}</b><span>Fiches</span></div>
+                <div class="kpi"><b>${t.touched || 0}</b><span>Contactés</span></div>
+                <div class="kpi bad"><b>${t.hostile || 0}</b><span>Hostiles &lt;35</span></div>
+                <div class="kpi warn"><b>${t.neutral || 0}</b><span>Neutres</span></div>
+                <div class="kpi good"><b>${t.friendly || 0}</b><span>Acquis &gt;65</span></div>
+                <div class="kpi"><b>${t.frisks || 0}</b><span>Contrôles</span></div>
+                <div class="kpi bad"><b>${t.spies || 0}</b><span>Espions</span></div>
+            </div>
+
+            ${zoneChips ? `<div class="zones"><span class="zchip ${zoneFilter ? '' : 'on'}" data-z="">Toutes zones</span>${zoneChips}</div>` : ''}
+
+            <table class="civ">
+                <thead><tr>
+                    <th>Nom</th><th>Zone</th><th style="width:190px">Confiance</th>
+                    <th>Échanges</th><th>Contrôles</th><th>Position</th>
+                </tr></thead>
+                <tbody>
+                ${rows.length ? rows.map(e => `
+                    <tr>
+                        <td><span class="cname">${esc(e.n || '—')}</span><br><span class="ckey">${esc(e.k)}</span></td>
+                        <td><span class="zone">${esc(e.zn || '—')}</span></td>
+                        <td>${trustCell(e.t || 0)}</td>
+                        <td>${e.i || 0}</td>
+                        <td>${e.f ? `<span class="badge-f">${e.f}</span>` : '<span class="muted">—</span>'}
+                            ${e.s ? ` <span class="badge-s">${e.s} espion${e.s > 1 ? 's' : ''}</span>` : ''}</td>
+                        <td class="ckey">${Math.round(e.x)} / ${Math.round(e.z)}</td>
+                    </tr>`).join('')
+                : `<tr><td colspan="6" class="text-muted p-4 text-center">Aucun civil dans cette zone.</td></tr>`}
+                </tbody>
+            </table>`;
+
+        box.querySelectorAll('.zchip').forEach(c => c.addEventListener('click', () => {
+            zoneFilter = c.dataset.z; render();
+        }));
+    }
+
+    (async () => {
+        try {
+            const me = await fetch(`${API}/users/me`);
+            if (!me.ok) { window.location.href = '/auth/discord/login'; return; }
+
+            const act = await (await fetch(`${API}/public/active-server`)).json();
+            if (!act || !act.id) throw new Error('aucun serveur actif');
+
+            const r = await fetch(`${API}/servers/${act.id}/ffcivs`);
+            if (r.status === 401 || r.status === 403) throw new Error("tu n'as pas les droits d'administration sur ce serveur");
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            DATA = await r.json();
+            render();
+        } catch (e) {
+            document.getElementById('body').innerHTML =
+                `<div class="alert alert-danger">Erreur de chargement : ${esc(e.message)}</div>`;
+        }
+    })();
+});
+</script>
+</body>
+</html>

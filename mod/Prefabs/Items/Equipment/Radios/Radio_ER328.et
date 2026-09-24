@@ -1,0 +1,156 @@
+GenericEntity : "{5879D8E9C56E358D}Prefabs/Modded/Items/Core/Radio_base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  BaseRadioComponent "{5A30BAE7673C63CA}" {
+   "Encryption key" "OuiOuiBaguette"
+   "Turned on" 1
+   Transceivers {
+    RadioTransceiver "{64DF380B1AA9692E}" {
+     ChannelFrequency 73000
+     "Transmitting Range" 1300
+     "Min tunable frequency" 30000
+     "Max tunable frequency" 87975
+    }
+    RadioTransceiver "{64DF380B1AA96938}" {
+     ChannelFrequency 54000
+     "Transmitting Range" 1300
+     "Min tunable frequency" 30000
+     "Max tunable frequency" 87975
+    }
+   }
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Thales ER328"
+     Description "#AMF-ER328-Description"
+     Icon "{2FBD8DA665FB8AF1}UI/Textures/VON/ANPRC68-100px_UI.edds"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 1.3
+     SizeSetupStrategy Manual
+     ItemVolume 300
+     RestingUP Forward
+     RestingAdditiveOffsetLS 0 0 0.15
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{64DF380B1AA96942}" {
+     AnimationInstance "{332D4A7512E78419}Assets/Items/Equipment/workspaces/Radio_ANPRC68_player.asi"
+     AnimationAttachments {
+      AnimationAttachmentInfo "{64DF380B1AA96944}" {
+       AnimGraph "{402BB5FA2891D687}Assets/Items/Equipment/workspaces/Radio_ANPRC68.agr"
+       AnimInstance "{332D4A7512E78419}Assets/Items/Equipment/workspaces/Radio_ANPRC68_player.asi"
+       BindingName "Gadget"
+      }
+     }
+     AllowInspection 1
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{64DF380B1AA96948}" {
+      CameraPreset Back
+      CameraOrbitAngles 25 -25 180
+      CameraDistanceToItem 2
+      CameraOffset 0 -0.07 0
+      FOV 10
+      PreviewModel "{FF68804D59C464C5}Assets/Items/Radios/ER328_preview.xob"
+     }
+     SCR_VONPreviewAttributes "{64DF380B1AA9694A}" {
+      CameraOrbitAngles -30 180 45
+      CameraDistanceToItem 0.6
+      FOV 40
+     }
+     AttachmentAttributes "{64DF380B5B9D6AF9}" {
+      AttachmentType AttachmentBayonet "{64DF380B5049A0DA}" {
+      }
+     }
+     SCR_WeaponAttachmentBayonetAttributes "{64DF380CEDEB0556}" {
+      AttachmentType AttachmentBayonet "{64DF380F67C22351}" {
+      }
+     }
+    }
+    CommonItemType "RADIO"
+    m_SlotType SLOT_VEST
+    m_bStackable 0
+   }
+  }
+  MeshObject "{5A30BAE7673C63D1}" {
+   Object "{5C93D00A4F518915}Assets/Items/Radios/ER328.xob"
+  }
+  RigidBody "{5A30BAE7673C63D3}" {
+   CenterOfMass -0.013 0.027 0.01
+   ModelGeometry 1
+   CCDRadius 0.015
+  }
+  ProcAnimComponent "{64DF380B1AA96950}" {
+   Enabled 0
+   Parameters {
+    ProcAnimParams "{64DF380B1AA96953}" {
+     ResourceName "{F335B90D4353B9A4}Assets/Items/Equipment/Radios/Radio_ANPRC68/Radio_ANPRC68_01.pap"
+     BoneNames +{
+     }
+     SimulationDistance 20
+     SimulateOnDedicatedServer 0
+    }
+   }
+  }
+  SCR_RadioComponent "{5A30BAE7673C63D4}" {
+   m_eAnimVariable ANPRC68
+   m_iRadioCategory PERSONAL
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.1 0
+     }
+     Radius 0.115
+    }
+    UserActionContext "{64DF380B1AA96956}" {
+     ContextName "knob_channel"
+     Position PointInfo "{64DF380B1AA96959}" {
+      Offset 0.012 0.2 0.007
+     }
+     Radius 0.1
+    }
+    UserActionContext "{64DF380B1AA9695B}" {
+     ContextName "knob_toggle"
+     Position PointInfo "{64DF380B1AA8B8F7}" {
+      Offset 0 0.2 -0.01
+     }
+     Radius 0.1
+    }
+   }
+   additionalActions {
+    SCR_EquipItemAction "{553AEBE8F3B60801}" : "{068D8D646964D12A}Prefabs/Characters/Core/Actions/EquipGadgetAction.conf" {
+     ActionTitle ""
+    }
+    SCR_RadioTuningUserAction "{64DF380B1AA8B8F2}" {
+     ParentContextList +{
+     }
+     UIInfo UIInfo "{64DF380B1AA8B8C8}" {
+     }
+    }
+    SCR_RadioTuningUserAction "{64DF380B1AA8B8CA}" {
+     ParentContextList +{
+     }
+     UIInfo UIInfo "{64DF380B1AA8B8C5}" {
+     }
+     m_bTuneUp 1
+    }
+    SCR_RadioToggleUserAction "{64DF380B1AA8B8C4}" {
+     ParentContextList +{
+     }
+    }
+    SCR_AttachItemFromInventoryAction "{64DF380A72F23BDC}" {
+     UIInfo SCR_ActionUIInfo "{64DF380A6BDC3664}" {
+     }
+     "Inventory action" 1
+    }
+    SCR_AttachementAction "{64DF380A62E7B68D}" {
+     UIInfo SCR_ActionUIInfo "{64DF380A4B2B328B}" {
+     }
+    }
+   }
+  }
+ }
+ coords 1380.194 36.309 2381.153
+}

@@ -1,0 +1,19 @@
+GenericEntity : "{09D6A1C9543E4A95}Prefabs/Items/Core/Backpack_Base.et" {
+ ID "511E9C6ADE70F798"
+ components {
+  SCR_UniversalInventoryStorageComponent "{5222CB03A40528FA}" {
+   MultiSlots {
+    MultiSlotConfiguration "{65CD4976EBFE524B}" {
+     SlotTemplate InventoryStorageSlot Tool {
+      Enabled 0
+     }
+    }
+    MultiSlotConfiguration "{65D921A5832155F7}" {
+     SlotTemplate InventoryStorageSlot Smokes {
+      Enabled 0
+     }
+    }
+   }
+  }
+ }
+}

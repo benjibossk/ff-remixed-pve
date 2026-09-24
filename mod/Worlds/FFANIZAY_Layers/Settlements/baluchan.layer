@@ -1,0 +1,113 @@
+JWK_CheckpointEntity masterCheckpoint21 : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ coords 782.75 136.438 7126.79
+ angles 0 167.661 0
+ m_iRange 50
+ {
+  $grp SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+   {
+    coords 3.683 -0.375 -11.25
+    angles 0 89.504 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.082 0
+      angles -1.26 0 -4.572
+     }
+    }
+   }
+   {
+    coords 20.712 -0.01 -16.309
+    angles 0 92.8 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.222 0
+      angles -0.599 0 2.765
+     }
+    }
+   }
+  }
+  $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+   {
+    coords -9.475 -0.288 10.028
+    angles 0 92.246 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.107 0
+      angles -0.915 0 3.634
+     }
+    }
+   }
+   {
+    coords 3.487 -0.414 8.458
+    angles 0 92.45 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.243 0
+      angles 1.352 0 4.611
+     }
+    }
+   }
+  }
+ }
+}
+JWK_TownEntity JWK_TownController_68E50EFA134C3DF1 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Baluchan"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 380.89 136.874 7128.776
+ m_iTownRange 200
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 376.073 136.906 7129.284
+ Points {
+  ShapePoint "{68E50EF963202B0B}" {
+   Position -259.166 -3.77 114.351
+  }
+  ShapePoint "{68E50EF9638ABDED}" {
+   Position -272.974 -2.782 -108.964
+  }
+  ShapePoint "{68E50EF962490316}" {
+   Position -218.075 -3.041 -218.81
+  }
+  ShapePoint "{68E50EF9620BF3C6}" {
+   Position -75.126 -3.019 -312.879
+  }
+  ShapePoint "{68E50EF962D90A17}" {
+   Position 122.258 -1.155 -371.87
+  }
+  ShapePoint "{68E50EF96282CCF1}" {
+   Position 382.725 -1.46 -294.152
+  }
+  ShapePoint "{68E50EF961498DD5}" {
+   Position 459.44 -1.938 -69.125
+  }
+  ShapePoint "{68E50EF961D62073}" {
+   Position 382.02 -0.926 240.988
+  }
+  ShapePoint "{68E50EF9619B4841}" {
+   Position 140.788 2.149 359.642
+  }
+  ShapePoint "{68E50EF9604704C7}" {
+   Position -94.74 -0.134 286.01
+  }
+  ShapePoint "{68E50EF960E677B2}" {
+   Position -223.521 2.557 195.417
+  }
+ }
+}

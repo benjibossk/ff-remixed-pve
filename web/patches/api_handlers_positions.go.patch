@@ -1,0 +1,169 @@
+diff --git a/api/handlers/positions.go b/api/handlers/positions.go
+index 772bea2..704be74 100644
+--- a/api/handlers/positions.go
++++ b/api/handlers/positions.go
+@@ -9,6 +9,7 @@ import (
+ 	"gtglivemap/models"
+ 	"io"
+ 	"log"
++	"math"
+ 	"net/http"
+ 	"regexp"
+ 	"strings"
+@@ -38,6 +39,11 @@ func updateLatestPositionsCache(serverID uuid.UUID, justSavedPositions []models.
+ 		RotationX      float64         `json:"rotationX"`
+ 		InVehicle      bool            `json:"inVehicle"`
+ 		Faction        FactionResponse `json:"faction"`
++		Rank           int             `json:"rank"`
++		XP             int             `json:"xp"`
++		FactionKey     string          `json:"factionKey"`
++		Radio          int             `json:"radio"`
++		LastSeen       int64           `json:"lastSeen"`
+ 	}
+ 
+ 	nowUTC := time.Now().UTC()
+@@ -91,6 +97,11 @@ func updateLatestPositionsCache(serverID uuid.UUID, justSavedPositions []models.
+ 				ColorG: faction.ColorG,
+ 				ColorB: faction.ColorB,
+ 			},
++			Rank:       pos.Rank,
++			XP:         pos.XP,
++			FactionKey: pos.FactionKey,
++			Radio:      pos.Radio,
++			LastSeen:   pos.LastSeen,
+ 		}
+ 	}
+ 
+@@ -130,6 +141,7 @@ func PostPositionsHandler(c *gin.Context) {
+ 	factionCache := make(map[string]models.Faction)
+ 	var allPositionsToSave []models.PlayerPosition
+ 	identitiesToUpdate := make(map[string]string)
++	statsUpdates := make(map[string]playerStatInput) // grade/xp/faction par joueur (dernier connu)
+ 	var latestTimestamp time.Time
+ 
+ 	playerNameRegex := regexp.MustCompile(`"playerName"\s*:\s*"(.*?)"`)
+@@ -158,11 +170,31 @@ func PostPositionsHandler(c *gin.Context) {
+ 		if singlePlayerPayload.PlayerName != "" {
+ 			identitiesToUpdate[singlePlayerPayload.PlayerGUID] = singlePlayerPayload.PlayerName
+ 		}
++		clearLeft(serverID.String(), singlePlayerPayload.PlayerGUID) // une position -> le joueur est revenu
++
++		// Dernier grade/xp/faction/position connus du joueur (fiche cumulée + roster admin).
++		inVeh := false
++		var px, pz float64
++		if n := len(singlePlayerPayload.Positions); n > 0 {
++			inVeh = singlePlayerPayload.Positions[n-1].InVehicle == 1
++			px = singlePlayerPayload.Positions[n-1].Position.Absolute.X
++			pz = singlePlayerPayload.Positions[n-1].Position.Absolute.Z
++		}
++		statsUpdates[singlePlayerPayload.PlayerGUID] = playerStatInput{
++			rank:       singlePlayerPayload.Rank,
++			xp:         singlePlayerPayload.XP,
++			factionKey: singlePlayerPayload.FactionKey,
++			inVehicle:  inVeh,
++			posX:       px,
++			posZ:       pz,
++		}
+ 
+ 		faction, found := factionCache[singlePlayerPayload.FactionName]
+ 		if !found {
+-			factionToHandle := models.Faction{ServerID: serverID, Name: singlePlayerPayload.FactionName, ColorR: singlePlayerPayload.FactionColor.R, ColorG: singlePlayerPayload.FactionColor.G, ColorB: singlePlayerPayload.FactionColor.B}
+-			result := database.DB.Where(models.Faction{ServerID: serverID, Name: singlePlayerPayload.FactionName}).FirstOrCreate(&faction, factionToHandle)
++			// La couleur va dans .Attrs() (valeurs appliquées SEULEMENT à la création),
++			// pas dans le WHERE — sinon la faction existante n'est jamais retrouvée (duplicate key).
++			colorAttrs := models.Faction{ColorR: singlePlayerPayload.FactionColor.R, ColorG: singlePlayerPayload.FactionColor.G, ColorB: singlePlayerPayload.FactionColor.B}
++			result := database.DB.Where(models.Faction{ServerID: serverID, Name: singlePlayerPayload.FactionName}).Attrs(colorAttrs).FirstOrCreate(&faction)
+ 			if result.Error != nil {
+ 				log.Printf("ERROR (ServerID %s): Could not find or create faction '%s': %v", serverID, singlePlayerPayload.FactionName, result.Error)
+ 				continue
+@@ -188,12 +220,18 @@ func PostPositionsHandler(c *gin.Context) {
+ 				RotationY:      posData.Rotation.Y,
+ 				RotationZ:      posData.Rotation.Z,
+ 				InVehicle:      posData.InVehicle == 1,
++				Rank:           singlePlayerPayload.Rank,
++				XP:             singlePlayerPayload.XP,
++				FactionKey:     singlePlayerPayload.FactionKey,
++				Radio:          singlePlayerPayload.Radio,
++				LastSeen:       singlePlayerPayload.LastSeen,
+ 			}
+ 			allPositionsToSave = append(allPositionsToSave, dbRecord)
+ 		}
+ 	}
+ 
+ 	go processNameUpdates(identitiesToUpdate)
++	go updatePlayerStats(serverID, statsUpdates)
+ 
+ 	if len(allPositionsToSave) > 0 {
+ 		if err := database.DB.Create(&allPositionsToSave).Error; err != nil {
+@@ -242,3 +280,71 @@ func processNameUpdates(identitiesToUpdate map[string]string) {
+ 		log.Printf("ERROR (Async Name Update): Could not update player names: %v", err)
+ 	}
+ }
++
++// playerStatInput = derniers grade/xp/faction reçus pour un joueur sur ce tick.
++type playerStatInput struct {
++	rank       int
++	xp         int
++	factionKey string
++	inVehicle  bool
++	posX       float64
++	posZ       float64
++}
++
++// updatePlayerStats met à jour la fiche cumulée par joueur/serveur : dernier grade/xp/faction,
++// premier/dernier vu, et TEMPS DE JEU cumulé (on n'ajoute le delta que si < 60 s -> évite de
++// compter les périodes hors ligne). Async (goroutine) après la sauvegarde des positions.
++func updatePlayerStats(serverID uuid.UUID, updates map[string]playerStatInput) {
++	if len(updates) == 0 {
++		return
++	}
++	const maxGapSeconds = 60.0
++	now := time.Now().UTC()
++
++	for guid, u := range updates {
++		var stat models.PlayerStat
++		err := database.DB.Where("server_id = ? AND player_guid = ?", serverID, guid).First(&stat).Error
++		if err != nil {
++			// Nouvelle fiche.
++			newStat := models.PlayerStat{
++				ServerID: serverID, PlayerGUID: guid,
++				LastRank: u.rank, LastXP: u.xp, FactionKey: u.factionKey,
++				FirstSeen: now, LastSeen: now, PlaytimeSeconds: 0,
++				LastPosX: u.posX, LastPosZ: u.posZ,
++			}
++			if err := database.DB.Create(&newStat).Error; err != nil {
++				log.Printf("ERROR (PlayerStats): create %s: %v", guid, err)
++			}
++			continue
++		}
++		gap := now.Sub(stat.LastSeen).Seconds()
++		if gap > 0 && gap < maxGapSeconds {
++			stat.PlaytimeSeconds += int64(gap)
++			if u.inVehicle {
++				stat.DriveSeconds += int64(gap)
++			} else {
++				stat.WalkSeconds += int64(gap)
++			}
++			// Distance : delta depuis la dernière position, capé pour ignorer respawn/téléport.
++			if (u.posX != 0 || u.posZ != 0) && (stat.LastPosX != 0 || stat.LastPosZ != 0) {
++				step := math.Hypot(u.posX-stat.LastPosX, u.posZ-stat.LastPosZ)
++				if step > 0 && step < 2000 {
++					stat.DistanceMeters += step
++				}
++			}
++		}
++		if u.posX != 0 || u.posZ != 0 {
++			stat.LastPosX = u.posX
++			stat.LastPosZ = u.posZ
++		}
++		stat.LastRank = u.rank
++		stat.LastXP = u.xp
++		if u.factionKey != "" {
++			stat.FactionKey = u.factionKey
++		}
++		stat.LastSeen = now
++		if err := database.DB.Save(&stat).Error; err != nil {
++			log.Printf("ERROR (PlayerStats): save %s: %v", guid, err)
++		}
++	}
++}

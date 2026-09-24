@@ -1,0 +1,31 @@
+// FF - REMIXED - PVE -- pile de sable, version CHANTIER.
+//
+// POURQUOI CE PREFAB. Les accessoires de chantier du jeu de base (PlankPile, BrickPile,
+// SandPile...) sont des props de decor : AUCUN RplComponent, ni chez eux ni chez leurs
+// parents ACTIF. Une entite sans replication n'existe que sur la machine qui l'a creee -- en
+// Workbench on est serveur ET client, donc ca semble marcher, et sur le dedie le joueur
+// ne voit rien. C'est exactement le piege qui avait rendu les murs invisibles.
+//
+// On ajoute donc le composant manquant, et rien d'autre : ni persistance (la pile est
+// temporaire, elle disparait quand le chantier s'acheve), ni action (on pellette sur le
+// chantier, pas sur le tas).
+//
+// ATTENTION -- LE RplComponent EST HERITE, MAIS DESACTIVE. Constate a l'import le
+// 2026-09-19 : le Workbench renvoyait DEUX RplComponent sur ce prefab, un herite
+// "Enabled: false" et le mien "Enabled: true". Declarer un composant avec un GUID
+// d'instance NEUF ne le surcharge pas, il en AJOUTE un second -- exactement le bug qui
+// empechait la caisse d'arsenal d'etre persistee.
+//
+// On reprend donc le GUID d'instance du parent ({5624A88DC2D9928D}) et on se contente de
+// l'ACTIVER. C'est ce que fait le jeu de base lui-meme sur les props destructibles qui ont
+// besoin d'etre repliques (Beehive_01, HayBale_01...).
+//
+// On ne redeclare NI MeshObject NI RigidBody : le prop de base les porte deja.
+GenericEntity : "{DEB57429CD49782D}Prefabs/Props/Construction/GravelPile_01/SandPile_01.et" {
+ ID "6FFEC0DEB2700400"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

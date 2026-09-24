@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6FFEC0DEDA000004}Prefabs/Characters/Factions/INDFOR/FIA_DESERT/Character_FIA_DA_AC_Medic.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

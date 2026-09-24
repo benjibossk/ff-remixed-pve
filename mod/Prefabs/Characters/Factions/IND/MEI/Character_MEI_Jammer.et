@@ -1,0 +1,12 @@
+SCR_ChimeraCharacter : "{F95AEA26749B12EC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman1.et" {
+ ID "6A3A80C13B2F606B"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Back {
+     Prefab "{4977C9711C8F1943}Prefabs/Items/Equipment/Backpacks/JammerBag.et"
+    }
+   }
+  }
+ }
+}

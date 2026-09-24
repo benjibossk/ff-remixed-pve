@@ -1,0 +1,12 @@
+SCR_ChimeraCharacter : "{A62FA97C4EC64F14}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_HeliPilot.et" {
+ ID "200D264F0EEA1A28"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo ArmoredVest {
+     Prefab "{F8C583E4B4481677}Prefabs/Characters/Vests/Vest_6B45/TF_Vest_6B45_EMR.et"
+    }
+   }
+  }
+ }
+}

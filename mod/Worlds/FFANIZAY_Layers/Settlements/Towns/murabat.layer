@@ -1,0 +1,180 @@
+$grp JWK_CheckpointEntity : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ JWK_CheckpointController_68DCC49280B6AE9 {
+  coords 9742.659 47.691 1318.737
+  angles 0 -78.276 0
+  {
+   SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    coords -6.943 0.901 16.01
+    angles 0 -81.832 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -0.706 0
+      angles 2.804 0 2.086
+     }
+    }
+   }
+   $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    {
+     coords -10.831 -0.024 -2.602
+     angles 0 -81.918 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 -0.98 0
+       angles 5.278 0 3.968
+      }
+     }
+    }
+    {
+     coords -9.932 -1.089 -17.201
+     angles 0 -84.274 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 -0.051 0
+       angles 7.211 0 -0.257
+      }
+     }
+    }
+   }
+  }
+ }
+ JWK_CheckpointController_68DCC49280B6AE10 {
+  coords 9260.662 50.31 1607.892
+  angles 0 103.158 0
+  {
+   SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    coords 14.865 0.901 6.039
+    angles 0 -96 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -0.094 0
+      angles -11.964 0 1.972
+     }
+    }
+   }
+   $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+    {
+     coords -10.831 -0.024 -2.602
+     angles 0 -97.074 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 1.899 0
+       angles 17.741 0 1.266
+      }
+     }
+    }
+    {
+     coords 11.923 -0.183 -8.761
+     angles 0 -96.678 0
+     {
+      StaticModelEntity {
+       ID "62A693F2AC4FB612"
+       coords 0 0.704 0
+       angles -3.935 0 1.547
+      }
+     }
+    }
+   }
+  }
+ }
+}
+JWK_TownEntity JWK_TownController_68DF02360997D548 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_CallToActionTriggerComponent "{6594CEFCB40E34B1}" {
+   m_UiInfo SCR_UIInfo "{65F683266A264311}" {
+   }
+  }
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Murabat"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 9544.688 39.487 1441.196
+ m_iTownRange 150
+ m_iPopulation 110
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 9541.545 39.547 1440.027
+ Points {
+  ShapePoint "{68DF02367BE61186}" {
+   Position -188.662 16.268 214.99
+  }
+  ShapePoint "{68DF02367A614F1D}" {
+   Position -234.843 17.271 196.403
+  }
+  ShapePoint "{68DF02367AC42AD4}" {
+   Position -276.638 16.111 127.387
+  }
+  ShapePoint "{68DF0236797C9B72}" {
+   Position -259.435 16.891 91.694
+  }
+  ShapePoint "{68DF02367907A4AA}" {
+   Position -260.448 16.714 31.589
+  }
+  ShapePoint "{68DF023679CCDC50}" {
+   Position -297.804 19.943 6.921
+  }
+  ShapePoint "{68DF023679854963}" {
+   Position -309.119 10.64 -69.518
+  }
+  ShapePoint "{68DF023678582751}" {
+   Position -282.053 16.253 -110.93
+  }
+  ShapePoint "{68DF023678247930}" {
+   Position -245.06 17.534 -132.348
+  }
+  ShapePoint "{68DF023678ABC1C0}" {
+   Position -179.652 21.05 -142.523
+  }
+  ShapePoint "{68DF0236777EC7A7}" {
+   Position -129.864 15.489 -162.606
+  }
+  ShapePoint "{68DF02367730C781}" {
+   Position -79.054 27.874 -205.344
+  }
+  ShapePoint "{68DF0236771D3B2E}" {
+   Position -13.35 21.824 -221.74
+  }
+  ShapePoint "{68DF023677D55387}" {
+   Position 56.656 18.096 -208.523
+  }
+  ShapePoint "{68DF02367536AF09}" {
+   Position 131.845 1.518 -139.022
+  }
+  ShapePoint "{68DF023675FD6136}" {
+   Position 149.123 10.226 -73.355
+  }
+  ShapePoint "{68DF023675A5C5DD}" {
+   Position 129.756 13.786 -7.882
+  }
+  ShapePoint "{68DF0236747F5375}" {
+   Position 125.614 10.603 29.121
+  }
+  ShapePoint "{68DF023674255D4B}" {
+   Position 163.393 18.899 79.453
+  }
+  ShapePoint "{68DF023673690837}" {
+   Position 80.117 9.222 138.597
+  }
+  ShapePoint "{68DF023673CCC912}" {
+   Position 19.42 -1.746 103.431
+  }
+  ShapePoint "{68DF02367241800F}" {
+   Position -31.987 -2.385 142.937
+  }
+ }
+}

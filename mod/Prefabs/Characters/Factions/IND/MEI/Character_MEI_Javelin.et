@@ -1,0 +1,55 @@
+SCR_ChimeraCharacter : "{F95AEA26749B12EC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman1.et" {
+ ID "6A3A80C137FB37EC"
+ components {
+  ChimeraAIControlComponent "{520EA1D2DB109F34}" {
+   components {
+    PerceptionComponent "{54A2CBC75F06064B}" {
+     ForgetEnemyTime 120
+     ForgetDetectedTime 120
+     SensorsList {
+      EyesSensor "{520EA1D2DB109AAD}" {
+       MaxRange 1500
+      }
+      EarsSensor "{520EA1D2DB109AA9}" {
+       MaxRange 1200
+      }
+     }
+     VehicleThreatMaxDist 1500
+     VehicleThreatMaxAngle 45
+    }
+    SCR_AICombatComponent "{55A2C9BE343B2EA1}" {
+     m_eAISkillDefault EXPERT
+    }
+   }
+  }
+  Deko_AIAntiAirFireController "{6FFEC0DEDA000204}" {
+   m_bEnabled 1
+   m_bDebug 0
+   m_fMaxRange 1300
+   m_fMinRange 80
+   m_fAimStabilizeTime 7
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    Name "Javelin"
+    IconSetName "EditableEntity_Character_Anti_Tank"
+    m_aAuthoredLabels + {
+     TRAIT_ARMORPIERCING
+    }
+    m_aAutoLabels {
+     SIZE_M ROLE_ANTITANK
+    }
+   }
+  }
+  WCS_AI_AntiVehicleEngagementComponent "{6FFEC0DEDA000203}" {
+   m_fMaxEngagementRange 1300
+   m_fMinEngagementRange 80
+   m_fForwardFov 100
+   m_fScanInterval 1
+   m_bDebug 0
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFB7}" {
+   WeaponTemplate "{FF1605ABFA3CE3DB}Prefabs/Weapons/Launchers/FGM148_Javelin/Launcher_FGM148_Javelin_AI.et"
+  }
+ }
+}

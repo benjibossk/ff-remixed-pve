@@ -1,0 +1,91 @@
+diff --git a/database/database.go b/database/database.go
+index 138dcb0..abcf7c5 100644
+--- a/database/database.go
++++ b/database/database.go
+@@ -6,6 +6,7 @@ import (
+ 	"gtglivemap/models" // <--- ANGEPASST
+ 	"log"
+ 
++	"golang.org/x/crypto/bcrypt"
+ 	"gorm.io/driver/mysql"
+ 	"gorm.io/gorm"
+ )
+@@ -37,12 +38,31 @@ func Migrate() {
+ 		&models.DamageEvent{},
+ 		&models.ServerAccess{},
+ 		&models.PlayerIdentity{},
++		&models.PlayerStat{},
++		&models.MarkerMeta{},
++		&models.RankCatalog{},
++		&models.Loadout{},
+ 		&models.BadWord{},
+ 		&models.SystemSetting{},
++		&models.Idea{},
++		&models.IdeaVote{},
++		&models.Comment{},
++		&models.DesignDoc{},
++		&models.SquadWhitelist{},
++		&models.FFStateSample{},
++		&models.ServerEvent{},
+ 	)
+ 	if err != nil {
+ 		log.Fatalf("Failed to migrate database: %v", err)
+ 	}
++
++	// Loadouts: uniqueness moved from (faction,name) to (owner_uid,faction,name) so
++	// personal loadouts of different players can share a name. Drop the stale index
++	// (best-effort: errors if already gone, which is fine).
++	if e := DB.Exec("DROP INDEX idx_loadout_faction_name ON loadouts").Error; e != nil {
++		log.Printf("(migration) drop idx_loadout_faction_name skipped: %v", e)
++	}
++
+ 	log.Println("Database migration completed")
+ }
+ 
+@@ -52,6 +72,12 @@ func Seed() {
+ 	DB.Model(&models.MapConfig{}).Count(&mapCount)
+ 	if mapCount == 0 {
+ 		log.Println("Seeding database: Creating default map configuration...")
++		// Calage Everon connu-bon (calibré via l'outil admin 2 points) — baké ici pour qu'une
++		// DB fraîche démarre déjà calibrée (pas de décalage). Modifiable ensuite via l'admin.
++		everonScaleX := 0.9820502236898179
++		everonScaleY := 1.0167493415006432
++		everonOffsetX := 8.021796442266464
++		everonOffsetY := 1.4120504022845353
+ 		defaultMap := models.MapConfig{
+ 			Name:      "Everon",
+ 			TilesURL:  "https://reforger.recoil.org/map-tiles/everon/{z}/{x}/{y}/tile.jpg",
+@@ -62,6 +88,10 @@ func Seed() {
+ 			BoundsNEY: 12800,
+ 			MinZoom:   0,
+ 			MaxZoom:   5,
++			ScaleX:    &everonScaleX,
++			ScaleY:    &everonScaleY,
++			OffsetX:   &everonOffsetX,
++			OffsetY:   &everonOffsetY,
+ 		}
+ 		DB.Create(&defaultMap)
+ 	}
+@@ -70,7 +100,10 @@ func Seed() {
+ 	DB.Model(&models.Server{}).Count(&serverCount)
+ 	if serverCount == 0 {
+ 		log.Println("Seeding database: Creating default server...")
+-		hashedAPIKey := "secret-my-test-api-key-123"
++		// La clé API doit être stockée HASHÉE (le middleware valide en bcrypt).
++		plainAPIKey := "CHANGEME-fleet-api-key"
++		hashBytes, _ := bcrypt.GenerateFromPassword([]byte(plainAPIKey), bcrypt.DefaultCost)
++		hashedAPIKey := string(hashBytes)
+ 
+ 		var defaultMap models.MapConfig
+ 		DB.First(&defaultMap)
+@@ -85,8 +118,8 @@ func Seed() {
+ 			if err := DB.Create(&defaultServer).Error; err != nil {
+ 				log.Printf("Could not create default server: %v", err)
+ 			} else {
+-				log.Printf("Default server created. Your testing API-KEY is: my-test-api-key-123")
+-				log.Printf("!!! IMPORTANT: Use this key with the 'X-API-KEY' header for your tests !!!")
++				log.Printf("Default server created. API-KEY (clé Fleet) = %s", plainAPIKey)
++				log.Printf("!!! Utilise cette clé en 'Authorization: Bearer %s' ou header 'X-API-KEY' !!!", plainAPIKey)
+ 			}
+ 		} else {
+ 			log.Println("Could not seed server because no map config was found.")

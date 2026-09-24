@@ -1,0 +1,87 @@
+// FF - REMIXED - PVE : replace the vanilla USSR enemy vehicle pool with the
+// TacticalFlava modern Russian Federation vehicles (GAZ Tigr variants, BM-21
+// Grad, 2B9 mortar, Ural arsenal).
+//
+// Done via a modded JWK_CombatFactionTrait: for the "USSR" faction only, swap
+// m_aDefaultVehicles for the TF set and drop the base-game vehicle catalog
+// imports BEFORE super.Initialize() adds them to the faction VEHICLE catalog.
+// No USSR.conf override -> no wipe risk, coexistence-safe, survives FF updates.
+
+modded class JWK_CombatFactionTrait
+{
+	override void Initialize(JWK_Faction faction)
+	{
+		if (faction && faction.GetKey() == "USSR")
+		{
+			m_aDefaultVehicles = {
+				// GAZ Tigr - unarmed (transport) + recon
+				"{6F4D5B56F4905A62}Prefabs/Vehicles/Wheeled/TIGR/Unarmed/GAZ_TIGR_v2_Unarmed_Green.et",
+				"{162B7A60442C5913}Prefabs/Vehicles/Wheeled/TIGR/Unarmed/WithAist/GAZ_TIGR_v2_Unarmed_Recon_1L271.et",
+				// GAZ Tigr - armed
+				"{6B7CD408BDFB94F5}Prefabs/Vehicles/Wheeled/TIGR/PKP/GAZ_TIGR_v2_PKM_Green.et",
+				"{7A16FB788DAD3992}Prefabs/Vehicles/Wheeled/TIGR/KORD/GAZ_TIGR_v2_KORD_Green.et",
+				"{199E549208D9782B}Prefabs/Vehicles/Wheeled/TIGR/AGS/GAZ_TIGR_v2_AGS17_Green.et",
+				"{95A220DF8D6E2543}Prefabs/Vehicles/Wheeled/TIGR/ArbaletDM/GAZ_TIGR_v2_Arbalet_KORD_Green.et",
+				// Support: Grad MLRS, 2B9 mortar, Ural arsenal
+				"{753091E32C4E2EE3}Prefabs/Vehicles/Wheeled/Ural_4320_Grad/BM 21-1_9M22.et",
+				"{A78D786EFFDDC8FD}Prefabs/Vehicles/Wheeled/2B9/TF_Wheeled_2B9.et",
+				"{1E29208544FECEBC}Prefabs/Vehicles/Wheeled/Ural4320/TF_Ural4320_Arsenal.et"
+			};
+
+			// Drop the base-game USSR vehicle imports (UAZ/BRDM/BTR/Ural/Mi-8).
+			m_aDefaultVehiclesEntityCatalogImports = {};
+		}
+
+		super.Initialize(faction);
+	}
+}
+
+// TacticalFlava vehicles carry no JWK_VehicleAttributesComponent, so FF's
+// LoadAttributesFromPrefab returns null and the spawn filters drop them. We
+// supply computed attributes here instead of the (null) whitelist lookup, so
+// no VehicleManager.conf override / no per-prefab component is needed.
+modded class JWK_VehicleManagerConfig
+{
+	override JWK_VehicleAttributes GetAttributesForPrefab(const ResourceName prefab)
+	{
+		JWK_VehicleAttributes found = super.GetAttributesForPrefab(prefab);
+		if (found)
+			return found;
+
+		string p = prefab;
+		bool isTigr = p.Contains("TIGR");
+		bool isSupport = p.Contains("2B9") || p.Contains("Grad") || p.Contains("BM 21") || p.Contains("TF_Ural");
+		if (!isTigr && !isSupport)
+			return null;
+
+		JWK_VehicleAttributes a = new JWK_VehicleAttributes();
+		a.m_iParkingDomain     = JWK_EParkingSlotDomain.LAND;
+		a.m_iCrewType          = JWK_EVehicleCrewType.GENERIC;
+		a.m_iRepairStationType = JWK_EVehicleRepairStationType.LAND;
+
+		if (isTigr)
+		{
+			a.m_iVehicleType = JWK_EVehicleType.CAR;
+			a.m_iParkingType = JWK_EParkingSlotType.CAR;
+			a.m_iArmorType   = JWK_EVehicleArmorType.LIGHT_ARMOR;
+			if (p.Contains("Unarmed") || p.Contains("Recon"))
+				a.m_iArmamentType = JWK_EVehicleArmamentType.UNARMED;
+			else if (p.Contains("KORD") || p.Contains("Arbalet"))
+				a.m_iArmamentType = JWK_EVehicleArmamentType.MEDIUM_ARMED;
+			else
+				a.m_iArmamentType = JWK_EVehicleArmamentType.LIGHT_ARMED; // PKM, AGS
+		}
+		else
+		{
+			// Grad MLRS / 2B9 mortar / Ural arsenal
+			a.m_iVehicleType = JWK_EVehicleType.TRUCK;
+			a.m_iParkingType = JWK_EParkingSlotType.TRUCK;
+			a.m_iArmorType   = JWK_EVehicleArmorType.UNARMORED;
+			if (p.Contains("TF_Ural"))
+				a.m_iArmamentType = JWK_EVehicleArmamentType.UNARMED;
+			else
+				a.m_iArmamentType = JWK_EVehicleArmamentType.HEAVY_ARMED; // Grad, 2B9
+		}
+		return a;
+	}
+}

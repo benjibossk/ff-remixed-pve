@@ -1,0 +1,21 @@
+SCR_IndestructibleEnvironmentalEntity {
+ ID "64D4682F7481E7B2"
+ components {
+  MeshObject "{64D4681F10AB479D}" {
+   Object "{1C00CAF5507AD7D2}source/props/tem_helipad1.xob"
+   LODFactors {
+    10 1
+   }
+  }
+  RigidBody "{64D4682F631FFC77}" {
+   ModelGeometry 1
+   Static 1
+  }
+ 
+    JWK_AmbientParkingSpotComponent "{66FAC9AD1E052C0E}" {
+     m_fSpawnChanceOverride 0.5
+    }
+ }
+ Flags 524291
+ coords 4551.569 0 5771.881
+}

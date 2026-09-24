@@ -1,0 +1,17 @@
+Vehicle : "{199E549208D9782B}Prefabs/Vehicles/Wheeled/TIGR/AGS/GAZ_TIGR_v2_AGS17_Green.et" {
+ ID "69EEC444FCECCEAB"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000051}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000052}" {
+    m_iVehicleType CAR
+    m_iParkingType CAR
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType LIGHT_ARMED
+    m_iArmorType LIGHT_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+}

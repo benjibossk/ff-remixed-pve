@@ -1,0 +1,18 @@
+Vehicle : "{1F9BB80C3EC3C891}Prefabs/Modded/Vehicles/Core/Wheeled_Car_Base.et" {
+ ID "BBCBA43A9778AE21"
+ components {
+  FFRX_JammerSpawnGate "{69EEC44105A68CC1}" {
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Jammer {
+     Offset 0 0.7025 -0.2808
+     MergePhysics 1
+     Enabled 0
+     Prefab ""
+    }
+   }
+  }
+ }
+ coords 146.908 1 150.302
+}

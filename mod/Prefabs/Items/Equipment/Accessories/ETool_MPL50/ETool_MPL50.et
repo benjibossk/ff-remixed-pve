@@ -1,0 +1,17 @@
+GenericEntity : "{79746A009471133A}Prefabs/Items/Equipment/Accessories/ETool_MPL50/ETool_MPL50_base.et" {
+ ID "5DACC8A511A90383"
+ components {
+  SCR_CampaignBuildingGadgetToolComponent "{5D9C6E85CC9796B7}" {
+   m_eAnimVariable ADRIANOV
+   m_eUseMask FROM_ACTION
+  }
+  JWK_ConstructionToolItemComponent "{6FFA10C0A0B10002}" {
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    SCR_EquipItemAction "{6324CBA5DE3B714F}" : "{068D8D646964D12A}Prefabs/Characters/Core/Actions/EquipGadgetAction.conf" {
+    }
+   }
+  }
+ }
+}

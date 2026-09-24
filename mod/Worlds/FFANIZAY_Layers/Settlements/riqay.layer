@@ -1,0 +1,94 @@
+JWK_TownEntity JWK_TownController_68E50EE221C2241A : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_CallToActionTriggerComponent "{6594CEFCB40E34B1}" {
+   m_UiInfo SCR_UIInfo "{65F683266A264311}" {
+    IconSetName "Riqay"
+   }
+  }
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Riqay"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 3560.757 208.426 668.977
+ m_iTownRange 120
+ m_iTownType TOWN
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 3560.757 208.426 668.977
+ Points {
+  ShapePoint "{68E50EE25A650B13}" {
+   Position -153.485 -4.709 43.146
+  }
+  ShapePoint "{68E50EE25A1F89C8}" {
+   Position -143.847 -2.153 117.787
+  }
+  ShapePoint "{68E50EE25AD97388}" {
+   Position -115.23 -2.103 139.207
+  }
+  ShapePoint "{68E50EE25AAE8C67}" {
+   Position -70.156 -0.603 133.032
+  }
+  ShapePoint "{68E50EE259799C42}" {
+   Position -23.182 -3.959 128.561
+  }
+  ShapePoint "{68E50EE259484228}" {
+   Position 14.39 -15.288 152.143
+  }
+  ShapePoint "{68E50EE2591F2DD8}" {
+   Position 30.671 -8.464 168.517
+  }
+  ShapePoint "{68E50EE259D5406D}" {
+   Position 63.283 -5.196 159.459
+  }
+  ShapePoint "{68E50EE259816DCE}" {
+   Position 114.981 5.941 122.436
+  }
+  ShapePoint "{68E50EE2585EF087}" {
+   Position 142.228 6.737 56.672
+  }
+  ShapePoint "{68E50EE25813681C}" {
+   Position 154.551 4.819 29.225
+  }
+  ShapePoint "{68E50EE258E7255A}" {
+   Position 150.074 4.67 5.767
+  }
+  ShapePoint "{68E50EE258BB8183}" {
+   Position 119.667 1.636 -27.786
+  }
+  ShapePoint "{68E50EE25882A353}" {
+   Position 76.401 0.74 -54.099
+  }
+  ShapePoint "{68E50EE257505680}" {
+   Position 23.007 0.191 -76.225
+  }
+  ShapePoint "{68E50EE257221DBA}" {
+   Position -15.602 1.091 -79.238
+  }
+  ShapePoint "{68E50EE257F1F6B9}" {
+   Position -55.262 -0.441 -70.357
+  }
+  ShapePoint "{68E50EE257B42B19}" {
+   Position -86.756 -2.998 -66.379
+  }
+  ShapePoint "{68E50EE256743091}" {
+   Position -107.113 -6.103 -52.035
+  }
+  ShapePoint "{68E50EE2561922C1}" {
+   Position -125.877 -6.858 -7.201
+  }
+  ShapePoint "{68E50EE2557229B2}" {
+   Position -137.191 -8.239 -5.512
+  }
+ }
+}

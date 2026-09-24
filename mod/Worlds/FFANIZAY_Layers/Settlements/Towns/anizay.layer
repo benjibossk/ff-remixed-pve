@@ -1,0 +1,75 @@
+JWK_TownEntity JWK_TownController_68E1021B8E3B2099 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_BattleSubjectComponent "{64B72BB65D41DFD9}" {
+   m_fEnemyMultiplier 2.5
+  }
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Anizay"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 3890.567 142.439 7929.45
+ m_iTownRange 280
+ m_iPopulation 250
+ m_iTownType CITY
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 3886.796 142.818 7930.067
+ Points {
+  ShapePoint "{68E1021B82754441}" {
+   Position 2.685 2.372 -312.357
+  }
+  ShapePoint "{68E1021B822BA50B}" {
+   Position -182.106 -1.436 -219.345
+  }
+  ShapePoint "{68E1021B82ECBB6E}" {
+   Position -306.552 0.273 -147.411
+  }
+  ShapePoint "{68E1021B82BEFB11}" {
+   Position -335.318 2.761 -50.136
+  }
+  ShapePoint "{68E1021B81365781}" {
+   Position -343.141 1.111 154.397
+  }
+  ShapePoint "{68E1021B81F2475B}" {
+   Position -266.195 0.607 279.191
+  }
+  ShapePoint "{68E1021B81C605A1}" {
+   Position -79.105 -0.134 352.277
+  }
+  ShapePoint "{68E1021B8199F8EE}" {
+   Position 76.958 -2.55 352.312
+  }
+  ShapePoint "{68E1021B80577B58}" {
+   Position 227.748 0.504 341.687
+  }
+  ShapePoint "{68E1021B8013662D}" {
+   Position 339.437 0.504 311.484
+  }
+  ShapePoint "{68E1021B80EFF45F}" {
+   Position 390.435 1.526 254.888
+  }
+  ShapePoint "{68E1021B80A27BAF}" {
+   Position 422.357 0.981 103.395
+  }
+  ShapePoint "{68E1021BBF7563C3}" {
+   Position 382.921 4.664 -35.283
+  }
+  ShapePoint "{68E1021BBF49A209}" {
+   Position 295.269 1.124 -147.45
+  }
+  ShapePoint "{68E1021BBF0C3042}" {
+   Position 180.3 -2.469 -203.951
+  }
+ }
+}

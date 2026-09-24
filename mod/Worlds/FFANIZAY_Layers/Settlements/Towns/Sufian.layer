@@ -1,0 +1,122 @@
+JWK_TownEntity JWK_TownController_68DB0E576BCA9C92 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Sufian"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_bPreferRoadsides 1
+   m_aDaytimeFactor JWK_DayCycleFactorConfig "{630757987D93DCFD}" {
+    aPerHourFactors {
+     0
+     0
+     0
+     0
+     0.05
+     0.15
+     0.2
+     0.3
+     0.45
+     0.4
+     0.35
+     0.35
+     0.35
+     0.4
+     0.45
+     0.5
+     0.5
+     0.5
+     0.4
+     0.35
+     0.3
+     0.2
+     0.1
+     0.05
+    }
+   }
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 1362.231 138.603 7219.372
+ m_iTownRange 110
+}
+GenericEntity : "{6956B2B7D8A1A5E0}Prefabs/Controllers/Loadtime/JWK_TownDonationPoint.et" {
+ coords 1363.99 137.202 7284.921
+}
+GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Modded/Structures/Signs/Traffic/SignBusStop_01.et" {
+ coords 1374.323 137.996 7232.595
+ angles 0 -22.982 0
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 1363.42 138.552 7218.935
+ Points {
+  ShapePoint "{68DB0E5DF8A21C37}" {
+   Position -143.223 2.094 -203.278
+  }
+  ShapePoint "{68DB0E5DF75D8515}" {
+   Position -188.963 -1.65 -109.281
+  }
+  ShapePoint "{68DB0E5DF707680E}" {
+   Position -206.955 -2.198 -28.566
+  }
+  ShapePoint "{68DB0E5DF7C4CDBE}" {
+   Position -208.699 -1.67 29.502
+  }
+  ShapePoint "{68DB0E5DF78EC9C7}" {
+   Position -209.889 -2.592 86.689
+  }
+  ShapePoint "{68DB0E5DF635AEFD}" {
+   Position -206.825 -2.044 121.49
+  }
+  ShapePoint "{68DB0E5DF6D775B0}" {
+   Position -129.973 -2.022 112.066
+  }
+  ShapePoint "{68DB0E5DF686F931}" {
+   Position -84.6 -3.515 111.5
+  }
+  ShapePoint "{68DB0E5DF5256509}" {
+   Position -83.869 -2.587 191.933
+  }
+  ShapePoint "{68DB0E5DF5E69A73}" {
+   Position -77.202 -1.593 225.559
+  }
+  ShapePoint "{68DB0E5DF5ABD675}" {
+   Position -25.068 0.645 229.444
+  }
+  ShapePoint "{68DB0E5DF4F3CB2E}" {
+   Position 142.551 -0.547 237.431
+  }
+  ShapePoint "{68DB0E5DF4C83CF7}" {
+   Position 185.919 -0.374 231.784
+  }
+  ShapePoint "{68DB0E5DF48AF911}" {
+   Position 226.978 0.417 184.611
+  }
+  ShapePoint "{68DB0E5DF3449D9E}" {
+   Position 242.745 0.658 115.659
+  }
+  ShapePoint "{68DB0E5DF3F51C0E}" {
+   Position 254.188 -1.209 -7.463
+  }
+  ShapePoint "{68DB0E5DF27C6071}" {
+   Position 222.05 5.292 -75.531
+  }
+  ShapePoint "{68DB0E5DF20AD67D}" {
+   Position 203.269 4.066 -105.81
+  }
+  ShapePoint "{68DB0E5DF1338C7E}" {
+   Position 10.563 -0.667 -165.277
+  }
+ }
+}
+SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastructure/Landlines/PhoneBooth_E/PhoneBooth_E_01.et" {
+ coords 1378.729 0 7235.635
+ angles 0 -20.789 0
+}

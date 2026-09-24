@@ -1,0 +1,53 @@
+SCR_ChimeraCharacter : "{F95AEA26749B12EC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman1.et" {
+ ID "6A3A80C13B239C28"
+ components {
+  ChimeraAIControlComponent "{520EA1D2DB109F34}" {
+   components {
+    PerceptionComponent "{54A2CBC75F06064B}" {
+     ForgetEnemyTime 120
+     ForgetDetectedTime 120
+     SensorsList {
+      EyesSensor "{520EA1D2DB109AAD}" {
+       MaxRange 2200
+      }
+      EarsSensor "{520EA1D2DB109AA9}" {
+       MaxRange 1000
+      }
+     }
+     VehicleThreatMaxDist 3000
+     VehicleThreatMaxAngle 75
+    }
+    SCR_AICombatComponent "{55A2C9BE343B2EA1}" {
+     m_eAISkillDefault EXPERT
+    }
+   }
+  }
+  Deko_AIAntiAirFireController "{6FFEC0DEDA000202}" {
+   m_bEnabled 1
+   m_bDebug 0
+   m_fAimStabilizeTime 7
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    Name "Anti_Air"
+    IconSetName "EditableEntity_Character_Anti_Tank"
+    m_aAuthoredLabels + {
+     TRAIT_ARMORPIERCING
+    }
+    m_aAutoLabels {
+     SIZE_M ROLE_ANTITANK
+    }
+   }
+  }
+  WCS_AI_AntiHeliEngagementComponent "{6FFEC0DEDA000201}" {
+   m_fMaxEngagementRange 2200
+   m_fForwardFov 110
+   m_fStableTargetTimeRequired 0.2
+   m_fCommitToFireDelay 0.9
+   m_bDebug 0
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFB7}" {
+   WeaponTemplate "{518C91E11E50CFA9}Prefabs/Weapons/Launchers/9K38_IGLA/Launcher_9K38_IGLA_AI.et"
+  }
+ }
+}

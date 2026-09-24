@@ -1,0 +1,42 @@
+Vehicle : "{67AA8E9D5DD748FD}Prefabs/Vehicles/Land_Vehicles/Wheeled_Vehicles/GBC180/DA/GBC180_DA_MK2_Transport.et" {
+ ID "6A5A00000000030A"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000309}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE0000030A}" {
+    m_iVehicleType TRUCK
+    m_iParkingType TRUCK
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType UNARMED
+    m_iArmorType UNARMORED
+    m_iSpecialType UNDEFINED
+   }
+  }
+  SCR_EditableVehicleComponent "{50DEB7C26B5EB312}" {
+   m_UIInfo SCR_EditableVehicleUIInfo "{5298E609432D192D}" {
+    Name "GBC180 - Réparation (Daguet)"
+   }
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo TroopTransport {
+     Enabled 0
+    }
+    EntitySlotInfo CargoBase {
+     Enabled 0
+    }
+    RegisteringComponentSlotInfo CargoCover {
+     Enabled 0
+    }
+    RegisteringComponentSlotInfo FFRX_Equip {
+     Offset 0 0.1233 0.5108
+     MergePhysics 1
+     Prefab "{2096570A3B9E831E}Prefabs/Vehicles/Wheeled/Ural4320/VehParts/Ural4320_FIA_repair_box.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0.222
+ m_eVehicleType REPAIR
+}

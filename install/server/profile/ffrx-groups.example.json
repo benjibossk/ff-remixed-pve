@@ -1,0 +1,141 @@
+{
+  "options": {
+    "deleteExistingGroupsOnStart": true,
+    "blockFreeCreation": true
+  },
+  "groups": [
+    {
+      "groupName": "ALPHA — Infanterie",
+      "description": "1re section d'infanterie. Prise et tenue du terrain, assaut et combat rapproché. Cœur de la manœuvre.",
+      "faction": "PLAYER",
+      "maxMembers": 8,
+      "radioFrequencies": [
+        {
+          "frequency": 39.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "BRAVO — Infanterie",
+      "description": "2e section d'infanterie. Prise et tenue du terrain, assaut et combat rapproché.",
+      "faction": "PLAYER",
+      "maxMembers": 8,
+      "radioFrequencies": [
+        {
+          "frequency": 40.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "CHARLIE — Infanterie",
+      "description": "3e section d'infanterie. Prise et tenue du terrain, assaut et combat rapproché.",
+      "faction": "PLAYER",
+      "maxMembers": 8,
+      "radioFrequencies": [
+        {
+          "frequency": 41.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "DELTA — Cavalerie",
+      "description": "Peloton de l'Arme Blindée Cavalerie. Reconnaissance, éclairage et appui blindé au profit de l'infanterie.",
+      "faction": "PLAYER",
+      "maxMembers": 8,
+      "radioFrequencies": [
+        {
+          "frequency": 43.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "ECHO — Génie",
+      "description": "Section du génie. Franchissement, déminage, fortifications et destructions : appui à la mobilité et à la contre-mobilité.",
+      "faction": "PLAYER",
+      "maxMembers": 8,
+      "radioFrequencies": [
+        {
+          "frequency": 45.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "FOXTROT — Appui-feu",
+      "description": "Groupe d'appui-feu. Mitrailleuses, tireurs de précision et moyens antichars pour appuyer la manœuvre.",
+      "faction": "PLAYER",
+      "maxMembers": 6,
+      "radioFrequencies": [
+        {
+          "frequency": 47.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "GOLF — Reconnaissance",
+      "description": "Éléments de reconnaissance. Renseignement, observation et jalonnement en avant du dispositif.",
+      "faction": "PLAYER",
+      "maxMembers": 6,
+      "radioFrequencies": [
+        {
+          "frequency": 49.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "HOTEL — Artillerie",
+      "description": "Batterie d'artillerie. Appui-feu indirect (canons et mortiers), neutralisation et destruction en profondeur sur demande.",
+      "faction": "PLAYER",
+      "maxMembers": 6,
+      "radioFrequencies": [
+        {
+          "frequency": 51.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "INDIA — ALAT (Pilotes)",
+      "description": "Aviation Légère de l'Armée de Terre. Pilotes hélicoptères : transport tactique, appui-feu aérien, MEDEVAC et reconnaissance héliportée.",
+      "faction": "PLAYER",
+      "maxMembers": 4,
+      "radioFrequencies": [
+        {
+          "frequency": 53.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "JULIETT — Santé",
+      "description": "Équipe du Service de Santé des Armées. Relève, tri et évacuation des blessés (MEDEVAC).",
+      "faction": "PLAYER",
+      "maxMembers": 4,
+      "radioFrequencies": [
+        {
+          "frequency": 55.0
+        }
+      ],
+      "allowedPlayerUIDs": []
+    },
+    {
+      "groupName": "KILO — Commandement",
+      "description": "Poste de Commandement. Coordination de la manœuvre, logistique et liaison avec l'échelon supérieur.",
+      "faction": "PLAYER",
+      "maxMembers": 4,
+      "radioFrequencies": [
+        {
+          "frequency": 60.0
+        }
+      ],
+      "allowedPlayerUIDs": [],
+      "etatMajor": true
+    }
+  ]
+}

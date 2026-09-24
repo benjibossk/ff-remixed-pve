@@ -1,0 +1,21 @@
+GenericEntity : "{3BA9D94C4EE9B33B}Prefabs/Compositions/Slotted/CompositionBase.et" {
+ ID "6FFEC0DEB111C110"
+ components {
+  SCR_EditableEntityComponent "{6FFEC0DEB111C111}" : "{5BC678011CA5A0D4}Prefabs/Components/JWK_BuildItemEditableEntityComponent.ct" {
+   m_UIInfo SCR_EditableEntityUIInfo "{6FFEC0DEB111C112}" {
+    Name "Arsenal"
+    m_Image "{5CA2A90D21FF7C8F}UI/Textures/AssetImages/Construction/SmallStorage.edds"
+   }
+  }
+  Hierarchy "{6FFEC0DEB111C113}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{B53B98CEA2D72735}Prefabs/Props/Military/Compositions/FIA/ArsenalBox_FIA.et" {
+   ID "6FFEC0DEB111C114"
+   coords 0 0 0
+  }
+ }
+}

@@ -1,0 +1,14 @@
+GenericEntity : "{6C6D4CF5F88AE48D}Prefabs/Vehicles/Core/Vehicle_AmmoBox_Base.et" {
+ ID "69EF4D4E84320B31"
+ components {
+  MeshObject "{4B42E716914465B9}" {
+   Object "{08F1739051237930}Assets/Vehicles/Land_Vehicles/Wheeled_Vehicules/GBC180/VehParts/CargoCover.xob"
+   Materials {
+    MaterialAssignClass "{6FFEC0DE000002B3}" {
+     SourceMaterial "GBC180_MAT5"
+     AssignedMaterial "{CA7977D3D0572C9C}Assets/Vehicles/Land_Vehicles/Wheeled_Vehicules/GBC180/Data/CCE/GBC180_CCE_MAT5.emat"
+    }
+   }
+  }
+ }
+}

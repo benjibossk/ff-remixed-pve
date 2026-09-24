@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC — Whitelists d'escouade</title>
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <style>
+        body { padding: 2rem; }
+        .wl-players { max-height: 300px; overflow: auto; }
+        .wl-players label { display: block; padding: 2px 4px; border-radius: 4px; }
+        .wl-players label:hover { background: rgba(255,255,255,.05); }
+        .wl-extra { font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+<div class="tricolore"></div>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><a href="/" class="d-flex align-items-center gap-3" style="color:inherit;text-decoration:none" title="Retour a l'accueil"><span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>PC — Whitelists d'escouade</a></h1>
+        <div class="d-flex gap-2 align-items-center">
+            <select id="server-select" class="form-select" style="min-width:220px"></select>
+            <a href="/dashboard.html" class="btn btn-secondary">Tableau de bord</a>
+            <button id="refresh-btn" class="btn btn-info"><i class="bi bi-arrow-clockwise"></i> Rafraîchir</button>
+        </div>
+    </div>
+    <div id="auth-status"></div>
+
+    <div id="content" class="d-none">
+        <p class="small text-muted">
+            Restreins l'accès d'un groupe à une <strong>liste de joueurs</strong> (ex. KILO — Commandement).
+            Un groupe avec une liste <strong>non vide</strong> n'admet QUE ces joueurs ; liste vide = ouvert à tous.
+            Enregistrer applique le changement <strong>en direct</strong> sur le serveur (et le persiste).
+            ⚠️ Les escouades affichées viennent du <strong>serveur en cours</strong> — il doit être en ligne.
+        </p>
+        <div id="wl-container"></div>
+    </div>
+</div>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const API = '/api/v1';
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+    const fetchJSON = async (ep, opt) => {
+        const res = await fetch(`${API}/${ep}`, opt);
+        if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || ('HTTP ' + res.status)); }
+        return res.status === 204 ? null : res.json();
+    };
+
+    let servers = [], curServer = null;
+    let squads = [], roster = [], whitelists = [];
+
+    function wlFor(groupId) {
+        const w = whitelists.find(x => x.groupId === groupId);
+        if (!w || !w.uids) return [];
+        return w.uids.split(';').map(s => s.trim()).filter(Boolean);
+    }
+
+    function render() {
+        const box = document.getElementById('wl-container');
+        if (!squads.length) {
+            box.innerHTML = '<div class="card"><div class="card-body text-center text-muted p-4">Aucune escouade reçue du serveur. Vérifie qu\'il est <strong>en ligne</strong> et que Fleet pousse les escouades.</div></div>';
+            return;
+        }
+        const nameByGuid = {};
+        roster.forEach(p => { nameByGuid[p.playerGuid] = p.name || p.playerGuid; });
+
+        box.innerHTML = squads.slice().sort((a,b) => a.id - b.id).map(sq => {
+            const cur = wlFor(sq.id);
+            const curSet = new Set(cur);
+            const restricted = cur.length > 0;
+            // Joueurs whitelistés absents du roster (UID inconnus) -> textarea extra.
+            const extra = cur.filter(u => !roster.some(p => p.playerGuid === u));
+            const players = roster.slice().sort((a,b) => (a.name||'').localeCompare(b.name||''));
+            const checks = players.length ? players.map(p => {
+                const on = curSet.has(p.playerGuid) ? 'checked' : '';
+                // Le pseudo reste DANS le <label> (cliquer dessus doit cocher la case) : le lien
+                // vers la fiche est une petite icône à part, sinon on ne pourrait plus cocher en
+                // cliquant le nom.
+                const sheet = `<a class="ms-1 text-decoration-none" href="/soldier?uid=${encodeURIComponent(p.playerGuid)}&server=${encodeURIComponent(curServer)}" title="Fiche soldat de ${esc(p.name || p.playerGuid)}"><i class="bi bi-person-badge"></i></a>`;
+                return `<label><input type="checkbox" class="form-check-input me-2 wl-chk" data-gid="${sq.id}" value="${esc(p.playerGuid)}" ${on}> ${esc(p.name || p.playerGuid)} <small class="text-muted">${esc(p.playerGuid)}</small></label>${sheet}`;
+            }).join('') : '<div class="text-muted small">Aucun joueur connu sur ce serveur (roster vide).</div>';
+
+            return `
+            <div class="card mb-3 bracket">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-people-fill me-2"></i>${esc(sq.name || ('Groupe ' + sq.id))} <small class="text-muted">#${sq.id}</small></span>
+                <span class="badge ${restricted ? 'text-bg-warning' : 'text-bg-secondary'}">${restricted ? ('Réservé — ' + cur.length + ' joueur(s)') : 'Ouvert à tous'}</span>
+              </div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-7">
+                    <label class="form-label small text-muted">Joueurs autorisés (cocher)</label>
+                    <div class="wl-players border rounded p-2">${checks}</div>
+                  </div>
+                  <div class="col-md-5">
+                    <label class="form-label small text-muted">UID supplémentaires (un par ligne)</label>
+                    <textarea class="form-control wl-extra" rows="6" data-gid="${sq.id}" placeholder="uid_hors_roster_1&#10;uid_hors_roster_2">${esc(extra.join('\n'))}</textarea>
+                    <div class="form-text">UID = celui du lien Discord (#link) / propriétaire des dotations.</div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                  <button class="btn btn-outline-danger btn-sm wl-clear" data-gid="${sq.id}" data-name="${esc(sq.name || '')}"><i class="bi bi-unlock"></i> Ouvrir (vider)</button>
+                  <button class="btn btn-info btn-sm wl-save" data-gid="${sq.id}" data-name="${esc(sq.name || '')}"><i class="bi bi-check-lg"></i> Enregistrer</button>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        box.querySelectorAll('.wl-save').forEach(b => b.addEventListener('click', e => saveGroup(+e.currentTarget.dataset.gid, e.currentTarget.dataset.name)));
+        box.querySelectorAll('.wl-clear').forEach(b => b.addEventListener('click', e => {
+            if (!confirm('Ouvrir ce groupe à tous (vider la whitelist) ?')) return;
+            saveGroup(+e.currentTarget.dataset.gid, e.currentTarget.dataset.name, true);
+        }));
+    }
+
+    async function saveGroup(gid, name, clear) {
+        let uids = [];
+        if (!clear) {
+            document.querySelectorAll(`.wl-chk[data-gid="${gid}"]:checked`).forEach(c => uids.push(c.value));
+            const ta = document.querySelector(`.wl-extra[data-gid="${gid}"]`);
+            if (ta) ta.value.split(/[\n;,\s]+/).map(s => s.trim()).filter(Boolean).forEach(u => uids.push(u));
+        }
+        try {
+            const r = await fetchJSON(`servers/${curServer}/whitelist`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ groupId: gid, groupName: name, uids })
+            });
+            await loadServer();
+            alert(clear ? 'Groupe ouvert à tous.' : `Whitelist enregistrée (${r.count} joueur(s)). Appliquée en direct.`);
+        } catch (err) { alert('Erreur : ' + err.message); }
+    }
+
+    async function loadServer() {
+        if (!curServer) return;
+        const box = document.getElementById('wl-container');
+        box.innerHTML = '<div class="text-muted p-3">Chargement…</div>';
+        try {
+            [squads, roster, whitelists] = await Promise.all([
+                fetchJSON(`public/squads/${curServer}`).catch(() => []),
+                fetchJSON(`servers/${curServer}/roster`).catch(() => []),
+                fetchJSON(`servers/${curServer}/whitelists`).catch(() => []),
+            ]);
+            render();
+        } catch (err) {
+            box.innerHTML = `<div class="alert alert-danger">Erreur : ${esc(err.message)}</div>`;
+        }
+    }
+
+    async function init() {
+        try {
+            await fetchJSON('users/me'); // requiert une session
+            // /servers renvoie { owned, shared, admin } -> on combine en une seule liste.
+            const grp = await fetchJSON('servers');
+            const seen = new Set();
+            servers = [];
+            [...(grp.owned || []), ...(grp.admin || []), ...(grp.shared || [])].forEach(s => {
+                if (s && s.id && !seen.has(s.id)) { seen.add(s.id); servers.push({ id: s.id, name: s.name }); }
+            });
+            if (!servers.length) throw new Error("Aucun serveur accessible. Demande au propriétaire de t'ajouter à la liste d'accès du serveur.");
+            const sel = document.getElementById('server-select');
+            sel.innerHTML = servers.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+            curServer = servers[0].id;
+            sel.addEventListener('change', () => { curServer = sel.value; loadServer(); });
+            document.getElementById('refresh-btn').addEventListener('click', loadServer);
+            document.getElementById('content').classList.remove('d-none');
+            loadServer();
+        } catch (err) {
+            document.getElementById('auth-status').innerHTML = `<div class="alert alert-danger text-center"><h3>Accès refusé</h3><p>${esc(err.message)}</p><a href="/auth/discord/login" class="btn btn-primary">Connexion</a></div>`;
+        }
+    }
+    init();
+});
+</script>
+</body>
+</html>

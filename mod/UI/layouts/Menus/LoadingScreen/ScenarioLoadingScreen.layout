@@ -1,0 +1,57 @@
+FrameWidgetClass {
+ {
+  OverlayWidgetClass "{5DFF03E4AD9D1E88}" {
+   Prefab "{5DFF03E4AD9D1E88}"
+   {
+    ScaleWidgetClass "{5CFCF5E894AE6629}" {
+     Prefab "{5CFCF5E894AE6629}"
+     {
+      ImageWidgetClass "{5CFCF5E894AE6628}" {
+       Prefab "{5CFCF5E894AE6628}"
+       Texture "{7F4BF8A7264195AB}Assets/francefaction.edds"
+      }
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{5E04A017BD489B2A}" {
+   Prefab "{5E04A017BD489B2A}"
+   {
+    OverlayWidgetClass "{5DFF03E4AD9D1E85}" {
+     Prefab "{5DFF03E4AD9D1E85}"
+     {
+      FrameWidgetClass "{5DFF03E4AD9D1EF7}" {
+       Prefab "{5DFF03E4AD9D1EF7}"
+       "Is Enabled" 0
+       "Is Visible" 0
+       IsPixelPerfect 0
+       {
+        SizeLayoutWidgetClass "{5DFF03E4AD9D1EEA}" {
+         Prefab "{5DFF03E4AD9D1EEA}"
+         {
+          ScaleWidgetClass "{5DFF03E4AD9D1EE8}" {
+           Prefab "{5DFF03E4AD9D1EE8}"
+           {
+            ImageWidgetClass "{5DFF03E4AD9D1EEF}" {
+             Prefab "{5DFF03E4AD9D1EEF}"
+             Slot AlignableSlot "{5DFE96E5E1D56AAA}" {
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{5DFF03E4AD9D1EE1}" {
+       Prefab "{5DFF03E4AD9D1EE1}"
+       Slot OverlayWidgetSlot "{5DFE96D622552BA2}" {
+        Padding 0 250 0 0
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

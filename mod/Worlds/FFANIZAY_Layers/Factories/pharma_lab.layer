@@ -1,0 +1,164 @@
+GenericEntity Factory_ResourceStorage_68DF022D335561DD : "{34EE59A28125F95F}Prefabs/Compositions/Factory_ResourceStorage.et" {
+ coords 6165.883 206.031 2511.319
+ angles 0 -160.881 0
+ {
+  GenericEntity Factory_Storage_68DF022D33556082 {
+   ID "64D5310E6D3945D6"
+  }
+ }
+}
+JWK_CheckpointEntity masterCheckpoint51 : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ coords 6200.003 205.991 2515.423
+ angles 0 167.661 0
+ m_iRange 50
+ m_fSpawnChance 1
+ {
+  SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+   coords -33.495 -0.622 -12.975
+   angles 0 79.244 0
+   {
+    StaticModelEntity {
+     ID "62A693F2AC4FB612"
+     coords 0 0.519 0
+     angles -0.465 0 0.849
+    }
+   }
+  }
+  $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+   {
+    coords -0.72 -1.259 -2.245
+    angles 0 -175.403 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 1.265 0
+      angles -0.163 0 -0.26
+     }
+    }
+   }
+   {
+    coords -3.078 0.69 19.309
+    angles 0 -3.739 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -1.236 0
+      angles 4.006 0 2.127
+     }
+    }
+   }
+  }
+ }
+}
+JWK_FactoryEntity JWK_FactoryController_68DF022D37B5CBB9 : "{644F3F0AD98280B4}Prefabs/Controllers/Loadtime/JWK_FactoryController.et" {
+ components {
+  JWK_AIGarrisonComponent "{659EFEC227B5CEDE}" {
+   m_iPatrolRange 50
+  }
+  JWK_NamedLocationComponent "{64E512EE3D735264}" {
+   m_sName "Pharma Prod. Facility"
+  }
+ }
+ coords 6167.149 206.044 2511.249
+}
+$grp PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ {
+  components {
+   JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+    m_aTags {
+     POI_AREA
+     PLAYER_CONSTRUCTION
+     BLOCK_TRAFFIC
+    }
+   }
+  }
+  coords 6167.726 206.049 2510.907
+  Points {
+   ShapePoint "{68DF022D77E22F54}" {
+    Position 22.791 0.106 -4.771
+   }
+   ShapePoint "{68DF022D7612F48D}" {
+    Position -0.669 0.199 -10.819
+   }
+   ShapePoint "{68DF022D7558C288}" {
+    Position -24.294 0.185 -3.816
+   }
+   ShapePoint "{68DF022D740A5223}" {
+    Position -24.827 -0.252 29.362
+   }
+   ShapePoint "{68DF022D73F158DF}" {
+    Position -0.083 0.009 39.264
+   }
+   ShapePoint "{68DF022D708BE4E0}" {
+    Position 16.059 0.015 33.554
+   }
+   ShapePoint "{68DF022D6D2B78A6}" {
+    Position 63.923 1.171 52.658
+   }
+   ShapePoint "{68DF022D6C4FCBA6}" {
+    Position 72.589 -0.38 28.141
+   }
+   ShapePoint "{68DF022D6B42A51B}" {
+    Position 74.967 -0.63 19.393
+   }
+   ShapePoint "{68DF022D6AE656CF}" {
+    Position 77.218 -0.695 11.524
+   }
+   ShapePoint "{68DF022D690D1742}" {
+    Position 78.405 -0.768 2.086
+   }
+   ShapePoint "{68DF022D64445AE8}" {
+    Position 79.658 0.58 -6.653
+   }
+   ShapePoint "{68DF022D626C6E68}" {
+    Position 73.355 -0.891 -13.637
+   }
+   ShapePoint "{68DF022D60A041A8}" {
+    Position 53.042 -1.674 -20.612
+   }
+  }
+ }
+ {
+  components {
+   JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+    m_aTags {
+     BATTLE_AREA
+    }
+    m_bApplyFactionToParkingSpots 0
+   }
+  }
+  coords 6168.02 206.044 2511.153
+  Points {
+   ShapePoint "{68DF022D8818CD1F}" {
+    Position 8.102 -3.102 90.763
+   }
+   ShapePoint "{68DF022D88A3C5B0}" {
+    Position 89.686 3.515 70.902
+   }
+   ShapePoint "{68DF022D87539CA4}" {
+    Position 126.111 3.097 36.439
+   }
+   ShapePoint "{68DF022D871E75D9}" {
+    Position 138.967 -0.679 -25.781
+   }
+   ShapePoint "{68DF022D87C0C1BA}" {
+    Position 81.015 -7.181 -65.833
+   }
+   ShapePoint "{68DF022D878405F7}" {
+    Position 31.171 -4.556 -68.407
+   }
+   ShapePoint "{68DF022D8648B614}" {
+    Position -15.403 -1.534 -43.422
+   }
+   ShapePoint "{68DF022D860D5A19}" {
+    Position -55.024 -0.896 -13.21
+   }
+   ShapePoint "{68DF022D86B7D7BD}" {
+    Position -48.193 -1.912 22.069
+   }
+   ShapePoint "{68DF022D8562F8EF}" {
+    Position -25.697 -5.175 67.833
+   }
+  }
+ }
+}

@@ -1,0 +1,32 @@
+SCR_ChimeraCharacter {
+ ID "69EF4D48FCA56FC6"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Goggles {
+     AreaType LoadoutGooglesArea "{5A6A7616390E4FF3}" {
+     }
+    }
+   }
+  }
+  CharacterAnimationComponent "{520EA1D2F659C994}" {
+   components {
+    SCR_CharacterCommandHandlerComponent "{520EA1D2F659C99A}" {
+     MoveSettings ScriptCharacterCommandMoveSettings "{520EA1D2F659C99B}" {
+      MovementFilterMaxChange 9
+      DirFilterTimeout 1
+      LeaningSpeed 1
+      m_fSpeed_Erect_Slow_Backward 1
+      m_fSpeed_Erect_Normal_Forward 4
+      m_fSpeed_Erect_Normal_Backward 2
+      m_fSpeed_Erect_Fast_Forward 6
+      m_fSpeed_Crouch_Slow_Backward 1
+     }
+    }
+   }
+  }
+ }
+ m_cFoliageHeightSlowCurve {
+  0 0.756 0.096 0.707 0.203 0.499 0.499 0.334 0.8 0.412 1 0.599
+ }
+}

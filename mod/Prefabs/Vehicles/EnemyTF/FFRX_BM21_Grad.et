@@ -1,0 +1,17 @@
+Vehicle : "{753091E32C4E2EE3}Prefabs/Vehicles/Wheeled/Ural_4320_Grad/BM 21-1_9M22.et" {
+ ID "69EEC444E2DD9645"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000071}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000072}" {
+    m_iVehicleType TRUCK
+    m_iParkingType TRUCK
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType HEAVY_ARMED
+    m_iArmorType UNARMORED
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+}

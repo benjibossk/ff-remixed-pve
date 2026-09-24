@@ -1,0 +1,12 @@
+GenericEntity : "{711FF7A143761768}Prefabs/Controllers/Loadtime/Abstract/JWK_ShopController_Base.et" {
+ ID "54B5AFF167DF0728"
+ components {
+  JWK_ShopComponent "{66BCFBE0421B35CB}" {
+   m_InventoryConfig JWK_ShopInventoryConfig "{5FA1B2C3D4E5F607}" : "{DBBD1C2408C9779B}Configs/Shops/ResistanceGunTrader.conf" {
+   }
+  }
+  SCR_EditableEntityComponent "{3EB7C2F7B2128CD4}" {
+   m_sDisplayName "Armurerie FIA (gun trader)"
+  }
+ }
+}

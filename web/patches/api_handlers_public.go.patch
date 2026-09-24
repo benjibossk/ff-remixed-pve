@@ -1,0 +1,70 @@
+diff --git a/api/handlers/public.go b/api/handlers/public.go
+index e618221..1c849b2 100644
+--- a/api/handlers/public.go
++++ b/api/handlers/public.go
+@@ -26,10 +26,16 @@ func GetPublicServersHandler(c *gin.Context) {
+ 		return
+ 	}
+ 
++	// Serveur "par défaut" = celui tagué comme démo/vedette (réglage admin demo_server_id).
++	var demoSetting models.SystemSetting
++	database.DB.First(&demoSetting, "`key` = ?", "demo_server_id")
++	defaultID := demoSetting.Value
++
+ 	type PublicServerResponse struct {
+ 		ID        uuid.UUID        `json:"id"`
+ 		Name      string           `json:"name"`
+ 		IsListed  bool             `json:"is_listed"`
++		IsDefault bool             `json:"is_default"`
+ 		MapConfig models.MapConfig `json:"map_config"`
+ 	}
+ 
+@@ -40,6 +46,7 @@ func GetPublicServersHandler(c *gin.Context) {
+ 			ID:        server.ID,
+ 			Name:      server.Name,
+ 			IsListed:  server.IsListed,
++			IsDefault: defaultID != "" && server.ID.String() == defaultID,
+ 			MapConfig: server.MapConfig,
+ 		}
+ 	}
+@@ -222,6 +229,11 @@ func GetPositionsByTimeHandler(c *gin.Context) {
+ 
+ // GetMapConfigsHandler returns all available map configurations.
+ func GetMapConfigsHandler(c *gin.Context) {
++	// Jamais mis en cache par le navigateur : porte la calibration (scale/offset). Sinon,
++	// après un recalage ou un redémarrage, le client garde l'ancien calage -> décalage fantôme.
++	c.Header("Cache-Control", "no-store, no-cache, must-revalidate")
++	c.Header("Pragma", "no-cache")
++
+ 	var maps []models.MapConfig
+ 	if err := database.DB.Find(&maps).Error; err != nil {
+ 		c.JSON(http.StatusInternalServerError, gin.H{"error": "database query failed for map configs"})
+@@ -511,6 +523,11 @@ func GetLatestPositionsHandler(c *gin.Context) {
+ 		RotationX      float64         `json:"rotationX"`
+ 		InVehicle      bool            `json:"inVehicle"`
+ 		Faction        FactionResponse `json:"faction"`
++		Rank           int             `json:"rank"`
++		XP             int             `json:"xp"`
++		FactionKey     string          `json:"factionKey"`
++		Radio          int             `json:"radio"`
++		LastSeen       int64           `json:"lastSeen"`
+ 	}
+ 
+ 	cacheKey := fmt.Sprintf("latest_positions:%s", serverIDStr)
+@@ -518,8 +535,14 @@ func GetLatestPositionsHandler(c *gin.Context) {
+ 
+ 	// 3. Try to retrieve data from the cache.
+ 	if err := cache.Get(cacheKey, &cachedResponse); err == nil {
+-		// Cache hit! Send the cached data.
+-		c.JSON(http.StatusOK, cachedResponse)
++		// Exclut les joueurs partis volontairement (retrait immédiat).
++		filtered := cachedResponse[:0]
++		for _, p := range cachedResponse {
++			if !isLeft(serverIDStr, p.PlayerGUID) {
++				filtered = append(filtered, p)
++			}
++		}
++		c.JSON(http.StatusOK, filtered)
+ 		return
+ 	}
+ 

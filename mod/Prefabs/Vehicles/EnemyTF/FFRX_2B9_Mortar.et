@@ -1,0 +1,17 @@
+Vehicle : "{A78D786EFFDDC8FD}Prefabs/Vehicles/Wheeled/2B9/TF_Wheeled_2B9.et" {
+ ID "69EF4D40E42F3494"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000081}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000082}" {
+    m_iVehicleType TRUCK
+    m_iParkingType TRUCK
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType HEAVY_ARMED
+    m_iArmorType UNARMORED
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+}

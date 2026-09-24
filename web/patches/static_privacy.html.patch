@@ -1,0 +1,37 @@
+diff --git a/static/privacy.html b/static/privacy.html
+index 0d0e202..a7126a0 100644
+--- a/static/privacy.html
++++ b/static/privacy.html
+@@ -4,7 +4,7 @@
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <title>Privacy Policy - [GTG] Live Map</title>
++    <title>PC — Confidentialité</title>
+     <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+     <style>
+@@ -15,16 +15,21 @@
+         .accordion-button:not(.collapsed) { background-color: rgba(88, 166, 255, 0.2); color: #fff; }
+         .accordion-button:focus { box-shadow: 0 0 0 .25rem rgba(88, 166, 255, 0.5); }
+     </style>
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
++    <link rel="stylesheet" href="/static/theme.css">
+ </head>
+ <body>
++<div class="tricolore"></div>
+ 
+ <nav class="navbar navbar-expand-lg navbar-dark sticky-top glass-nav">
+     <div class="container">
+         <a class="navbar-brand d-flex align-items-center" href="/">
+-            <i class="bi bi-broadcast-pin me-2 fs-4"></i><span class="fw-bold">[GTG] Live Map</span>
++            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span><span class="fw-bold">PC — Confidentialité</span>
+         </a>
+         <div class="ms-auto">
+-            <a href="/" class="btn btn-outline-light">Back to Map</a>
++            <a href="/" class="btn btn-outline-light">Retour à la carte</a>
+         </div>
+     </div>
+ </nav>

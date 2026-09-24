@@ -1,0 +1,136 @@
+JWK_CheckpointEntity masterCheckpoint12 : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ coords 2110.267 145.916 8969.377
+ angles 0 67.968 0
+ m_iRange 50
+ {
+  $grp SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+   {
+    coords -18.384 -1.554 -20.665
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.47 0
+      angles 4.098 0 6.766
+     }
+    }
+   }
+   {
+    coords 15.639 -1.274 -17.385
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -0.15 0
+      angles -0.314 0 -7.109
+     }
+    }
+   }
+  }
+  $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+   {
+    coords -17.004 1.307 10.028
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -0.194 0
+      angles 0.555 0 3.228
+     }
+    }
+   }
+   {
+    coords 12.203 -1.384 12.872
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.013 0
+      angles 0.19 0 -3.841
+     }
+    }
+   }
+  }
+ }
+}
+JWK_TownEntity JWK_TownController_68E1272A9767854C : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Barekzi"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 1932.486 145.595 8919.379
+ m_iTownRange 170
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 1932.838 145.593 8921.166
+ Points {
+  ShapePoint "{68E1272A8D9C4F49}" {
+   Position -178.194 -0.022 17.34
+  }
+  ShapePoint "{68E1272A8C4A1BB3}" {
+   Position -171.479 -1.946 91.875
+  }
+  ShapePoint "{68E1272A8C0448CF}" {
+   Position -121.681 -1.833 104.135
+  }
+  ShapePoint "{68E1272A8CAB94F5}" {
+   Position -41.077 0.271 150.145
+  }
+  ShapePoint "{68E1272A8B67753D}" {
+   Position -0.69 2.389 158.013
+  }
+  ShapePoint "{68E1272A8B33E613}" {
+   Position 35.312 1.996 129.479
+  }
+  ShapePoint "{68E1272A8B1D2EA6}" {
+   Position 55.167 1.878 82.805
+  }
+  ShapePoint "{68E1272A8BD83B6E}" {
+   Position 93.115 0.6 73.576
+  }
+  ShapePoint "{68E1272A8BAF75F8}" {
+   Position 121.246 -1.4 61.206
+  }
+  ShapePoint "{68E1272A8A6DC69F}" {
+   Position 145.044 -1.803 9.683
+  }
+  ShapePoint "{68E1272A8A2FA8E1}" {
+   Position 142.861 -0.825 -43.218
+  }
+  ShapePoint "{68E1272A895CB83E}" {
+   Position 158.075 -0.48 -79.898
+  }
+  ShapePoint "{68E1272A89134CFC}" {
+   Position 161.239 -1.676 -102.538
+  }
+  ShapePoint "{68E1272A89EEB837}" {
+   Position 145.067 -3.312 -130.035
+  }
+  ShapePoint "{68E1272A89A7161F}" {
+   Position 107.316 -1.623 -141.702
+  }
+  ShapePoint "{68E1272A8861DA71}" {
+   Position 18.651 -0.862 -140.957
+  }
+  ShapePoint "{68E1272A8817613E}" {
+   Position -39.444 -2.396 -140.304
+  }
+  ShapePoint "{68E1272A874355DB}" {
+   Position -91.69 -1.133 -138.428
+  }
+  ShapePoint "{68E1272A87F026CF}" {
+   Position -139.589 -1.543 -90.022
+  }
+  ShapePoint "{68E1272A879DBC3E}" {
+   Position -172.563 -0.501 -25.004
+  }
+ }
+}

@@ -1,0 +1,199 @@
+diff --git a/main.go b/main.go
+index 52d8b00..d518e90 100644
+--- a/main.go
++++ b/main.go
+@@ -39,7 +39,7 @@ func setup() {
+ 	log.Println("Redis connection established")
+ 	cache.Init()
+ 	database.Connect()
+-	// database.Migrate()
++	database.Migrate()
+ 	database.Seed()
+ 	handlers.InitAuth()
+ 	utils.InitEncryption()
+@@ -59,6 +59,20 @@ func startWebServer(ctx context.Context, wg *sync.WaitGroup) {
+ 	corsConfig.AddAllowHeaders("Authorization", "X-API-KEY", "Content-Type")
+ 	r.Use(cors.New(corsConfig))
+ 
++	// Pages HTML (et "/") jamais mises en cache par le navigateur -> les mises à jour
++	// (calibration, UI) s'appliquent immédiatement, pas de "décalage fantôme" au redémarrage.
++	// Les tuiles/CDN (/api/v1/tiles, /api/v1/cdn) NE sont PAS concernés (perf préservée).
++	r.Use(func(c *gin.Context) {
++		p := c.Request.URL.Path
++		// Toute PAGE (hors /api et /static) = jamais mise en cache -> pas de page périmée servie
++		// à la place d'une autre (ex. l'accueil rendu pour /soldier). /api et /static gardent leur cache.
++		if !strings.HasPrefix(p, "/api/") && !strings.HasPrefix(p, "/static/") {
++			c.Header("Cache-Control", "no-store, no-cache, must-revalidate")
++			c.Header("Pragma", "no-cache")
++		}
++		c.Next()
++	})
++
+ 	// --- 1. API Routen ---
+ 	apiLimiter, err := middleware.CreateRateLimiter("200-S")
+ 	if err != nil {
+@@ -93,6 +107,22 @@ func startWebServer(ctx context.Context, wg *sync.WaitGroup) {
+ 		{
+ 			authenticated.POST("/positions", handlers.PostPositionsHandler)
+ 			authenticated.POST("/events/damage", handlers.PostDamageEventsHandler)
++			authenticated.POST("/markers", handlers.PostMarkersHandler)
++			authenticated.POST("/drawings", handlers.PostDrawingsHandler) // Fleet -> GTG (crayons)
++			authenticated.POST("/squads", handlers.PostSquadsHandler)     // Fleet -> GTG (escouades)
++			authenticated.POST("/ranks", handlers.PostRanksHandler)       // Fleet -> GTG (catalogue grades)
++			authenticated.POST("/coverage", handlers.PostCoverageHandler) // Fleet -> GTG (couverture radio)
++			authenticated.POST("/objectives", handlers.PostObjectivesHandler) // Fleet -> GTG (objectifs actifs)
++			authenticated.POST("/ffstate", handlers.PostFFStateHandler)       // jeu -> GTG (état FF/Réoccupation live)
++			authenticated.POST("/ffcatalog", handlers.PostFFCatalogHandler)   // jeu -> GTG (catalogues de référence, une fois au boot)
++			authenticated.POST("/ffcensus", handlers.PostFFCensusHandler)     // jeu -> GTG (recensement des spawns ennemis, cumul poussé toutes les 10 min)
++			authenticated.POST("/ffcivs", handlers.PostFFCivsHandler)         // jeu -> GTG (registre des civils rencontrés, poussé toutes les 5 min)
++			authenticated.POST("/events/log", handlers.PostEventLogHandler)  // jeu -> GTG (journal admin : connexions, chat)
++			authenticated.POST("/leave", handlers.PostLeaveHandler)           // Fleet -> GTG (départ volontaire d'un joueur)
++			authenticated.POST("/link", handlers.PostLinkHandler)         // Fleet -> GTG (#link code -> uid)
++			authenticated.POST("/loadouts", handlers.PostLoadoutsHandler) // Fleet -> GTG (publier un loadout)
++			authenticated.GET("/loadouts", handlers.GetLoadoutsHandler)   // Fleet <- GTG (appliquer un loadout)
++			authenticated.GET("/commands", handlers.GetCommandsHandler)    // Fleet pull + vide la file
+ 		}
+ 
+ 		serverAPI := apiV1.Group("/server")
+@@ -108,6 +138,9 @@ func startWebServer(ctx context.Context, wg *sync.WaitGroup) {
+ 		public := apiV1.Group("/public")
+ 		{
+ 			public.GET("/servers", handlers.GetPublicServersHandler)
++			// Mode serveur unique : le front resout le serveur actif ici au lieu de
++			// passer par un selecteur. Voir api/handlers/active_server.go.
++			public.GET("/active-server", handlers.GetActiveServerHandler)
+ 			public.GET("/positions/timestamps/:server_id", handlers.GetTimestampsHandler)
+ 			public.GET("/positions/:server_id/:timestamp", handlers.GetPositionsByTimeHandler)
+ 			public.GET("/damage_events/:server_id/:timestamp", handlers.GetDamageEventsByTimeHandler)
+@@ -118,6 +151,15 @@ func startWebServer(ctx context.Context, wg *sync.WaitGroup) {
+ 			public.GET("/events/timestamps/:server_id/:guid", handlers.GetPlayerEventTimestampsHandler)
+ 			public.GET("/avatars/:user_id/:avatar_hash", handlers.AvatarProxyHandler)
+ 			public.GET("/positions/latest/:server_id", handlers.GetLatestPositionsHandler)
++			public.GET("/markers/:server_id", handlers.GetMarkersHandler)
++			public.GET("/drawings/:server_id", handlers.GetDrawingsHandler)
++			public.GET("/squads/:server_id", handlers.GetSquadsHandler)
++			public.GET("/ranks/:server_id", handlers.GetRanksHandler)
++			public.GET("/xpladder/:server_id", handlers.GetXpLadderHandler) // paliers d'XP publiés par Fleet
++			public.GET("/soldiercard/:uid", handlers.GetPublicSoldierCardHandler) // fiche minimale pour l'écran de chargement du jeu
++			public.GET("/coverage/:server_id", handlers.GetCoverageHandler)
++			public.GET("/objectives/:server_id", handlers.GetObjectivesHandler)
++			public.GET("/servers/:id/current-map", handlers.GetServerCurrentMapHandler)
+ 			public.GET("/damage_events/range/:server_id", handlers.GetDamageEventsInRangeHandler)
+ 			public.GET("/demo-data", handlers.GetDemoDataHandler)
+ 		}
+@@ -130,11 +172,19 @@ func startWebServer(ctx context.Context, wg *sync.WaitGroup) {
+ 			{
+ 				admin.PUT("/maps/:id", handlers.UpdateMapConfigHandler)
+ 				admin.PUT("admin/users/:user_id/limit", handlers.AdminSetServerLimitHandler)
++				admin.PUT("admin/users/:user_id/link", handlers.AdminSetUserLinkHandler)
+ 				admin.GET("admin/users", handlers.AdminGetAllUsersHandler)
+ 				admin.GET("admin/users/:user_id/servers", handlers.AdminGetUserServersHandler)
+ 				admin.GET("admin/settings/demo", handlers.AdminGetDemoSettingsHandler)
+ 				admin.PUT("admin/settings/demo", handlers.AdminSetDemoSettingsHandler)
+ 				admin.PATCH("admin/maps/:id/calibrate", handlers.AdminUpdateMapCalibrationHandler)
++				admin.GET("admin/loadouts", handlers.AdminGetLoadoutsHandler)
++				admin.PUT("admin/loadouts/:id", handlers.AdminUpdateLoadoutHandler)
++				admin.DELETE("admin/loadouts/:id", handlers.AdminDeleteLoadoutHandler)
++
++				// Collaboration (admin) : statut d'une idée + édition du doc de design.
++				admin.PATCH("/ideas/:id", handlers.PatchIdeaHandler)
++				admin.PUT("/design/:slug", handlers.PutDesignHandler)
+ 			}
+ 
+ 			private.GET("/users/me", handlers.MeHandler)
+@@ -143,12 +193,51 @@ func startWebServer(ctx context.Context, wg *sync.WaitGroup) {
+ 			private.GET("/servers", handlers.GetUserServersHandler)
+ 			private.POST("/servers", handlers.CreateServerHandler)
+ 			private.GET("/dashboard/servers/statuses", handlers.GetDashboardServerStatusesHandler)
++			private.POST("/command", handlers.PostCommandHandler) // navigateur -> file d'ordres (web -> jeu)
++			private.POST("/link/code", handlers.GenerateLinkCodeHandler) // génère un code de liaison compte<->jeu
++			private.GET("/user/loadouts", handlers.SessionListLoadoutsHandler) // dotations visibles par tout connecté (intranet)
++			private.GET("/user/loadouts/mine", handlers.GetMyLoadoutsHandler)  // MES tenues perso (owner == mon UID lié)
++			private.PUT("/user/loadouts/:id", handlers.UpdateMyLoadoutHandler) // renommer une de mes tenues
++			private.DELETE("/user/loadouts/:id", handlers.DeleteMyLoadoutHandler)
++			private.GET("/user/soldier", handlers.GetSoldierHandler)          // fiche "Mon Soldat" (stats du perso lié)
++
++			// Collaboration intranet : boîte à idées + doc de design (cf. TASK_WEB_COLLAB).
++			private.GET("/ideas", handlers.GetIdeasHandler)
++			private.POST("/ideas", handlers.CreateIdeaHandler)
++			private.GET("/ideas/:id", handlers.GetIdeaHandler)
++			private.POST("/ideas/:id/vote", handlers.ToggleIdeaVoteHandler)
++			private.POST("/ideas/:id/comments", handlers.CreateIdeaCommentHandler)
++			private.DELETE("/ideas/:id", handlers.DeleteIdeaHandler)
++			private.DELETE("/comments/:id", handlers.DeleteCommentHandler)
++			private.GET("/design/:slug", handlers.GetDesignHandler)
++			private.GET("/design/:slug/comments", handlers.GetDesignCommentsHandler)
++			private.POST("/design/:slug/comments", handlers.CreateDesignCommentHandler)
++
++			// Tests & Retours : les soldats écrivent leur retour sous un test (clé stable).
++			private.GET("/tests/:key/comments", handlers.GetTestCommentsHandler)
++			private.POST("/tests/:key/comments", handlers.CreateTestCommentHandler)
++
++			// Gestion de CONTENU : propriétaire, admin global, OU co-admin (accès partagé).
++			serverManaged := private.Group("/servers/:id")
++			serverManaged.Use(middleware.ServerManagerMiddleware())
++			{
++				serverManaged.GET("/status", handlers.GetServerStatusHandler)
++				serverManaged.GET("/roster", handlers.GetServerRosterHandler)   // tous les joueurs déjà connectés
++				serverManaged.GET("/whitelists", handlers.GetWhitelistsHandler) // whitelists d'escouade persistées
++				serverManaged.POST("/whitelist", handlers.SetWhitelistHandler)  // set whitelist + push live au jeu
++				serverManaged.GET("/journal", handlers.GetJournalHandler)      // journal admin (connexions, chat, kills)
++				serverManaged.GET("/ffstate", handlers.GetFFStateHandler)       // état FF/Réoccupation
++				serverManaged.GET("/ffcatalog", handlers.GetFFCatalogHandler)   // catalogues de référence FF
++				serverManaged.GET("/ffstate/history", handlers.GetFFStateHistoryHandler) // série temporelle (page Économie)
++				serverManaged.GET("/ffcensus", handlers.GetFFCensusHandler)     // recensement des spawns ennemis (page Recensement)
++				serverManaged.GET("/ffcivs", handlers.GetFFCivsHandler)         // fichier des civils rencontrés (page Civils)
++				serverManaged.GET("/soldier/:guid", handlers.GetPlayerSoldierHandler) // fiche soldat d'un AUTRE joueur (clic sur un pseudo du journal)
++			}
+ 
++			// Opérations SENSIBLES : propriétaire / admin global UNIQUEMENT (pas les co-admins).
+ 			serverSpecific := private.Group("/servers/:id")
+ 			serverSpecific.Use(middleware.ServerOwnerOrAdminMiddleware())
+ 			{
+-				serverSpecific.GET("/status", handlers.GetServerStatusHandler)
+-
+ 				serverSpecific.PUT("", middleware.GinLimitMiddleware(sensitiveLimiter), handlers.UpdateServerHandler)
+ 				serverSpecific.DELETE("", middleware.GinLimitMiddleware(sensitiveLimiter), handlers.DeleteServerHandler)
+ 				serverSpecific.PATCH("/new-key", middleware.GinLimitMiddleware(sensitiveLimiter), handlers.RegenerateAPIKeyHandler)
+@@ -166,12 +255,41 @@ func startWebServer(ctx context.Context, wg *sync.WaitGroup) {
+ 	r.GET("/", func(c *gin.Context) { c.File("./static/index.html") })
+ 	r.GET("/map", func(c *gin.Context) { c.File("./static/map.html") })
+ 	r.GET("/map.html", func(c *gin.Context) { c.File("./static/map.html") })
++	r.GET("/mapadmin", func(c *gin.Context) { c.File("./static/mapadmin.html") })
++	r.GET("/mapadmin.html", func(c *gin.Context) { c.File("./static/mapadmin.html") })
++	r.GET("/adminmap", func(c *gin.Context) { c.File("./static/mapadmin.html") })
++	r.GET("/adminmap.html", func(c *gin.Context) { c.File("./static/mapadmin.html") })
+ 	r.GET("/dashboard", func(c *gin.Context) { c.File("./static/dashboard.html") })
+ 	r.GET("/dashboard.html", func(c *gin.Context) { c.File("./static/dashboard.html") })
+ 	r.GET("/admin.html", func(c *gin.Context) { c.File("./static/admin.html") })
+ 	r.GET("/admin", func(c *gin.Context) { c.File("./static/admin.html") })
+ 	r.GET("/privacy.html", func(c *gin.Context) { c.File("./static/privacy.html") })
+ 	r.GET("/privacy", func(c *gin.Context) { c.File("./static/privacy.html") })
++	r.GET("/loadouts.html", func(c *gin.Context) { c.File("./static/loadouts.html") })
++	r.GET("/admin/loadouts", func(c *gin.Context) { c.File("./static/loadouts.html") })
++	r.GET("/soldier.html", func(c *gin.Context) { c.File("./static/soldier.html") })
++	r.GET("/soldier", func(c *gin.Context) { c.File("./static/soldier.html") })
++	r.GET("/idees", func(c *gin.Context) { c.File("./static/idees.html") })
++	r.GET("/idees.html", func(c *gin.Context) { c.File("./static/idees.html") })
++	r.GET("/tests", func(c *gin.Context) { c.File("./static/tests.html") })
++	r.GET("/tests.html", func(c *gin.Context) { c.File("./static/tests.html") })
++	r.GET("/economie", func(c *gin.Context) { c.File("./static/economie.html") })
++	r.GET("/recensement", func(c *gin.Context) { c.File("./static/census.html") })
++	r.GET("/census.html", func(c *gin.Context) { c.File("./static/census.html") })
++	r.GET("/journal", func(c *gin.Context) { c.File("./static/journal.html") })
++	r.GET("/decision", func(c *gin.Context) { c.File("./static/decision.html") })
++	r.GET("/civils", func(c *gin.Context) { c.File("./static/civils.html") })
++	r.GET("/decisions", func(c *gin.Context) { c.File("./static/decision.html") })
++	r.GET("/economie.html", func(c *gin.Context) { c.File("./static/economie.html") })
++	r.GET("/roadmap", func(c *gin.Context) { c.File("./static/roadmap.html") })
++	r.GET("/roadmap.html", func(c *gin.Context) { c.File("./static/roadmap.html") })
++	r.GET("/commandes", func(c *gin.Context) { c.File("./static/commands.html") })
++	r.GET("/commands.html", func(c *gin.Context) { c.File("./static/commands.html") })
++	r.GET("/commands", func(c *gin.Context) { c.File("./static/commands.html") })
++	r.GET("/design", func(c *gin.Context) { c.File("./static/design.html") })
++	r.GET("/design.html", func(c *gin.Context) { c.File("./static/design.html") })
++	r.GET("/presentation", func(c *gin.Context) { c.File("./static/presentation.html") })
++	r.GET("/presentation.html", func(c *gin.Context) { c.File("./static/presentation.html") })
+ 
+ 	r.NoRoute(func(c *gin.Context) {
+ 		if strings.HasPrefix(c.Request.URL.Path, "/api/") {

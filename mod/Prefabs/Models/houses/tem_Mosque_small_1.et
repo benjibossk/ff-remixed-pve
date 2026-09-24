@@ -1,0 +1,249 @@
+SCR_DestructibleBuildingEntity : "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et" {
+ ID "648279E6D7EF8F42"
+ components {
+  MeshObject "{506EDA9D46FC6C06}" {
+   Object "{C069CCF3B9BEEFA0}source/houses/tem_Mosque_small_1.xob"
+
+  }
+  SCR_DestructibleBuildingComponent "{632E452D4660482E}" {
+   "Additional hit zones" {
+    SCR_HitZone Default {
+     HZDefault 1
+     MaxHealth 50000
+     DamageReduction 100
+     DamageThreshold 800
+     "Melee multiplier" 0
+     "Kinetic multiplier" 0.5
+     "Fragmentation multiplier" 0.1
+     "Explosive multiplier" 10
+    }
+   }
+   m_aEffects {
+    SCR_TimedParticle Particle_01_dust_start {
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{632E452D85301294}" {
+      m_Particle "{B0D882F853DE2783}Particles/Enviroment/Building_Explosion_Smoke.ptc"
+      m_bAtCenter 0
+      m_bDirectional 0
+     }
+     m_fParticlesMultiplier 0.2
+    }
+    SCR_TimedSound Sound_Bricks_01_Start {
+     m_fSpawnTime 0.001
+     m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{5CAED06EA03F5DB5}" {
+      m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+      m_sSoundEventName "SOUND_BUILDING_DESTRUCTION"
+      m_eFlags 9
+     }
+    }
+    SCR_TimedSound Sound_Bricks_01_End {
+     m_fSpawnTime 0.5
+     m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{5CAED06EA03F5DB1}" {
+      m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+      m_sSoundEventName "SOUND_BUILDING_DESTRUCTION_END"
+      m_eFlags 9
+     }
+    }
+    SCR_TimedParticle Particle_Bricks_01_Start {
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{632E452C1A5FFF95}" {
+      m_Particle "{6D89EA548ABDDF25}Particles/Enviroment/Building_Explosion_Debris_Brick.ptc"
+      m_bAtCenter 0
+      m_bDirectional 0
+     }
+    }
+    SCR_TimedPrefab Prefab_Ruins_01 {
+     m_sRuinsPrefab "{70AD5B381758A9BA}Prefabs/Models/houses/ruins/tem_Mosque_small_1_dst.et"
+    }
+    SCR_TimedSound Sounds_Bricks_01_PreStart {
+     m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{6152D9E67B9267D6}" {
+      m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+      m_sSoundEventName "SOUND_BUILDING_DESTRUCTION_PRESTART"
+      m_eFlags 9
+     }
+    }
+    SCR_TimedParticle Particle_Dust_01_Collapse {
+     m_fSpawnTime 0.001
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{632E452CF68E961E}" {
+      m_Particle "{B0D882F853DE2783}Particles/Enviroment/Building_Explosion_Smoke.ptc"
+      m_bDirectional 0
+     }
+     m_fParticlesMultiplier 0.45
+    }
+    SCR_TimedParticle Particle_Brick_01_Collapse {
+     m_fSpawnTime 0.001
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{5DE84D31F1FA3A5C}" {
+      m_Particle "{6D89EA548ABDDF25}Particles/Enviroment/Building_Explosion_Debris_Brick.ptc"
+      m_bAtCenter 0
+      m_bDirectional 0
+     }
+     m_fParticlesMultiplier 2
+    }
+   }
+   m_aInteriorQueryBoundingBoxes {
+    SCR_InteriorBoundingBox "{651668560D01DD9A}" {
+     m_vCenter PointInfo "{651668560392BCEC}" {
+      Offset 0 2 0
+     }
+     m_vScale 15 15 15
+    }
+   }
+   m_fDelay 3
+   m_fSinkingSpeed 0.15
+   m_fSinkingSpeedGradualMultiplier 500
+   m_fRotationSpeed 5
+   m_fRotationTime 50
+   m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{632E453342C6790A}" {
+    m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+    m_sSoundEventName "SOUND_BUILDING_DESTRUCTION_BOUNCE"
+    m_eFlags 9
+   }
+   m_CameraShakeCurve {
+    0 1 0.071 0.245 0.196 0.039 1 0
+   }
+   m_eAllowedRotations 5
+  }
+ 
+ }
+ Flags 525315
+ coords 3861.244 0 7327.23
+ {
+  $grp GenericEntity : "{026353DC9E65B538}Prefabs/Models/props/tem_carbet2f.et" {
+   {
+    ID "648292D52DA0B686"
+    coords 1.796 0.256 2.343
+    angleY -1.349
+   }
+   {
+    ID "648292D52DA0B6E4"
+    coords -4.792 0.269 2.188
+    angleY -1.349
+   }
+   {
+    ID "648292D52DA0B6F2"
+    coords -2.546 0.269 2.242
+    angleY -1.349
+   }
+   {
+    ID "648292D52DA0B6FB"
+    coords -0.383 0.256 2.294
+    angleY -1.349
+   }
+  }
+  GenericEntity : "{189E8603BBEF73DF}Prefabs/Models/props/tem_chest1.et" {
+   ID "648292D52DA0B53B"
+   coords 1.106 0.263 -0.947
+   angleY -90.201
+  }
+  GenericEntity : "{29429F5112AFB910}Prefabs/Models/props/tem_plasticchair.et" {
+   ID "648292D52DA0B69C"
+   coords 2.185 0.6 -2.666
+   angleY 86.868
+  }
+  GenericEntity : "{3013E3B09ED396A6}Prefabs/Models/props/tem_SM_Rug_Hanging_03.et" {
+   ID "648292D52DA0B5B1"
+   coords -7.125 1.18 0.067
+   angleY -1.436
+  }
+  GenericEntity : "{490914E767A7D60B}Prefabs/Structures/BuildingParts/Doors/DoorSet_Metal_02_L_INT_COV_B_red.et" {
+   ID "648292DDBD567A17"
+   coords 6.667 0.529 -1.606
+   angleY 179.219
+  }
+  $grp GenericEntity : "{4CFFC99BC7113CCD}Prefabs/Models/props/tem_boots.et" {
+   {
+    ID "648292D52DA0B748"
+    coords -6.715 0.6 -3.191
+    angleY 3.674
+   }
+   {
+    ID "648292D52DA0B756"
+    coords -7.179 0.6 -3.1
+    angleY 6.79
+   }
+   {
+    ID "648292D52DA0B75C"
+    coords -3.685 0.6 -3.463
+    angleY 97.129
+   }
+   {
+    ID "648292D52DA0B76D"
+    coords -3.904 0.6 -3.013
+    angleY 97.129
+   }
+   {
+    ID "648292D52DA0B779"
+    coords -3.955 0.6 -2.564
+    angleY 97.129
+   }
+  }
+  GenericEntity : "{746FB30D27C5D788}Prefabs/Models/props/tem_blankets.et" {
+   ID "648292D52DA0B6BC"
+   coords 3.798 0.598 -2.88
+   angleY -89.171
+  }
+  $grp GenericEntity : "{9B7DEA45838284A8}Prefabs/Models/props/tem_carbet1f.et" {
+   {
+    ID "648292D52DA0B6C8"
+    coords -4.383 0.267 -0.351
+    angleY -91.048
+   }
+   {
+    ID "648292D52DA0B6D1"
+    coords -1.429 0.257 -0.296
+    angleY -91.048
+   }
+   {
+    ID "648292D52DA0B6D9"
+    coords 1.446 0.257 -0.243
+    angleY -91.048
+   }
+  }
+  GenericEntity : "{C654D8930B908C9D}Prefabs/Models/props/tem_pillowshelf1.et" {
+   ID "648292D52DA0B603"
+   coords -6.502 0.261 2.87
+   angleY -168.337
+  }
+  $grp GenericEntity : "{C960BC8F653630AC}Prefabs/Models/props/tem_ceilinglight1.et" {
+   {
+    ID "648292D52DA0B5C4"
+    coords 0.008 5.873 1.342
+    angleY -90.201
+   }
+   {
+    ID "648292D52DA0B5D1"
+    coords -4.536 5.873 1.326
+    angleY -90.201
+   }
+  }
+  GenericEntity : "{D11A95DDC19811D0}Prefabs/Models/props/tem_cabinet1.et" {
+   ID "648292D52DA0B64C"
+   coords -3.8 0.273 -1.035
+   angleY -90.201
+  }
+  GenericEntity : "{EA02EE011A45230F}Prefabs/Models/props/tem_bench2.et" {
+   ID "648292D52DA0B639"
+   coords -6.42 0.26 1.426
+   angleY -90.201
+  }
+  $grp GenericEntity : "{F77F7F847CC6455F}Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et" {
+   {
+    ID "648292D52DA0B70B"
+    coords -0.532 0.252 4.065
+    angleY 178.304
+   }
+   {
+    ID "648292D52DA0B718"
+    coords -2.202 0.252 4.016
+    angleY 178.304
+   }
+   {
+    ID "648292D52DA0B739"
+    coords -3.852 0.252 3.967
+    angleY 178.304
+   }
+  }
+ }
+}

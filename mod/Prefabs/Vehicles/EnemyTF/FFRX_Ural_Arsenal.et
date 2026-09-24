@@ -1,0 +1,18 @@
+Vehicle {
+ ID "69EEC444E51C8574"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000091}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000092}" {
+    m_iVehicleType TRUCK
+    m_iParkingType TRUCK
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType UNARMED
+    m_iArmorType UNARMORED
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+ coords 138.336 1 137.887
+}

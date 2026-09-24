@@ -1,0 +1,10 @@
+$grp JWK_AmbientCameraPointEntity : "{46AFA0825A6BC628}Prefabs/World/JWK_AmbientCameraPoint.et" {
+ {
+  coords 397.591 279.213 1272.013
+  angles 0 45 0
+ }
+ {
+  coords 3676.719 212.102 4551.142
+  angles 0 -3.759 0
+ }
+}

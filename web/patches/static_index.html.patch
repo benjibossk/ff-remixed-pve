@@ -1,0 +1,790 @@
+diff --git a/static/index.html b/static/index.html
+index 6c9b955..6f46f44 100644
+--- a/static/index.html
++++ b/static/index.html
+@@ -1,241 +1,618 @@
+ <!DOCTYPE html>
+-<html lang="en" data-bs-theme="dark">
++<html lang="fr" data-bs-theme="dark">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <title>[GTG] Live Map - Tactical View for Arma Reforger</title>
+-    <meta name="description" content="[GTG] Live Map: A real-time tactical map for Arma Reforger servers, featuring replays, heatmaps, and Discord integration. Sign up and connect your server today!">
+-
++    <title>PC — Intranet Tactique</title>
++    <meta name="description" content="Intranet du poste de commandement — accès restreint.">
+     <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+-    <link rel="stylesheet" href="/api/v1/cdn/map/leaflet.css" />
++    <link rel="preconnect" href="https://fonts.googleapis.com">
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
++    <link rel="stylesheet" href="/static/theme.css">
+     <style>
+-        body { background-color: #0d1117; color: #c9d1d9; background-image: url('https://gtg-arma.de/img/background.webp'); background-size: cover; background-position: center center; background-attachment: fixed; }
+-        .glass-nav, .glass-pane { background: rgba(13, 17, 23, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+-        .hero { min-height: 80vh; padding-top: 120px; }
+-        .section { padding: 80px 0; }
+-        .section-title { text-align: center; margin-bottom: 50px; font-weight: bold; font-size: 2.5rem; }
+-        .feature-icon { font-size: 3rem; color: #58a6ff; }
+-        .preview-map { height: 250px; width: 100%; border-top-left-radius: .375rem; border-top-right-radius: .375rem; background-color: #0d1117; }
+-        #demo-map { height: 500px; width: 100%; border-radius: .375rem; border: 1px solid rgba(255, 255, 255, 0.1); }
+-        .leaflet-container { background-color: #0d1117; }
+-        .btn-login { font-size: 1.25rem; padding: 0.75rem 1.5rem; font-weight: 600; }
+-        .dropdown-menu { background-color: rgba(30, 35, 41, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+-        .card.glass-pane { background: rgba(13, 17, 23, 0.6); }
+-        #cookie-banner { position: fixed; bottom: -200px; left: 0; right: 0; padding: 1.5rem; z-index: 1055; transition: transform 0.5s ease-in-out; }
+-        #cookie-banner.show { transform: translateY(-200px); }
+-        #cookie-banner .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
++        .fx-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
++            background-image:linear-gradient(rgba(122,163,196,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(122,163,196,.05) 1px,transparent 1px);background-size:54px 54px;}
++        .portal{min-height:78vh;display:flex;align-items:center;justify-content:center;text-align:center;}
++        .crest-lg{width:76px;height:76px;flex:0 0 76px;border:1px solid var(--line-strong);display:grid;place-items:center;margin:0 auto 18px;
++            background:radial-gradient(circle at 50% 40%,rgba(61,139,255,.22),transparent 70%);}
++        .crest-lg svg{width:44px;height:44px;}
++        .tile{display:flex;flex-direction:column;gap:8px;text-decoration:none;padding:22px;height:100%;
++            background:var(--panel);border:1px solid var(--line);transition:.15s;color:var(--txt);}
++        .tile:hover{border-color:var(--blue);background:rgba(61,139,255,.08);color:var(--hi);transform:translateY(-2px);}
++        .tile .ico{font-size:2rem;color:var(--blue);}
++        .tile .t{font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:1.1rem;}
++        .tile .d{font-size:.8rem;color:var(--dim);}
++        .lo-card{background:var(--panel);border:1px solid var(--line);height:100%;}
++        .lo-sec-title{font-family:"Oswald";text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:var(--dim);margin:10px 0 5px;display:flex;align-items:center;gap:6px;}
++        .lo-chip{display:inline-block;font-family:"IBM Plex Mono";font-size:11px;background:rgba(6,11,16,.7);border:1px solid var(--line);
++            padding:2px 7px;margin:0 3px 3px 0;color:var(--txt);}
++        .lo-chip .q{color:var(--amber);}
++        /* liste d'items (dotation) */
++        .lo-item{display:flex;align-items:center;gap:8px;padding:5px 9px;border:1px solid var(--line);background:rgba(6,11,16,.5);margin:3px 0;}
++        .lo-item.expandable{cursor:pointer;user-select:none;}
++        .lo-item.expandable:hover{border-color:var(--line-strong);background:rgba(61,139,255,.08);}
++        .lo-chev{font-size:.7rem;color:var(--dim);transition:transform .15s;flex:0 0 auto;}
++        .lo-chev.open{transform:rotate(90deg);}
++        .lo-chev-spacer{width:.7rem;flex:0 0 auto;display:inline-block;}
++        .lo-item-ico{color:var(--blue);flex:0 0 auto;}
++        .lo-item-name{font-family:"IBM Plex Mono";font-size:12px;color:var(--txt);}
++        .lo-sub{margin-left:auto;font-family:"IBM Plex Mono";font-size:10px;color:var(--dim);border:1px solid var(--line);padding:0 5px;}
++        .lo-count{font-family:"Oswald";color:var(--amber);font-size:11px;border:1px solid rgba(226,165,58,.4);padding:0 5px;margin-left:6px;}
++        .lo-children{margin:0 0 5px 14px;padding-left:8px;border-left:1px solid var(--line);}
++        .lo-cat{font-family:"Oswald";text-transform:uppercase;font-size:9px;letter-spacing:.06em;border:1px solid;padding:0 5px;margin-left:6px;opacity:.9;}
++        /* bandeau cookies (positionnement + animation) */
++        #cookie-banner{position:fixed;bottom:-200px;left:0;right:0;padding:1rem 1.5rem;z-index:1055;transition:transform .5s ease;}
++        #cookie-banner.show{transform:translateY(-200px);}
++        #cookie-banner .container{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
++        .spec-tab{font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:.8rem;}
++        /* Journal des mises a jour (changelog) */
++        .cl-entry{border-left:2px solid var(--line);padding:0 0 14px 16px;position:relative;}
++        .cl-entry:last-child{padding-bottom:2px;}
++        .cl-entry::before{content:"";position:absolute;left:-5px;top:4px;width:8px;height:8px;border-radius:50%;
++            background:var(--blue);border:1px solid var(--panel);}
++        .cl-entry.latest::before{background:var(--amber);box-shadow:0 0 0 3px rgba(226,165,58,.18);}
++        .cl-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:5px;}
++        .cl-ver{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:.95rem;color:var(--hi);}
++        .cl-date{font-family:"IBM Plex Mono";font-size:11px;color:var(--dim);}
++        .cl-tag{font-family:"Oswald";text-transform:uppercase;letter-spacing:.05em;font-size:9px;
++            border:1px solid var(--blue);color:var(--blue);padding:1px 6px;}
++        .cl-list{list-style:none;margin:0;padding:0;}
++        .cl-list li{position:relative;padding:2px 0 2px 16px;font-size:.86rem;color:var(--txt);}
++        .cl-list li::before{content:"\2013";position:absolute;left:0;color:var(--dim);}
+     </style>
+ </head>
+ <body>
++<div class="tricolore"></div>
++<div class="fx-grid"></div>
+ 
+ <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+     <div class="container">
+         <a class="navbar-brand d-flex align-items-center" href="/">
+-            <i class="bi bi-broadcast-pin me-2 fs-4"></i>
+-            <span class="fw-bold">[GTG] Live Map</span>
++            <span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>
++            <span class="fw-bold">PC — Intranet Tactique</span>
+         </a>
+-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+-        <div class="collapse navbar-collapse" id="navbarNav">
+-            <ul class="navbar-nav ms-auto align-items-center">
+-                <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+-                <li class="nav-item"><a class="nav-link" href="#demo">Live Demo</a></li>
+-                <li class="nav-item"><a class="nav-link" href="#maps">Maps</a></li>
+-                <li id="user-display" class="nav-item ms-lg-2 mt-2 mt-lg-0"></li>
+-            </ul>
+-        </div>
++        <div class="ms-auto d-flex align-items-center" id="user-display"></div>
+     </div>
+ </nav>
+ 
+-<main>
+-    <section class="hero d-flex align-items-center justify-content-center text-center">
+-        <div class="container">
+-            <div class="glass-pane p-5 rounded-4">
+-                <h1 class="display-3 fw-bold mb-3">[GTG] Live Map for Arma Reforger</h1>
+-                <p class="lead mb-4 mx-auto" style="max-width: 700px;">Take your operations to the next level with real-time tracking, replays, heatmaps, and full Discord integration.</p>
+-                <div id="hero-login-button-container">
+-                    <a href="/auth/discord/login" class="btn btn-lg btn-success discord-button btn-login"><i class="bi bi-discord me-2"></i> Login with Discord & Get Started</a>
+-                </div>
++<main class="container" style="padding-top:90px;">
++
++    <!-- ===== VUE INVITÉ (non connecté) ===== -->
++    <section id="guest-view" class="portal">
++        <div>
++            <div class="crest-lg"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.3" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></div>
++            <div class="classif d-inline-block mb-3">Diffusion Restreinte</div>
++            <h1 class="display-5 fw-bold">Intranet du Poste de Commandement</h1>
++            <p class="lead mx-auto text-muted" style="max-width:560px">Accès restreint au personnel autorisé. Identifiez-vous pour rejoindre le réseau tactique : carte de situation, effectifs et dotations.</p>
++            <div id="hero-login-button-container" class="mt-4">
++                <a href="/auth/discord/login" class="btn btn-lg btn-success discord-button btn-login"><i class="bi bi-discord me-2"></i> S'engager via Discord</a>
+             </div>
+         </div>
+     </section>
+ 
+-    <section id="features" class="section">
+-        <div class="container">
+-            <h2 class="section-title">Feature Overview</h2>
+-            <div class="row g-4 text-center">
+-                <div class="col-md-4"><div class="glass-pane p-4 h-100 rounded-3"><div class="feature-icon mb-3"><i class="bi bi-broadcast"></i></div><h5>Real-time Tracking</h5><p>See player and vehicle positions live on the map. Maintain an overview of the entire battlefield.</p></div></div>
+-                <div class="col-md-4"><div class="glass-pane p-4 h-100 rounded-3"><div class="feature-icon mb-3"><i class="bi bi-collection-play"></i></div><h5>Powerful Replays</h5><p>Rewind time and analyze past operations, engagements, and movements step by step.</p></div></div>
+-                <div class="col-md-4"><div class="glass-pane p-4 h-100 rounded-3"><div class="feature-icon mb-3"><i class="bi bi-fire"></i></div><h5>Heatmap Analysis</h5><p>Visualize movement patterns and hotspots on the map to gain strategic insights.</p></div></div>
++    <!-- ===== VUE MEMBRE (connecté) ===== -->
++    <section id="member-view" class="d-none">
++        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-2">
++            <div>
++                <div class="classif d-inline-block mb-2">Diffusion Restreinte</div>
++                <h1 class="display-6 fw-bold mb-0" id="welcome-line">Bienvenue au poste</h1>
++                <div class="text-muted" style="letter-spacing:.14em;text-transform:uppercase;font-size:.78rem" id="clock-line">—</div>
+             </div>
+         </div>
+-    </section>
+ 
+-    <section id="demo" class="section bg-dark bg-opacity-25">
+-        <div class="container">
+-            <h2 class="section-title">Live in Action</h2>
+-            <div class="glass-pane p-3 p-md-4 rounded-3">
+-                <div id="demo-map"><div class="d-flex h-100 justify-content-center align-items-center"><div class="spinner-border" style="width: 3rem; height: 3rem;"></div></div></div>
++        <!-- Accès rapides -->
++        <div class="row g-3 mb-4" id="quick-tiles">
++            <div class="col-md-4">
++                <a class="tile bracket" href="/map.html">
++                    <span class="ico"><i class="bi bi-map-fill"></i></span>
++                    <span class="t">Carte tactique</span>
++                    <span class="d">Situation en temps réel — unités, marqueurs, objectifs.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile" href="/soldier">
++                    <span class="ico"><i class="bi bi-person-badge"></i></span>
++                    <span class="t">Mon Soldat</span>
++                    <span class="d">Livret militaire : grade, temps de jeu, marche, conduite.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile" href="/idees">
++                    <span class="ico"><i class="bi bi-lightbulb-fill"></i></span>
++                    <span class="t">Idées</span>
++                    <span class="d">Propose, vote et commente les idées du scénario.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile bracket" href="/tests">
++                    <span class="ico"><i class="bi bi-clipboard-check-fill"></i></span>
++                    <span class="t">Tests &amp; Retours</span>
++                    <span class="d">Ce qu'il faut tester en jeu — remonte tes retours.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile bracket" href="/journal">
++                    <span class="ico"><i class="bi bi-journal-text"></i></span>
++                    <span class="t">Journal du serveur</span>
++                    <span class="d">Connexions, départs et combats — réservé au commandement.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile bracket" href="/roadmap">
++                    <span class="ico"><i class="bi bi-map-fill"></i></span>
++                    <span class="t">Roadmap</span>
++                    <span class="d">Où en est le scénario — fait, en cours, à faire.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile bracket" href="/economie">
++                    <span class="ico"><i class="bi bi-graph-up-arrow"></i></span>
++                    <span class="t">Économie de guerre</span>
++                    <span class="d">Stocks, production réelle et territoire — l'effort de guerre dans le temps.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile bracket" href="/recensement">
++                    <span class="ico"><i class="bi bi-bar-chart-steps"></i></span>
++                    <span class="t">Recensement</span>
++                    <span class="d">Ce que l'ennemi envoie vraiment — groupes, soldats et véhicules, en proportions.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile bracket" href="/civils">
++                    <span class="ico"><i class="bi bi-people-fill"></i></span>
++                    <span class="t">Civils</span>
++                    <span class="d">Le fichier de renseignement — confiance, contrôles d'identité et espions démasqués.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile" href="/decision">
++                    <span class="ico"><i class="bi bi-signpost-split-fill"></i></span>
++                    <span class="t">Décisions</span>
++                    <span class="d">Les choix à trancher sur le système de construction — comparatif visuel.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile" href="/design">
++                    <span class="ico"><i class="bi bi-file-earmark-text-fill"></i></span>
++                    <span class="t">Doc de design</span>
++                    <span class="d">Vision, roadmap &amp; doc technique — à lire et commenter.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <a class="tile bracket" href="/presentation">
++                    <span class="ico"><i class="bi bi-easel-fill"></i></span>
++                    <span class="t">Présentation</span>
++                    <span class="d">La vitrine du scénario — fonctionnalités &amp; ambiance.</span>
++                </a>
++            </div>
++            <div class="col-md-4">
++                <div class="tile" role="button" id="tile-link">
++                    <span class="ico"><i class="bi bi-link-45deg"></i></span>
++                    <span class="t">Lier mon perso</span>
++                    <span class="d">Associe ton compte à ton personnage en jeu.</span>
++                </div>
++            </div>
++            <div class="col-md-4" id="tile-dashboard" style="display:none">
++                <a class="tile" href="/dashboard.html">
++                    <span class="ico"><i class="bi bi-speedometer2"></i></span>
++                    <span class="t">Tableau de bord</span>
++                    <span class="d">Gestion de tes secteurs et de ton perso.</span>
++                </a>
++            </div>
++            <div class="col-md-4" id="tile-admin" style="display:none">
++                <a class="tile" href="/admin.html">
++                    <span class="ico"><i class="bi bi-shield-lock-fill"></i></span>
++                    <span class="t">Administration</span>
++                    <span class="d">Effectifs, grades, calibration, dotations.</span>
++                </a>
++            </div>
++            <div class="col-md-4" id="tile-adminmap" style="display:none">
++                <a class="tile bracket" href="/mapadmin">
++                    <span class="ico"><i class="bi bi-diagram-3-fill"></i></span>
++                    <span class="t">Carte tactique admin</span>
++                    <span class="d">État FF/Réoccupation en direct : captures, contre-attaques, patrouilles.</span>
++                </a>
+             </div>
+         </div>
+-    </section>
+ 
+-    <section id="maps" class="section">
+-        <div class="container">
+-            <h2 class="section-title">Available Maps</h2>
+-            <div id="map-previews-container" class="row g-4">
+-                <div class="col-12 text-center"><div class="spinner-border text-light"></div></div>
++        <!-- Journal des mises a jour -->
++        <div class="card bracket mb-4">
++            <div class="card-header d-flex justify-content-between align-items-center">
++                <span><i class="bi bi-journal-text me-2"></i>Journal des mises à jour</span>
++                <span class="badge text-bg-secondary" id="cl-count"></span>
++            </div>
++            <div class="card-body">
++                <div id="changelog-body"></div>
++            </div>
++        </div>
++
++        <!-- Dotations disponibles -->
++        <div class="card bracket">
++            <div class="card-header d-flex justify-content-between align-items-center">
++                <span><i class="bi bi-person-vcard me-2"></i>Dotations disponibles</span>
++                <div class="btn-group btn-group-sm" id="lo-faction-tabs"></div>
++            </div>
++            <div class="card-body">
++                <div id="loadouts-body"><div class="text-center text-muted p-4"><div class="spinner-border spinner-border-sm"></div></div></div>
+             </div>
+         </div>
+     </section>
+ </main>
+ 
+-<footer class="footer mt-auto py-4">
+-    <div class="container text-center">
+-        <span class="text-white-50 small">© 2025 [GTG] Live Map</span>
+-        <div class="mt-2">
+-            <a href="https://event.gtg-arma.de/impressum.html" target="_blank" class="text-white-50 text-decoration-none small mx-2">Impressum</a>
+-            <a href="/privacy.html" class="text-white-50 text-decoration-none small mx-2">Privacy Policy</a>
+-        </div>
++<footer class="footer mt-5 py-4">
++    <div class="container text-center credit-foot">
++        <span>Moteur carte · <a href="https://reforger.armaplatform.com/workshop/65E90CB6053F2791" target="_blank" rel="noopener">GTG LiveMap</a></span>
++        <div class="mt-2"><a href="/privacy.html" class="mx-2">Confidentialité</a></div>
+     </div>
+ </footer>
+ 
++<!-- Lier mon perso en jeu -->
++<div class="modal fade" id="linkCharModal" tabindex="-1">
++    <div class="modal-dialog modal-dialog-centered">
++        <div class="modal-content">
++            <div class="modal-header"><h5 class="modal-title">Lier mon perso en jeu</h5>
++                <button class="btn-close" data-bs-dismiss="modal"></button>
++            </div>
++            <div class="modal-body text-center">
++                <p class="text-muted mb-1">Rejoins le serveur en jeu et tape dans le chat :</p>
++                <div class="my-3"><code style="font-size:1.1rem">#link <span id="link-code-cmd" style="font-size:1.6rem;letter-spacing:.2em">------</span></code></div>
++                <p class="small text-muted">Le code expire dans <span id="link-code-ttl">10</span> min · usage unique.</p>
++                <p class="small">Une fois lié, tu pourras déplacer/supprimer <strong>tes</strong> marqueurs depuis le site.</p>
++                <div id="link-code-msg" class="small"></div>
++            </div>
++        </div>
++    </div>
++</div>
++
+ <div id="cookie-banner" class="glass-pane">
+     <div class="container">
+-        <div class="text-white-50">
+-            <p class="mb-0">This website uses technically necessary cookies to ensure login functionality. By continuing to use the site, you agree to this. For more information, please see our Privacy Policy.</p>
+-        </div>
+-        <div>
+-            <button class="btn btn-primary" id="accept-cookies">Accept</button>
+-        </div>
++        <div class="text-white-50"><p class="mb-0">Cookies techniques nécessaires à la connexion. En poursuivant, vous acceptez leur usage.</p></div>
++        <div><button class="btn btn-primary" id="accept-cookies">Accepter</button></div>
+     </div>
+ </div>
+ 
+ <script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+-<script src="/api/v1/cdn/map/leaflet.js"></script>
+ <script>
+     document.addEventListener('DOMContentLoaded', () => {
++        const API = '/api/v1';
++        const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+         const userDisplay = document.getElementById('user-display');
+-        const heroLoginContainer = document.getElementById('hero-login-button-container');
+-
+-        const edge_to_center_offset = 50;
+-        L.CRS.CustomSimple = L.Util.extend({}, L.CRS, {
+-            projection: L.Projection.LonLat,
+-            transformation: new L.Transformation(1/12.501, 0, -1/12.501, 0),
+-            scale(zoom) { return Math.pow(2, zoom); },
+-            zoom(scale) { return Math.log(scale) / Math.LN2; },
+-            distance(latlng1, latlng2) { const dx = latlng2.lng - latlng1.lng; const dy = latlng2.lat - latlng1.lat; return Math.sqrt(dx * dx + dy * dy); },
+-            infinite: true
+-        });
+-        L.TileLayer.InvertedY = L.TileLayer.extend({
+-            getTileUrl: function(coords) {
+-                coords.y = -coords.y - 1;
+-                return L.TileLayer.prototype.getTileUrl.call(this, coords);
+-            }
+-        });
+-        const armaToLeaflet = (coordPair) => {
+-            return L.latLng(coordPair[1] + edge_to_center_offset, coordPair[0] + edge_to_center_offset);
+-        };
++        let allLoadouts = [], activeFaction = null;
++
++        // ===== JOURNAL DES MISES A JOUR =====
++        // Ajouter la nouvelle version EN HAUT du tableau. tag: Nouveau / Equilibrage / Correctif / Compat.
++        const CHANGELOG = [
++            { date: '2026-09-19', version: "Désignation laser, écran de chargement vivant et ennemi mieux armé", tag: 'Nouveau', items: [
++                "L'écran de chargement vous parle. Il affiche les nouvelles du serveur et, dès votre deuxième connexion, votre grade, votre XP et vos heures au front. La première connexion sert à vous reconnaître — normal de ne rien voir ce jour-là.",
++                "Les jumelles Sophie désignent maintenant au laser, et l'arsenal reçoit de quoi tirer sur ce qu'elles désignent : programmateur MMS, obus de mortier 81 mm guidé (grade Sergent requis) et roquette APKWS. Un observateur désigne, un servant au mortier tire — sans avoir besoin d'un hélicoptère.",
++                "L'ancienne Sophie sans laser disparaît de l'arsenal : deux entrées au même nom dont une inférieure, personne n'y gagnait.",
++                "L'ennemi n'est plus démuni face aux blindés et aux hélicoptères. Jusqu'ici il ne sortait un servant antichar ou sol-air qu'APRÈS avoir déjà souffert dans le secteur — autrement dit le premier hélicoptère de la soirée ne rencontrait jamais de défense. Une part minimale de spécialistes est désormais présente partout.",
++                "Moins d'hélicoptères ennemis, mais ils sont armés. Le transport désarmé représentait 28 des 29 appareils recensés : ils patrouillaient sans jamais pouvoir tirer.",
++                "Les civils ne conduisent plus de véhicules militaires. Leur parc pointait sur un catalogue militaire — on y trouvait des UAZ à mitrailleuse et des blindés.",
++                "Les villages ont des habitants. Un civil croisé dans un secteur est désormais quelqu'un DE ce secteur : les mêmes visages reviennent chez eux, avec la mémoire de ce que vous leur avez fait. Aidez-les, ils vous accueillent ; rançonnez-les, ils vous trahissent.",
++                "Le bandeau de vitesse et la jauge de contrôle aux checkpoints disparaissent de l'écran. Le couvre-feu et les checkpoints, eux, s'appliquent toujours — vous apprendrez la limite en vous faisant arrêter.",
++                "Votre XP remonte enfin sur le site. Elle restait bloquée à zéro alors que vous montiez bel et bien en grade : deux compteurs coexistaient et c'est le mauvais qui était publié.",
++            ] },
++            { date: '2026-09-17', version: "La construction remarche, et elle passe au Génie", tag: 'Correctif', items: [
++                "La touche J ouvre enfin le menu de construction. Depuis plusieurs jours elle n'affichait qu'un cercle vide — avec ou sans pelle, dans le Génie comme ailleurs. Deux pannes s'étaient superposées, l'une et l'autre parfaitement silencieuses : le menu n'était plus construit au lancement de la partie, et le code chargé de le rouvrir ne démarrait jamais côté serveur.",
++                "Plus de roue à traverser : sortez la pelle, appuyez sur J, le menu s'ouvre directement. L'étape intermédiaire a disparu.",
++                "La construction est désormais réservée à l'escouade du Génie. Les autres gardent leur pelle, mais ne bâtissent plus.",
++                "Et quand c'est refusé, on vous dit pourquoi : pas de pelle en main, outil qui n'est pas une pelle de terrassement, mauvaise escouade, ou rien de constructible à cet endroit. Fini le menu qui reste muet.",
++                "À signaler : J ne sert plus qu'à construire. L'accès aux objectifs en cours qu'elle proposait également a été retiré — dites-nous s'il vous manque.",
++            ] },
++            { date: '2026-09-16', version: "Les tenues enregistrées arrivent enfin complètes", tag: 'Correctif', items: [
++                "Fini l'arme à moitié montée. Vous preniez une dotation et receviez un gilet seul, ou un fusil sans crosse ni viseur. La cause : dès qu'un seul objet refusait de se poser, le jeu abandonnait toute la tenue en silence. La restauration continue désormais malgré un objet récalcitrant — au pire il vous manque cet objet-là, plus la tenue entière.",
++                "Un objet qui ne peut pas être livré est maintenant signalé dans les journaux au lieu de disparaître sans bruit, ce qui nous permettra de traiter les cas restants.",
++                "Vos tenues enregistrées avant cette mise à jour sont à ré-enregistrer : leur format de stockage a changé. Une ancienne tenue ne vous équipera pas et vous le dira, plutôt que de vous donner n'importe quoi.",
++            ] },
++            { date: '2026-09-10', version: "L'ennemi soigne ses blessés comme un vrai soldat", tag: 'Equilibrage', items: [
++                "Plus personne ne se lève en plein champ de tir pour panser un camarade. Un médecin ennemi le faisait systématiquement, offrant deux cibles immobiles au milieu de l'échange. La cause était une priorité du jeu de base : soigner passait devant se protéger — Bohemia avait même prévu un garde-fou pour ça, sans jamais le brancher. L'IA se met désormais à couvert d'abord, et soigne quand ça se calme.",
++                "Et elle traîne ses blessés à l'abri avant de les soigner. Un camarade vient chercher l'homme à terre, s'éloigne de vous vers un vrai couvert, le repose, puis le soigne. Vous ne fauchez plus deux hommes d'une rafale parce que l'un s'est agenouillé sur l'autre.",
++                "Nouvelle menace : la voiture piégée roulante. Une voiture civile fonce sur vous et explose au contact. Contrairement aux épaves piégées qu'on subit sans rien voir venir, celle-ci s'identifie et se neutralise — tirez sur le conducteur et l'attaque s'arrête.",
++                "Le kamikaze à pied ne vous attend plus sur place : il vient vous chercher, en zigzag, et se met à couvert quand vous lui tirez dessus avant de repartir.",
++                "Les voitures civiles piégées sont maintenant dosables par l'état-major (proportion et nombre maximum). Le piège reste une vraie mine : un détecteur ACE la repère.",
++            ] },
++            { date: '2026-09-10', version: "Vos tenues ne sont plus qu'à vous, et l'AT4 arrive", tag: 'Correctif', items: [
++                "Vos tenues enregistrées redeviennent privées. Sur le site, la liste des dotations affichait aussi les tenues personnelles des autres joueurs — elle ne montre plus que les dotations de faction et les vôtres. En jeu, la caisse d'arsenal faisait déjà le tri correctement : personne n'a jamais pu équiper la tenue d'un autre. Elles s'appellent toutes « Ma tenue 1 » parce que le compteur est propre à chaque joueur, ce qui entretenait la confusion.",
++                "L'AT4 rejoint l'arsenal, en cinq versions : HEAT contre le blindage, HE contre l'infanterie, HEDP polyvalent, plus deux modèles CS tirables depuis un espace clos. C'est un tube jetable livré chargé : pas de roquette à acheter à côté, et l'arme se jette après le tir. Comptez le prix d'un RPG-7 pour le HEAT, un cran au-dessus pour les autres.",
++            ] },
++            { date: '2026-09-10', version: "Les grades se portent enfin sur la manche", tag: 'Nouveau', items: [
++                "Votre galon est posé automatiquement, au grade qui est réellement le vôtre. Il apparaît au spawn et se remet à chaque changement de tenue : discret quand vous portez un gilet de combat, voyant en t-shirt ou en tenue de cérémonie. En contrepartie, les galons disparaissent de l'arsenal — on ne choisit plus son grade dans une caisse. Les autres patchs (nom, groupe sanguin, insignes de régiment, opérations) restent libres.",
++                "L'échelle passe à 18 grades, de Déserteur à Colonel, calquée sur les galons réellement disponibles. Trois échelons rejoignent la liste : Caporal-Chef de 1ère Classe, Sergent-Chef BM2 et Aspirant. Pas de Général : le galon n'existe pas, donc le grade non plus.",
++                "Le premier grade s'obtient tout seul après 30 minutes de jeu. Au-delà, chaque montée est décidée par l'état-major. Votre fiche de soldat indique désormais quand vous êtes au plafond de votre palier et attendez une promotion — auparavant l'expérience semblait simplement bloquée.",
++                "Une dotation Génie fait son apparition, réservée à l'escouade ECHO, avec la pelle qu'il faut. Et n'importe quelle pelle devient un outil de construction : jusqu'ici deux modèles précis fonctionnaient et les autres, visuellement identiques, ne servaient à rien. En cas de doute, la commande #pelle vous dit exactement ce qui vous bloque.",
++                "La radio Thalès rentre enfin dans la poche radio du gilet modulaire.",
++                "Le brouilleur se pose sur un véhicule et se reprend, en gardant sa charge. Au passage, un défaut qui dévorait la batterie de rechange livrée avec le sac est corrigé.",
++                "La cinématique d'accueil ne se rejoue plus indéfiniment : elle se base maintenant sur votre temps de jeu réel et non sur une expérience qui plafonnait.",
++            ] },
++            { date: '2026-09-10', version: "L'ennemi ne se laisse plus tirer comme au pigeon", tag: 'Equilibrage', items: [
++                "Une partie du groupe ennemi vient vous chercher. Jusqu'ici, l'accrocher à 200 m ne demandait qu'un bon stock de munitions : personne ne bougeait, vous les cueilliez un par un. Maintenant environ la moitié du groupe progresse vers vous par bonds pendant que le reste vous cloue au feu. Ils gardent leurs réflexes de survie et reprennent un combat normal une fois au contact — ce n'est pas une charge suicidaire, c'est une manœuvre. Réglable dans les options FF, jusqu'à la désactivation complète.",
++                "Et ils posent un écran de fumée avant d'avancer. Le moteur savait le faire depuis toujours, mais le jeu de base ne le déclenchait qu'en soignant un blessé — jamais en combat. Une position ennemie qui se masque avant de bouger change complètement la lecture d'un engagement à distance.",
++                "Même arme, main plus sûre. Porter longtemps la même arme réduit progressivement le tremblement à la visée, jusqu'à -10 % après environ quatre heures. Volontairement modeste : l'idée est de récompenser la fidélité à une arme, pas de creuser un fossé entre les anciens et les recrues. Le temps est compté côté serveur et survit aux redémarrages.",
++                "Les tenues enregistrées ne cassent plus vos armes. Reprendre une tenue sauvegardée sortait une arme aux accessoires empilés avec un badge « +10 » : on reposait les accessoires enregistrés sans retirer ceux d'origine. Les dotations de faction, elles, gardent bien leur optique.",
++                "La caisse d'arsenal gagne des catégories et une recherche, et ses actions — enregistrer sa tenue, rendre son équipement, prendre une dotation — s'affichent enfin : elles étaient posées sur une partie invisible de la caisse.",
++                "Correction d'un bug destructeur : enregistrer sa tenue sur un bâtiment « equipment store » pouvait SUPPRIMER le bâtiment, payé en ravitaillement, sans le moindre avertissement.",
++                "Le panneau de réglages de la carte disparaît pour les joueurs. Ses interrupteurs ne faisaient déjà rien — le brouillard de guerre les bloquait — et un menu qui ment fait douter de tout le reste. Les admins le gardent.",
++                "Tenir la même position en tirant finit par vous coûter cher. Un drone ennemi arrive d'abord — visible et audible bien avant de pouvoir agir : c'est l'avertissement. Si vous restez, une équipe déjà sur le terrain vient vous chercher, puis un groupe motorisé. Ce n'est pas le nombre de tirs qui compte mais la durée passée au même endroit : une embuscade suivie d'un décrochage ne déclenche jamais rien, et tenir un point que vous défendez non plus.",
++                "Le jeu vous dit enfin pourquoi vous ne pouvez pas construire. Jusqu'ici, tenter d'ouvrir le menu de construction sans remplir les conditions ne donnait rien du tout : pas de refus, pas de raison, et l'impression d'un bug. Vous lisez maintenant le motif — hors zone, ravitaillement insuffisant, ou autre.",
++                "Les messages du jeu passent dans le chat. Le bandeau qui s'affichait au centre prenait trop de place et s'effaçait avant qu'on ait fini de lire ; le chat, lui, garde l'historique. Le son d'erreur est conservé.",
++            ] },
++            { date: '2026-09-08', version: "L'ennemi devient dangereux", tag: 'Equilibrage', items: [
++                "Tirez sur un véhicule ennemi et il vous répond. Jusqu'ici, un char qui encaissait une roquette continuait sa route comme si de rien n'était : quand un véhicule était touché, c'était le véhicule qui était considéré comme la victime, et son équipage n'était tout simplement jamais prévenu. Désormais la tourelle pivote vers le tireur et l'équipage passe en alerte maximale. Rater sa roquette ne sort plus impuni.",
++                "Les lance-roquettes ennemis visent enfin les véhicules. Jusqu'ici un homme au RPG continuait de tirer au fusil pendant qu'un blindé passait devant lui : prendre un véhicule armé était devenu la façon la plus sûre de nettoyer une position. Il lâche maintenant l'infanterie pour vous traiter, et de bien plus loin.",
++                "Les servants de tourelle ne descendent plus de leur véhicule. C'est un défaut du jeu de base : dès que vous sortiez de leur angle de tir, ils abandonnaient une mitrailleuse lourde pour reprendre leur fusil. Tous les technicals et camions armés se vidaient ainsi de leur tireur.",
++                "Les chars peuvent désormais vous envoyer un obus. Le jeu de base réservait le canon aux blindés et ne sortait que la mitrailleuse coaxiale contre les fantassins. Restez groupés devant un char et vous le regretterez — mais il ne videra pas sa soute pour autant.",
++                "L'ennemi riposte plus vite, vise plus juste et vous repère de plus loin. Une patrouille qui vous croise à bout portant s'arrête maintenant pour tirer au lieu de poursuivre sa route.",
++                "Ce durcissement s'applique aussi aux troupes du désert (MEI), qui n'avaient jusqu'ici aucun réglage de difficulté et se battaient avec les valeurs par défaut.",
++                "Tout ce comportement est piloté par 15 curseurs côté admin (onglet « FF REMIXED - Difficulté IA »), modifiables en pleine partie : si c'est trop violent, on redescend le niveau sans redémarrer le serveur ni relancer la campagne. Vos retours sur la page Tests serviront directement à régler ça.",
++            ]},
++            { date: '2026-09-08', version: 'Économie de guerre & dotations désert', tag: 'Nouveau', items: [
++                "Nouvelle page « Économie de guerre » : ce qu'on a en stock, ce qui rentre réellement chaque heure, les sites de production tenus et la pression ennemie — sur 6 heures à 30 jours. Les débits sont mesurés dans le jeu, pas estimés.",
++                "Les dotations de l'arsenal s'adaptent au théâtre : sur Anizay elles sortent automatiquement en camo Daguet. La caisse n'était jusqu'ici tout simplement pas approvisionnée sur cette carte.",
++            ]},
++            { date: '2026-09-08', version: 'Drones ennemis, Daguet & carte Anizay', tag: 'Nouveau', items: [
++                "L'ennemi du désert opère désormais ses propres drones : un appareil de reconnaissance vous repère et vous désigne, puis des drones-suicides FPV sont lancés sur votre position. Abattez l'opérateur pour couper la menace à la source.",
++                "Ses patrouilles embarquent aussi de l'anti-aérien portable, des brouilleurs et des missiles antichars guidés. Ces spécialistes existaient déjà mais n'apparaissaient jamais sur le terrain — c'est corrigé.",
++                "Équipement français du théâtre désertique : vous spawnez en tenue Daguet, et l'arsenal comme le parc de véhicules (VBCI, VBL, Griffon, GBC180) sont passés au camo sable. Les tenues Centre Europe restent réservées à Everon.",
++                "Les uniformes ne portent plus d'insigne ni de galon imposés : votre grade vous appartient.",
++                "Carte tactique d'Anizay disponible sur le site : le fond satellite du théâtre désertique s'affiche enfin, avec un niveau de zoom plus fin que sur les cartes précédentes.",
++                "Correctif : le premier joueur à rejoindre une campagne neuve ne pouvait pas spawner sur la base de départ et devait se reconnecter. Le déploiement attend maintenant que la base soit posée.",
++                "Les points de contrôle conservent leur état, leur camp et leur garnison à travers les redémarrages du serveur : fini les postes qui s'évaporent.",
++                "Compatibilité avec la mise à jour majeure de Réoccupation : escadrons de la mort retravaillés, alarmes de ville et annonces au haut-parleur enrichies."
++            ]},
++            { date: '2026-09-02', version: 'Théâtre désertique : Anizay', tag: 'Nouveau', items: [
++                "Nouveau théâtre d'opérations : Anizay, un terrain désertique. Vous y jouez l'Armée française en tenue Daguet, face aux insurgés du Moyen-Orient — un adversaire, un climat et un décor entièrement différents d'Everon.",
++                "L'ennemi du désert a été entièrement reconstruit : il ne restait jusqu'ici qu'une poignée de combattants génériques mal équipés. Vous ferez désormais face à des groupes complets — fantassins, mitrailleurs, tireurs d'élite, sapeurs, équipages de blindés et état-major.",
++                "Les insurgés ne sont plus une milice légère. Leurs patrouilles embarquent maintenant de l'anti-aérien portable (volez bas), des brouilleurs qui neutralisent vos drones, et des missiles antichars guidés sur les groupes les plus lourds.",
++                "Ils opèrent aussi leurs propres drones : un appareil de reconnaissance vous repère et vous désigne, puis des drones-suicides FPV sont lancés sur votre position. Ce même drone peut également larguer des grenades. Abattez l'opérateur pour couper la menace à la source.",
++                "Parc de véhicules dédié au théâtre : blindés, camions et pick-ups adaptés au désert, dont des Tigr aux couleurs sable rachetés aux Russes."
++            ]},
++            { date: '2026-08-29', version: 'Renseignement & escadrons de la mort', tag: 'Nouveau', items: [
++                "L'occupant lance désormais des raids d'escadrons de la mort sur les villages tenus par la résistance : plusieurs escouades lourdement armées quittent une base ennemie, progressent vers une agglomération du front, puis donnent l'assaut. Chaque civil tué fait chuter le soutien local, et le village peut repasser à l'ennemi.",
++                "Les civils croisés sur la route peuvent avoir aperçu la colonne : parlez-leur, c'est votre alerte précoce.",
++                "Les rapports du réseau radio ne s'affichent plus à l'écran. Ils vous attendent sur place : rendez-vous à une tour radio que vous contrôlez, restez-y quelques secondes, et la dépêche vous est remise en main propre. Un seul exemplaire — celui qui fait le déplacement doit relayer aux autres.",
++                "Une dépêche non récupérée finit par être périmée. L'information ne vous attend pas indéfiniment.",
++                "Les documents portés par un officier ennemi sont maintenant un véritable objet à fouiller sur le corps, et non plus un message à l'écran. Si vous ne fouillez pas vos morts, vous n'aurez rien.",
++                "Plus vous contrôlez de tours radio, plus TOUS vos renseignements gagnent en précision et en fiabilité — y compris les tuyaux des civils. Avec un réseau complet, une rumeur devient une position exploitable."
++            ]},
++            { date: '2026-08-24', version: 'Compat 1.8', tag: 'Compat', items: [
++                "Compatibilité avec la grosse mise à jour Arma 1.8 / Freedom Fighters 0.70 / Réoccupation 4.2 — le scénario recompile et tourne sur les dernières versions.",
++                "Garnisons de ville : le bug des villes qui se vidaient est désormais corrigé côté Freedom Fighters.",
++                "Notifications d'événements masquées proprement (le renseignement se gagne, il ne tombe pas en pop-up)."
++            ]},
++            { date: '2026-07-25', version: 'Arsenal & véhicules', tag: 'Equilibrage', items: [
++                "Arsenal : sacs à dos limités aux 3 modèles TECPACK (30 / 45 / 70 L).",
++                "Ajout à l'arsenal : batteries de drone (DJI et FPV) et sac brouilleur.",
++                "Véhicules ennemis : les UAZ reviennent aux versions du jeu de base (retrait de l'UAZ Kornet buggé)."
++            ]},
++            { date: '2026-07-24', version: 'Civils & guerre asymétrique', tag: 'Nouveau', items: [
++                "Civils persistants : chaque civil garde son identité et un niveau de confiance qui évolue avec vos actions (sauvegardé entre les sessions).",
++                "Nouvelle option de dialogue « Fouiller » — attention, fouiller sans saluer agace le civil.",
++                "Menace asymétrique : espions déguisés en civils, voitures piégées, kamikazes, champs de mines ennemis."
++            ]}
++        ];
++
++        function renderChangelog() {
++            const body = document.getElementById('changelog-body');
++            if (!body) return;
++            document.getElementById('cl-count').textContent = CHANGELOG.length + ' entrées';
++            body.innerHTML = CHANGELOG.map((e, i) => `
++                <div class="cl-entry ${i === 0 ? 'latest' : ''}">
++                    <div class="cl-head">
++                        <span class="cl-ver">${esc(e.version)}</span>
++                        <span class="cl-tag">${esc(e.tag || '')}</span>
++                        <span class="cl-date">${esc(e.date)}</span>
++                    </div>
++                    <ul class="cl-list">${(e.items || []).map(it => `<li>${esc(it)}</li>`).join('')}</ul>
++                </div>`).join('');
++        }
+ 
+         const updateUserDisplay = (user) => {
+             if (user && user.id) {
+-                userDisplay.innerHTML = `<div class="dropdown"><a href="#" class="d-block link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><img src="${user.avatar}" width="32" height="32" class="rounded-circle"></a><ul class="dropdown-menu dropdown-menu-dark text-small"><li><a class="dropdown-item" href="/dashboard.html">Dashboard</a></li><li><a class="dropdown-item" href="/map.html">Live Map</a></li><li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/auth/logout">Logout</a></li></ul></div>`;
+-                heroLoginContainer.innerHTML = `<a href="/dashboard.html" class="btn btn-lg btn-primary btn-login"><i class="bi bi-speedometer2 me-2"></i> Go to Dashboard</a>`;
++                userDisplay.innerHTML = `<div class="dropdown"><a href="#" class="d-block link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"><img src="${user.avatar}" width="32" height="32" class="rounded-circle"><span class="ms-2 d-none d-md-inline">${esc(user.username)}</span></a><ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end"><li><a class="dropdown-item" href="/map.html">Carte tactique</a></li>${user.account_type === 'admin' ? '<li><a class="dropdown-item" href="/dashboard.html">Tableau de bord</a></li><li><a class="dropdown-item" href="/admin.html"><i class="bi bi-shield-lock me-1"></i>Admin</a></li>' : ''}<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/auth/logout">Déconnexion</a></li></ul></div>`;
+             } else {
+-                userDisplay.innerHTML = `<a href="/auth/discord/login" class="btn btn-outline-light">Login</a>`;
+-                heroLoginContainer.innerHTML = `<a href="/auth/discord/login" class="btn btn-lg btn-success discord-button btn-login"><i class="bi bi-discord me-2"></i> Login with Discord & Get Started</a>`;
++                userDisplay.innerHTML = `<a href="/auth/discord/login" class="btn btn-outline-light btn-sm">Connexion</a>`;
+             }
+         };
+ 
+-        const checkAuth = async () => { try { const res = await fetch('/api/v1/users/me'); if (!res.ok) throw new Error(); updateUserDisplay(await res.json()); } catch (e) { updateUserDisplay(null); } };
++        // Affichage "sympa" du contenu d'une dotation (JSON opaque -> sections + chips).
++        const KEY_ICONS = { clothing: 'bi-person-fill', vetements: 'bi-person-fill', tenue: 'bi-person-fill',
++            weapons: 'bi-crosshair', armes: 'bi-crosshair', arme: 'bi-crosshair',
++            mags: 'bi-boxes', magazines: 'bi-boxes', chargeurs: 'bi-boxes', ammo: 'bi-boxes',
++            items: 'bi-bag-fill', gear: 'bi-backpack-fill', equipment: 'bi-backpack-fill',
++            grenades: 'bi-diamond-half', medical: 'bi-heart-pulse', backpack: 'bi-backpack-fill' };
++        // Nom lisible depuis un chemin de prefab (LECTURE SEULE — on ne modifie jamais le JSON).
++        // "{GUID}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_01_cover.et" -> "Helmet PASGT 01 cover"
++        function prefabName(p) {
++            if (!p) return '';
++            let s = String(p).replace(/^\{[^}]*\}/, '');       // retire le {GUID}
++            s = s.split('/').pop().replace(/\.et$/i, '');        // dernier segment sans .et
++            return s.replace(/_/g, ' ').trim();
++        }
++        // Catégorie (icône + couleur + libellé FR) déduite du chemin de prefab (lecture seule).
++        function prefabCat(p) {
++            const s = String(p || '').toLowerCase();
++            if (s.includes('/magazines/') || s.includes('magazine')) return { icon: 'bi-boxes', color: 'var(--amber)', label: 'Chargeur' };
++            if (s.includes('grenade')) return { icon: 'bi-diamond-half', color: 'var(--red)', label: 'Grenade' };
++            if (s.includes('medicine') || s.includes('bandage') || s.includes('morphine') || s.includes('tourniquet') || s.includes('dressing') || s.includes('heal') || s.includes('saline') || s.includes('blood')) return { icon: 'bi-bandaid', color: 'var(--green)', label: 'Médical' };
++            if (s.includes('/weapons/')) return { icon: 'bi-crosshair', color: 'var(--blue)', label: 'Arme' };
++            if (s.includes('headgear') || s.includes('helmet')) return { icon: 'bi-shield-shaded', color: 'var(--cyan)', label: 'Casque' };
++            if (s.includes('vest')) return { icon: 'bi-grid-1x2-fill', color: 'var(--cyan)', label: 'Gilet' };
++            if (s.includes('uniform') || s.includes('pants') || s.includes('jacket')) return { icon: 'bi-person-fill', color: 'var(--cyan)', label: 'Tenue' };
++            if (s.includes('boots') || s.includes('footwear')) return { icon: 'bi-person-walking', color: 'var(--cyan)', label: 'Bottes' };
++            if (s.includes('radio')) return { icon: 'bi-broadcast', color: 'var(--blue)', label: 'Radio' };
++            if (s.includes('compass')) return { icon: 'bi-compass', color: 'var(--dim)', label: 'Boussole' };
++            if (s.includes('map')) return { icon: 'bi-map', color: 'var(--dim)', label: 'Carte' };
++            if (s.includes('flashlight') || s.includes('flare') || s.includes('optic') || s.includes('scope')) return { icon: 'bi-lightbulb', color: 'var(--amber)', label: 'Optique' };
++            if (s.includes('backpack') || s.includes('pouch')) return { icon: 'bi-backpack-fill', color: 'var(--cyan)', label: 'Contenant' };
++            if (s.includes('equipment') || s.includes('tool') || s.includes('gadget') || s.includes('accessor')) return { icon: 'bi-tools', color: 'var(--dim)', label: 'Équipement' };
++            return { icon: 'bi-dot', color: 'var(--dim)', label: '' };
++        }
++        // Rend une liste d'items en LIGNES propres : icône + nom, doublons regroupés (×N),
++        // contenu imbriqué (children) indenté. On ne lit que prefab / count / children.
++        function renderItemList(items, depth) {
++            const groups = [], idx = {};
++            (items || []).forEach(it => {
++                if (!it || typeof it !== 'object') return;
++                const name = prefabName(it.prefab) || it.name || it.item || '?';
++                const kn = Array.isArray(it.children) ? it.children.length : 0;
++                const key = name + '#' + kn; // ne regroupe que les items vraiment identiques
++                const q = it.count || it.qty || it.amount || 1;
++                if (idx[key] === undefined) { idx[key] = groups.length; groups.push({ name, item: it, count: q }); }
++                else groups[idx[key]].count += q;
++            });
++            return groups.map(g => {
++                const kids = Array.isArray(g.item.children) ? g.item.children.filter(k => k && (k.prefab || k.name)) : [];
++                const hasKids = kids.length && depth < 3;
++                const count = g.count > 1 ? `<span class="lo-count">×${g.count}</span>` : '';
++                const cat = prefabCat(g.item.prefab);
++                const ico = `<i class="bi ${cat.icon} lo-item-ico" style="color:${cat.color}"></i>`;
++                const tag = cat.label ? `<span class="lo-cat" style="color:${cat.color};border-color:${cat.color}">${cat.label}</span>` : '';
++                if (hasKids) {
++                    const nkids = kids.reduce((n, k) => n + (k.count || k.qty || 1), 0);
++                    return `<div class="lo-item expandable"><i class="bi bi-chevron-right lo-chev"></i>${ico}<span class="lo-item-name">${esc(g.name)}</span>${tag}<span class="lo-sub">${nkids}</span>${count}</div>` +
++                        `<div class="lo-children" style="display:none">${renderItemList(kids, depth + 1)}</div>`;
++                }
++                return `<div class="lo-item"><span class="lo-chev-spacer"></span>${ico}<span class="lo-item-name">${esc(g.name)}</span>${tag}${count}</div>`;
++            }).join('');
++        }
++        function renderValue(v) {
++            if (Array.isArray(v)) {
++                if (!v.length) return '<span class="text-muted small">—</span>';
++                if (v.some(x => x && typeof x === 'object')) return renderItemList(v, 0);
++                return v.map(x => `<span class="lo-chip">${esc(String(x))}</span>`).join('');
++            }
++            if (v && typeof v === 'object') {
++                if (v.prefab !== undefined) return renderItemList([v], 0);
++                return Object.entries(v).map(([k, val]) => `<span class="lo-chip">${esc(k)}: <span class="q">${esc(String(val))}</span></span>`).join('');
++            }
++            return `<span class="lo-chip">${esc(String(v))}</span>`;
++        }
++        function renderLoadoutContent(dataStr) {
++            let obj;
++            try { obj = JSON.parse(dataStr || 'null'); } catch (_) { return `<div class="text-muted small">Contenu non lisible.</div>`; }
++            if (!obj || typeof obj !== 'object') return `<div class="text-muted small">Aucun détail.</div>`;
++            return Object.entries(obj).map(([k, v]) => {
++                const ico = KEY_ICONS[k.toLowerCase()] || 'bi-dot';
++                return `<div class="lo-sec-title"><i class="bi ${ico}"></i>${esc(k)}</div><div class="lo-list">${renderValue(v)}</div>`;
++            }).join('') || `<div class="text-muted small">Aucun détail.</div>`;
++        }
+ 
+-        // ★★★ KOMPLETT NEUE `initDemoMap`-FUNKTION ★★★
+-        const initDemoMap = async () => {
+-            const demoMapContainer = document.getElementById('demo-map');
+-            try {
+-                const demoData = await (await fetch('/api/v1/public/demo-data')).json();
++        function renderLoadouts() {
++            const body = document.getElementById('loadouts-body');
++            const tabs = document.getElementById('lo-faction-tabs');
++            if (!allLoadouts.length) {
++                tabs.innerHTML = '';
++                body.innerHTML = `<div class="text-center text-muted p-4"><i class="bi bi-inboxes fs-3 d-block mb-2"></i>Aucune dotation publiée pour l'instant.<br><small>Les dotations sont créées en jeu par le commandement.</small></div>`;
++                return;
++            }
++            const factions = [...new Set(allLoadouts.map(l => l.faction || '(sans faction)'))].sort();
++            if (!activeFaction || !factions.includes(activeFaction)) activeFaction = factions[0];
++            tabs.innerHTML = factions.map(f => `<button class="btn btn-outline-light spec-tab ${f === activeFaction ? 'active' : ''}" data-f="${esc(f)}">${esc(f)}</button>`).join('');
++            tabs.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeFaction = b.dataset.f; renderLoadouts(); }));
+ 
+-                const mapConfig = demoData.map_config;
+-                if (!mapConfig) throw new Error("Demo server has no map configuration.");
++            const list = allLoadouts.filter(l => (l.faction || '(sans faction)') === activeFaction);
++            const bySpec = {};
++            list.forEach(l => { const s = l.specialty || 'Non classé'; (bySpec[s] = bySpec[s] || []).push(l); });
+ 
+-                const bounds = L.latLngBounds(armaToLeaflet([mapConfig.BoundsSWX, mapConfig.BoundsSWY]), armaToLeaflet([mapConfig.BoundsNEX, mapConfig.BoundsNEY]));
+-                const demoMap = L.map('demo-map', { crs: L.CRS.CustomSimple, attributionControl: false, zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false });
++            body.innerHTML = Object.keys(bySpec).sort().map(spec => `
++                <div class="mb-2"><span class="badge text-bg-info"><i class="bi bi-bookmark-fill me-1"></i>${esc(spec)}</span></div>
++                <div class="row g-3 mb-3">
++                    ${bySpec[spec].map(l => `
++                        <div class="col-md-6 col-lg-4">
++                            <div class="lo-card bracket p-3">
++                                <div class="d-flex justify-content-between align-items-center mb-2">
++                                    <strong>${esc(l.name)}</strong>
++                                    <span class="badge text-bg-secondary">${esc(l.faction || '—')}</span>
++                                </div>
++                                ${renderLoadoutContent(l.data)}
++                            </div>
++                        </div>`).join('')}
++                </div>`).join('');
++        }
+ 
+-                if (mapConfig.TilesURL) {
+-                    new L.TileLayer.InvertedY(mapConfig.TilesURL, { noWrap: true, bounds: bounds, zoomReverse: true, minZoom: mapConfig.MinZoom, maxZoom: mapConfig.MaxZoom }).addTo(demoMap);
+-                }
++        async function loadLoadouts() {
++            try {
++                const d = await (await fetch(`${API}/user/loadouts`)).json();
++                allLoadouts = d.loadouts || [];
++            } catch (_) { allLoadouts = []; }
++            renderLoadouts();
++        }
+ 
+-                demoMap.fitBounds(bounds).zoomOut(1); // Finde eine gute Ansicht
+-                demoMap.setMaxBounds(bounds.pad(0.2));
++        function tickClock() {
++            const d = new Date();
++            const z = d.toISOString().slice(11, 19);
++            document.getElementById('clock-line').textContent = `${z} Zulu · ${d.toLocaleDateString('fr-FR')}`;
++        }
+ 
+-                if (demoData.positions && demoData.positions.length > 0) {
+-                    demoData.positions.forEach(p => {
+-                        const r=Math.round(p.Faction.ColorR*255),g=Math.round(p.Faction.ColorG*255),b=Math.round(p.Faction.ColorB*255);
+-                        const color=`#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+-                        L.circleMarker(armaToLeaflet([p.AbsolutePosX, p.AbsolutePosZ]), { radius: 6, color: 'white', weight: 1, fillColor: color, fillOpacity: 1 }).addTo(demoMap);
+-                    });
++        const checkAuth = async () => {
++            let user = null;
++            try { const r = await fetch(`${API}/users/me`); if (r.ok) user = await r.json(); } catch (_) {}
++            updateUserDisplay(user);
++            if (user && user.id) {
++                document.getElementById('guest-view').classList.add('d-none');
++                document.getElementById('member-view').classList.remove('d-none');
++                document.getElementById('welcome-line').textContent = `Bienvenue au poste, ${user.username}`;
++                if (user.account_type === 'admin') {
++                    document.getElementById('tile-admin').style.display = '';
++                    document.getElementById('tile-dashboard').style.display = '';
++                    document.getElementById('tile-adminmap').style.display = '';
+                 }
+-            } catch (e) {
+-                console.error('Demo map failed to load:', e);
+-                demoMapContainer.innerHTML = '<div class="d-flex h-100 align-items-center justify-content-center"><p class="text-muted p-5">No demo server available at the moment.</p></div>';
++                tickClock(); setInterval(tickClock, 1000);
++                renderChangelog();
++                loadLoadouts();
++            } else {
++                document.getElementById('guest-view').classList.remove('d-none');
++                document.getElementById('member-view').classList.add('d-none');
+             }
+         };
+ 
+-        const initMapPreviews = async () => {
+-            const container = document.getElementById('map-previews-container');
+-            if (!container) return;
++        // Lier mon perso : génère un code de liaison (session) et l'affiche.
++        document.getElementById('tile-link').addEventListener('click', async () => {
++            const msg = document.getElementById('link-code-msg');
++            msg.textContent = ''; msg.className = 'small';
++            document.getElementById('link-code-cmd').textContent = '……';
++            new bootstrap.Modal(document.getElementById('linkCharModal')).show();
+             try {
+-                const response = await fetch('/api/v1/public/map-configs');
+-                const maps = await response.json();
+-                if (!maps || maps.length === 0) { container.innerHTML = '<p class="text-center text-muted">No maps available.</p>'; return; }
+-
+-                container.innerHTML = '';
+-                maps.forEach(mapConfig => {
+-                    const col = document.createElement('div'); col.className = 'col-lg-4 col-md-6';
+-                    const mapId = `preview-map-${mapConfig.ID}`;
+-                    col.innerHTML = `<div class="card glass-pane h-100"><div id="${mapId}" class="preview-map"></div><div class="card-body"><h5 class="card-title text-white">${mapConfig.Name}</h5></div></div>`;
+-                    container.appendChild(col);
+-
+-                    setTimeout(() => {
+-                        try {
+-                            const bounds = L.latLngBounds(armaToLeaflet([mapConfig.BoundsSWX, mapConfig.BoundsSWY]), armaToLeaflet([mapConfig.BoundsNEX, mapConfig.BoundsNEY]));
+-                            const previewMap = L.map(mapId, { crs: L.CRS.CustomSimple, attributionControl: false, zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false });
+-
+-                            if (mapConfig.TilesURL) {
+-                                new L.TileLayer.InvertedY(mapConfig.TilesURL, { noWrap: true, bounds: bounds, zoomReverse: true, minZoom: mapConfig.MinZoom, maxZoom: mapConfig.MaxZoom }).addTo(previewMap);
+-                            }
+-
+-                            if (mapConfig.InitialViewLat != null) { previewMap.setView([mapConfig.InitialViewLat, mapConfig.InitialViewLng], mapConfig.InitialViewZoom); }
+-                            else { previewMap.setView(bounds.getCenter(), mapConfig.MinZoom + 1); }
+-                            previewMap.setMaxBounds(bounds.pad(0.2));
+-                        } catch (mapError) {
+-                            console.error(`Could not initialize preview map ${mapId}:`, mapError);
+-                            document.getElementById(mapId).innerHTML = `<div class="d-flex h-100 align-items-center justify-content-center bg-dark text-danger">Map Error</div>`;
+-                        }
+-                    }, 0);
+-                });
+-            } catch(e) { console.error("Failed to load map previews:", e); container.innerHTML = '<p class="text-center text-danger">Could not load map previews.</p>'; }
+-        };
++                const res = await fetch(`${API}/link/code`, { method: 'POST' });
++                if (!res.ok) throw new Error('HTTP ' + res.status);
++                const d = await res.json();
++                document.getElementById('link-code-cmd').textContent = d.code;
++                document.getElementById('link-code-ttl').textContent = Math.round((d.expires_in || 600) / 60);
++            } catch (e) {
++                msg.textContent = 'Erreur : impossible de générer le code (' + e.message + ')';
++                msg.className = 'small text-danger';
++            }
++        });
+ 
+-        const cookieBanner = document.getElementById('cookie-banner');
+-        const acceptButton = document.getElementById('accept-cookies');
+-        const getCookie = (name) => { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return parts.pop().split(';').shift(); }
++        // Déplier / replier le contenu d'un item conteneur (chevron).
++        document.getElementById('loadouts-body').addEventListener('click', (e) => {
++            const item = e.target.closest('.lo-item.expandable');
++            if (!item) return;
++            const kids = item.nextElementSibling;
++            const chev = item.querySelector('.lo-chev');
++            if (kids && kids.classList.contains('lo-children')) {
++                const open = kids.style.display === 'none';
++                kids.style.display = open ? '' : 'none';
++                if (chev) chev.classList.toggle('open', open);
++            }
++        });
+ 
+-        acceptButton.addEventListener('click', () => {
+-            const d = new Date(); d.setTime(d.getTime() + (365*24*60*60*1000));
++        // Cookies
++        const cookieBanner = document.getElementById('cookie-banner');
++        const getCookie = (name) => { const v = `; ${document.cookie}`; const p = v.split(`; ${name}=`); if (p.length === 2) return p.pop().split(';').shift(); };
++        document.getElementById('accept-cookies').addEventListener('click', () => {
++            const d = new Date(); d.setTime(d.getTime() + 365 * 24 * 60 * 60 * 1000);
+             document.cookie = "cookie_consent=true;expires=" + d.toUTCString() + ";path=/";
+             cookieBanner.classList.remove('show');
+         });
+-
+-        if (!getCookie('cookie_consent')) {
+-            setTimeout(() => { cookieBanner.classList.add('show'); }, 500);
+-        }
++        if (!getCookie('cookie_consent')) setTimeout(() => cookieBanner.classList.add('show'), 500);
+ 
+         checkAuth();
+-        initDemoMap();
+-        initMapPreviews();
+     });
+ </script>
+-
+ </body>
+ </html>

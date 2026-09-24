@@ -1,0 +1,76 @@
+JWK_TownEntity JWK_TownController_68ECE9C88E51161D : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Salam"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 3613.67 131.814 6181.966
+ m_iTownRange 190
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    BATTLE_AREA
+   }
+   m_bApplyFactionToParkingSpots 0
+  }
+ }
+ coords 3613.628 131.813 6175.601
+ Points {
+  ShapePoint "{68ECE9C8F9FE2F29}" {
+   Position 302.903 7.068 488.996
+  }
+  ShapePoint "{68ECE9C8ED66F4BE}" {
+   Position 328.486 6.023 415.624
+  }
+  ShapePoint "{68ECE9C8ED2CC8CE}" {
+   Position 363.018 3.39 305.128
+  }
+  ShapePoint "{68ECE9C8EDEBF50D}" {
+   Position 415.602 6.057 82.047
+  }
+  ShapePoint "{68ECE9C8EDBACC6C}" {
+   Position 402.727 6.072 -69.441
+  }
+  ShapePoint "{68ECE9C8ED8CA5AE}" {
+   Position 330.801 3.852 -255.261
+  }
+  ShapePoint "{68ECE9C8EC5F3DBC}" {
+   Position 168.948 7.52 -363.382
+  }
+  ShapePoint "{68ECE9C8EC1363E1}" {
+   Position -18.757 0.485 -392.611
+  }
+  ShapePoint "{68ECE9C8ECE6D2DE}" {
+   Position -152.172 5.182 -327.158
+  }
+  ShapePoint "{68ECE9C8EC9F0DA5}" {
+   Position -254.26 5.124 -168.318
+  }
+  ShapePoint "{68ECE9C8EB59AB42}" {
+   Position -305.748 6.002 40.797
+  }
+  ShapePoint "{68ECE9C8EB0B34C3}" {
+   Position -285.258 1.42 302.029
+  }
+  ShapePoint "{68ECE9C8EBC87C2A}" {
+   Position -231.114 2.806 418.786
+  }
+  ShapePoint "{68ECE9C8EB8092D7}" {
+   Position -139.805 3.516 475.217
+  }
+  ShapePoint "{68ECE9C8EA5989F1}" {
+   Position -27.921 3.432 470.699
+  }
+  ShapePoint "{68ECE9C8EA2C6E9E}" {
+   Position 73.483 6.969 457.58
+  }
+  ShapePoint "{68ECE9C8EAD7E0F8}" {
+   Position 209.327 9.851 495.306
+  }
+ }
+}

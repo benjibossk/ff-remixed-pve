@@ -1,0 +1,22 @@
+Vehicle : "{2834E391EC6FC919}Prefabs/Vehicles/Land_Vehicles/Wheeled_Vehicles/VBCI/VBCI_Dragar_CE.et" {
+ ID "69EF4D4E614E54C9"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE000000F1}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE000000F2}" {
+    m_iVehicleType HEAVY
+    m_iParkingType TRUCK
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType HEAVY_ARMED
+    m_iArmorType HEAVY_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+  SCR_EditableVehicleComponent "{50DEB7C26B5EB312}" {
+   m_UIInfo SCR_EditableVehicleUIInfo "{5298E609432D192D}" {
+    Name "VBCI Dragar"
+   }
+  }
+ }
+}

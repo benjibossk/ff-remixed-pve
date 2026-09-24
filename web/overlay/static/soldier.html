@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC — Mon Soldat</title>
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        body { padding: 2rem; }
+        .stat{background:var(--panel);border:1px solid var(--line);padding:16px;height:100%;}
+        .stat .lbl{font-family:"Oswald";text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;color:var(--dim);display:flex;align-items:center;gap:6px;}
+        .stat .val{font-family:"Oswald";font-size:1.7rem;color:var(--hi);margin-top:4px;}
+        .stat .ico{font-size:1.4rem;color:var(--blue);}
+        .uid-box{font-family:"IBM Plex Mono";font-size:12px;background:rgba(6,11,16,.7);border:1px solid var(--line);padding:6px 10px;word-break:break-all;}
+        .dossier{background:var(--panel);border:1px solid var(--line-strong);}
+        .bar{height:8px;background:rgba(6,11,16,.7);border:1px solid var(--line);overflow:hidden;}
+        .bar span{display:block;height:100%;}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+
+<div class="container" style="max-width:900px">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><a href="/" class="d-flex align-items-center gap-3" style="color:inherit;text-decoration:none" title="Retour a l'accueil"><span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>Mon Soldat</a></h1>
+        <a href="/" class="btn btn-secondary">Accueil</a>
+    </div>
+    <div id="body"><div class="text-center text-muted p-5"><div class="spinner-border"></div></div></div>
+</div>
+
+<!-- Lier mon perso -->
+<div class="modal fade" id="linkCharModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Lier mon perso en jeu</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body text-center">
+                <p class="text-muted mb-1">Rejoins le serveur en jeu et tape dans le chat :</p>
+                <div class="my-3"><code style="font-size:1.1rem">#link <span id="link-code-cmd" style="font-size:1.6rem;letter-spacing:.2em">……</span></code></div>
+                <p class="small text-muted">Le code expire dans <span id="link-code-ttl">10</span> min · usage unique.</p>
+                <div id="link-code-msg" class="small"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const API = '/api/v1';
+        const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const fmt = (sec) => { sec = Number(sec) || 0; const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60); return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : (m > 0 ? `${m}m` : `${Math.floor(sec)}s`); };
+        const fdist = (m) => { m = Number(m) || 0; return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m)} m`; };
+
+        async function linkCode() {
+            const msg = document.getElementById('link-code-msg'); msg.textContent = '';
+            document.getElementById('link-code-cmd').textContent = '……';
+            new bootstrap.Modal(document.getElementById('linkCharModal')).show();
+            try {
+                const r = await fetch(`${API}/link/code`, { method: 'POST' });
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const d = await r.json();
+                document.getElementById('link-code-cmd').textContent = d.code;
+                document.getElementById('link-code-ttl').textContent = Math.round((d.expires_in || 600) / 60);
+            } catch (e) { msg.textContent = 'Erreur : ' + e.message; msg.className = 'small text-danger'; }
+        }
+
+        function renderNotLinked() {
+            document.getElementById('body').innerHTML = `
+                <div class="dossier bracket p-4 text-center">
+                    <i class="bi bi-person-x fs-1 text-muted d-block mb-2"></i>
+                    <h4>Personnage non lié</h4>
+                    <p class="text-muted">Ton compte n'est pas encore associé à ton perso en jeu. Lie-le pour voir tes états de service (temps de jeu, grade…) et gérer tes marqueurs.</p>
+                    <button class="btn btn-warning" id="link-btn"><i class="bi bi-link-45deg me-1"></i> Lier mon perso</button>
+                </div>`;
+            document.getElementById('link-btn').addEventListener('click', linkCode);
+        }
+
+        const fdate = ts => ts ? new Date(ts * 1000).toLocaleString('fr-FR') : '—';
+        const cleanWeapon = w => w ? String(w).replace(/^\{[^}]*\}/, '').split('/').pop().replace(/\.et$/i, '').replace(/_/g, ' ') : '—';
+
+        // --- Paliers d'XP -----------------------------------------------------------
+        // La table vient du JEU (Fleet la publie avec /ranks, endpoint /public/xpladder).
+        // Elle N'EST PLUS recopiée ici : une table en dur devenait fausse en silence dès
+        // qu'un seuil changeait en jeu.
+        //
+        // FALLBACK_FLOORS ne sert QUE si Fleet n'a pas encore publié (site redémarré et
+        // jeu pas relancé). Mieux vaut une estimation qu'une page vide, mais on le dit.
+        const FALLBACK_FLOORS = [0, 300, 500, 1200, 2200, 3500, 5000, 7000, 10000];
+        let XP_LADDER = null;   // rempli par loadLadder()
+
+        async function loadLadder() {
+            try {
+                const act = await (await fetch(`${API}/public/active-server`)).json();
+                if (!act || !act.id) return;
+                const d = await (await fetch(`${API}/public/xpladder/${act.id}`)).json();
+                if (d && d.known && d.ladder && d.ladder.length) XP_LADDER = d.ladder;
+            } catch (_) { /* repli silencieux */ }
+        }
+
+        function gradeBand(g) {
+            if (XP_LADDER) {
+                const e = XP_LADDER.find(x => x.g === g);
+                if (e) return { lo: e.floor, hi: e.ceil, name: e.name, auto: e.auto, live: true };
+            }
+            const fl = n => (n < 0 ? 0 : (n < FALLBACK_FLOORS.length ? FALLBACK_FLOORS[n] : 10000 + (n - 8) * 3000));
+            return { lo: fl(g), hi: fl(g + 1) - 1, name: null, auto: g === 1, live: false };
+        }
+
+        function renderXp(s) {
+            const xp = s.xp ?? 0;
+            const g = s.rank ?? 0;
+            const band = gradeBand(g);
+            const lo = band.lo, hi = band.hi;
+            const span = Math.max(1, hi - lo);
+            const pct = Math.max(0, Math.min(100, Math.round((xp - lo) * 100 / span)));
+            const capped = xp >= hi;
+
+            // Le grade AUTO (Soldat) est le seul qu'on obtient sans promotion : on le lit
+            // dans la table du jeu plutôt que de le supposer.
+            const nextAuto = XP_LADDER ? XP_LADDER.find(x => x.auto && x.g > g) : (g < 1 ? { name: 'Soldat' } : null);
+
+            let note;
+            if (capped)
+                note = `<div class="text-warning" style="font-size:.82rem"><i class="bi bi-hourglass-split me-1"></i>Palier plein — en attente d'une promotion.</div>`;
+            else if (nextAuto)
+                note = `<div class="text-muted" style="font-size:.82rem">${esc(nextAuto.name || 'Soldat')} s'obtient automatiquement après 30 min de jeu.</div>`;
+            else
+                note = `<div class="text-muted" style="font-size:.82rem">Progression jusqu'au haut du palier ; au-delà, promotion manuelle.</div>`;
+
+            if (!band.live)
+                note += `<div class="text-muted" style="font-size:.75rem;opacity:.7">Paliers estimés — le serveur n'a pas encore publié sa table.</div>`;
+
+            return `<div><span class="text-muted">XP :</span> <strong>${esc(String(xp))}</strong>
+                        <small class="text-muted">/ ${esc(String(hi))}</small></div>
+                    <div style="height:4px;background:rgba(255,255,255,.12);max-width:260px;margin:5px 0 3px">
+                        <div style="height:100%;width:${pct}%;background:${capped ? '#e0a33a' : '#4cc38a'}"></div>
+                    </div>
+                    ${note}`;
+        }
+
+        function renderSoldier(s) {
+            const walk = s.walkSeconds || 0, drive = s.driveSeconds || 0, tot = walk + drive || 1;
+            const wp = Math.round(walk / tot * 100), dp = 100 - wp;
+            const rank = s.rankName ? `${esc(s.rankName)} <small class="text-muted">(${s.rank})</small>` : (s.rank ? `Grade ${s.rank}` : '—');
+            const online = s.online ? '<span class="badge text-bg-success">En ligne</span>' : '<span class="badge text-bg-secondary">Hors ligne</span>';
+            const kd = (s.deaths > 0) ? (s.kills / s.deaths).toFixed(2) : (s.kills || 0).toFixed(2);
+            document.getElementById('body').innerHTML = `
+                <div class="dossier bracket p-4 mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                        <div>
+                            <div class="lbl text-muted" style="font-family:Oswald;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem">Livret militaire</div>
+                            <h2 class="mb-1">${esc(s.name || 'Soldat')}</h2>
+                            <div class="mb-2">${online} <span class="badge text-bg-info ms-1">${esc(s.factionKey || '—')}</span></div>
+                            <div><span class="text-muted">Grade :</span> <strong class="text-warning">${rank}</strong></div>
+                            ${renderXp(s)}
+                        </div>
+                        <div style="min-width:240px">
+                            <div class="lbl text-muted mb-1" style="font-family:Oswald;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem"><i class="bi bi-fingerprint me-1"></i>UID en jeu (lien vérifié)</div>
+                            <div class="uid-box">${esc(s.uid)}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3"><div class="stat bracket"><div class="lbl"><i class="bi bi-clock-history ico"></i>Temps de jeu</div><div class="val">${fmt(s.playtimeSeconds)}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-signpost-split ico"></i>Distance</div><div class="val">${fdist(s.distanceMeters)}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-person-walking ico"></i>Temps à pied</div><div class="val">${fmt(walk)}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-truck ico"></i>Temps en véhicule</div><div class="val">${fmt(drive)}</div></div></div>
+                </div>
+                <div class="stat mb-4">
+                    <div class="lbl mb-2"><i class="bi bi-bar-chart-fill ico"></i>Répartition à pied / véhicule</div>
+                    <div class="bar"><span style="width:${wp}%;background:var(--green);float:left"></span><span style="width:${dp}%;background:var(--blue);float:left"></span></div>
+                    <div class="d-flex justify-content-between mt-1 small"><span style="color:var(--green)">À pied ${wp}%</span><span style="color:var(--blue)">Véhicule ${dp}%</span></div>
+                </div>
+
+                <div class="lbl mb-2" style="font-family:Oswald;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--dim)"><i class="bi bi-crosshair me-1"></i>États de combat</div>
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-trophy ico"></i>Éliminations</div><div class="val text-success">${s.kills || 0}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-x-circle ico"></i>Morts</div><div class="val text-danger">${s.deaths || 0}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-graph-up ico"></i>Ratio K/D</div><div class="val">${kd}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-rulers ico"></i>Kill le + long</div><div class="val">${Math.round(s.longestKill || 0)} m</div></div></div>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6"><div class="stat"><div class="lbl"><i class="bi bi-crosshair ico"></i>Arme favorite</div><div class="val" style="font-size:1.1rem">${esc(cleanWeapon(s.favWeapon))}</div></div></div>
+                    <div class="col-md-6"><div class="stat"><div class="lbl"><i class="bi bi-exclamation-triangle ico" style="color:var(--red)"></i>Tirs amis (bavures)</div><div class="val ${s.friendlyKills ? 'text-danger' : ''}">${s.friendlyKills || 0}</div></div></div>
+                </div>
+
+                <div class="lbl mb-2" style="font-family:Oswald;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--dim)"><i class="bi bi-bullseye me-1"></i>Précision & impacts</div>
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-record-circle ico"></i>Impacts infligés</div><div class="val">${s.hitsDealt || 0}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-fire ico"></i>Dégâts infligés</div><div class="val">${Math.round(s.damageDealt || 0)}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-emoji-dizzy ico"></i>Headshots</div><div class="val">${s.headshots || 0}<small class="text-muted" style="font-size:.9rem"> (${s.kills > 0 ? Math.round((s.headshots || 0) / s.kills * 100) : 0}%)</small></div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-arrows-expand ico"></i>Distance moy. kill</div><div class="val">${Math.round(s.avgKillDist || 0)} m</div></div></div>
+                </div>
+
+                <div class="lbl mb-2" style="font-family:Oswald;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--dim)"><i class="bi bi-shield-shaded me-1"></i>Défense & endurance</div>
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-bullseye ico"></i>Fois touché</div><div class="val">${s.timesHit || 0}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-heartbreak ico"></i>Dégâts subis</div><div class="val">${Math.round(s.damageTaken || 0)}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-people ico"></i>Adversaires distincts</div><div class="val">${s.distinctVictims || 0}</div></div></div>
+                    <div class="col-6 col-md-3"><div class="stat"><div class="lbl"><i class="bi bi-emoji-frown ico"></i>Tué par bavure</div><div class="val ${s.teamKilledDeaths ? 'text-danger' : ''}">${s.teamKilledDeaths || 0}</div></div></div>
+                </div>
+
+                <div class="stat mb-4">
+                    <div class="row small">
+                        <div class="col-md-4"><span class="text-muted"><i class="bi bi-crosshair me-1"></i>Zone la + touchée :</span> ${esc(s.favHitZone || '—')}</div>
+                        <div class="col-md-4"><span class="text-muted"><i class="bi bi-person-x me-1"></i>Tué par :</span> ${s.distinctKillers || 0} joueur(s)</div>
+                        <div class="col-md-4"><span class="text-muted"><i class="bi bi-geo me-1"></i>Dernière position :</span> ${s.hasLastPos ? `X ${Math.round(s.lastPosX)} · Z ${Math.round(s.lastPosZ)}` : '—'}</div>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="row small">
+                        <div class="col-md-3"><span class="text-muted"><i class="bi bi-calendar-check me-1"></i>Engagé le :</span> ${fdate(s.firstSeen)}</div>
+                        <div class="col-md-3"><span class="text-muted"><i class="bi bi-clock me-1"></i>Dernière activité :</span> ${fdate(s.lastSeen)}</div>
+                        <div class="col-md-3"><span class="text-muted"><i class="bi bi-hdd-network me-1"></i>Serveurs :</span> ${s.servers || 0}</div>
+                        <div class="col-md-3"><span class="text-muted"><i class="bi bi-graph-up-arrow me-1"></i>Relevés position :</span> ${s.posSamples || 0}</div>
+                    </div>
+                </div>
+
+                ${OTHER_UID ? '' : `
+                <div class="dossier bracket p-4 mt-4">
+                    <div class="lbl mb-2" style="font-family:Oswald;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:var(--dim)"><i class="bi bi-person-badge me-1"></i>Mes tenues perso <span id="mine-count" class="badge text-bg-secondary ms-2">0</span></div>
+                    <p class="small text-muted mb-3">Enregistre tes tenues <strong>en jeu</strong> à l'arsenal (action « Enregistrer ma tenue »). Renomme-les / supprime-les ici. Max 5 (la plus ancienne saute au-delà).</p>
+                    <div id="mine-container"><div class="text-muted small">Chargement…</div></div>
+                </div>`}`;
+            // Les tenues perso sont une section « mes affaires ». En consultation admin elles
+            // n'ont pas de sens : /user/loadouts/mine renverrait celles de l'admin qui regarde,
+            // donc un contenu faux attribué à quelqu'un d'autre.
+            if (!OTHER_UID) loadMine();
+        }
+
+        async function loadMine() {
+            const box = document.getElementById('mine-container');
+            if (!box) return;
+            try {
+                const d = await (await fetch(`${API}/user/loadouts/mine`)).json();
+                const los = d.loadouts || [];
+                const cnt = document.getElementById('mine-count'); if (cnt) cnt.textContent = los.length;
+                if (!los.length) { box.innerHTML = '<div class="text-muted small">Aucune tenue enregistrée. Enregistre-en une en jeu à l\'arsenal.</div>'; return; }
+                box.innerHTML = los.map(l => {
+                    const date = l.updated_at ? new Date(l.updated_at).toLocaleString('fr-FR') : '';
+                    return `<div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color:var(--line)!important">
+                        <div><i class="bi bi-bookmark-fill me-2 text-info"></i><strong>${esc(l.name)}</strong> <small class="text-muted ms-2">maj ${esc(date)}</small></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-secondary mine-rename" data-id="${l.id}" data-name="${esc(l.name)}" title="Renommer"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger mine-del" data-id="${l.id}" data-name="${esc(l.name)}" title="Supprimer"><i class="bi bi-trash"></i></button>
+                        </div></div>`;
+                }).join('');
+                box.querySelectorAll('.mine-rename').forEach(b => b.addEventListener('click', async e => {
+                    const id = e.currentTarget.dataset.id, cur = e.currentTarget.dataset.name;
+                    const name = prompt('Nouveau nom de ta tenue :', cur); if (!name || name === cur) return;
+                    try { const r = await fetch(`${API}/user/loadouts/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) }); if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || ('HTTP ' + r.status)); loadMine(); }
+                    catch (err) { alert('Erreur : ' + err.message); }
+                }));
+                box.querySelectorAll('.mine-del').forEach(b => b.addEventListener('click', async e => {
+                    const id = e.currentTarget.dataset.id;
+                    if (!confirm(`Supprimer « ${e.currentTarget.dataset.name} » ?`)) return;
+                    try { const r = await fetch(`${API}/user/loadouts/${id}`, { method: 'DELETE' }); if (!r.ok) throw new Error('HTTP ' + r.status); loadMine(); }
+                    catch (err) { alert('Erreur : ' + err.message); }
+                }));
+            } catch (e) { box.innerHTML = `<div class="text-danger small">Erreur : ${esc(e.message)}</div>`; }
+        }
+
+        // ------------------------------------------------------------------------------
+        //  Deux modes pour la même page
+        //
+        //  Sans paramètre  -> « Mon Soldat » : la fiche du compte connecté.
+        //  ?uid=<guid>     -> consultation d'un AUTRE joueur (clic sur un pseudo du journal).
+        //
+        //  On réutilise la même page plutôt que d'en créer une seconde : la fiche est déjà
+        //  écrite une fois côté serveur (buildSoldierPayload) et une fois ici (renderSoldier).
+        //  Dupliquer la vue garantirait qu'elles divergent.
+        //
+        //  `server` est transmis parce que l'endpoint de consultation est porté par le
+        //  périmètre du serveur (mêmes droits que le journal). S'il manque, on retombe sur
+        //  le serveur actif — le cas normal quand on colle une URL à la main.
+        // ------------------------------------------------------------------------------
+        const QS = new URLSearchParams(location.search);
+        const OTHER_UID = QS.get('uid') || '';
+        let OTHER_SERVER = QS.get('server') || '';
+
+        async function fetchOtherSoldier() {
+            if (!OTHER_SERVER) {
+                const act = await (await fetch(`${API}/public/active-server`)).json();
+                OTHER_SERVER = act && act.id ? act.id : '';
+            }
+            if (!OTHER_SERVER) throw new Error("aucun serveur actif pour résoudre cette fiche");
+
+            const r = await fetch(`${API}/servers/${OTHER_SERVER}/soldier/${encodeURIComponent(OTHER_UID)}`);
+            if (r.status === 403 || r.status === 401) throw new Error("tu n'as pas les droits d'administration sur ce serveur");
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return await r.json();
+        }
+
+        function renderOtherHeader(s) {
+            document.querySelector('h1').innerHTML =
+                `<span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>`
+                + `Fiche soldat <span class="badge text-bg-warning ms-2" style="vertical-align:middle">Vue admin</span>`;
+            document.title = (s && s.name ? s.name : 'Fiche soldat') + ' — Vue admin';
+        }
+
+        async function init() {
+            try {
+                const me = await fetch(`${API}/users/me`);
+                if (!me.ok) { window.location.href = '/auth/discord/login'; return; }
+
+                const s = OTHER_UID
+                    ? await fetchOtherSoldier()
+                    : await (await fetch(`${API}/user/soldier`)).json();
+
+                // Table des paliers d'XP AVANT le rendu : renderXp() en dépend.
+                await loadLadder();
+
+                if (OTHER_UID) { renderOtherHeader(s); renderSoldier(s); return; }
+                if (!s.linked) renderNotLinked(); else renderSoldier(s);
+            } catch (e) {
+                document.getElementById('body').innerHTML = `<div class="alert alert-danger">Erreur de chargement : ${esc(e.message)}</div>`;
+            }
+        }
+        init();
+    });
+</script>
+</body>
+</html>

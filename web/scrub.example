@@ -1,0 +1,20 @@
+# Copy to scrub.local (gitignored) and list the credentials that must never reach
+# a patch. One rule per line:
+#
+#     real-value=placeholder-that-ships
+#
+# The left-hand side IS your secret, which is exactly why this list cannot live in
+# make-patches.sh — that script is published.
+#
+# make-patches.sh aborts if any left-hand value survives into overlay/ or patches/,
+# so a wrong rule fails loudly instead of silently shipping the real thing.
+#
+# Keep the placeholders recognisable: they end up in the repository, and a host
+# reading docs/HOSTING.md is told to search for CHANGEME.
+
+# your database password, as set in docker-compose.yaml and config.yaml
+my-real-db-password=CHANGEME_db_password
+my-real-root-password=CHANGEME_root_password
+
+# the API key the mod uses to push data to the site
+my-real-api-key=CHANGEME-fleet-api-key

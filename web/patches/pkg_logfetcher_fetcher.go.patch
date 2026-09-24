@@ -1,0 +1,30 @@
+diff --git a/pkg/logfetcher/fetcher.go b/pkg/logfetcher/fetcher.go
+index 772e9b8..d7c8781 100644
+--- a/pkg/logfetcher/fetcher.go
++++ b/pkg/logfetcher/fetcher.go
+@@ -45,6 +45,11 @@ func ProcessServerLogs(server models.Server) {
+ 	if len(newKillEvents) > 0 {
+ 		SaveEventsInBatches(server, newKillEvents, highestKillTs, "kill")
+ 	}
++
++	// Nouveau mod "ReforgerJS Support" : format JSON, chemin different, et surtout
++	// positions + marqueur IA. Voir rjssupport.go. Les deux lectures cohabitent : si
++	// le mod n'est pas installe le fichier est absent, et l'appel ne fait rien.
++	ProcessRJSSupportLogs(server)
+ }
+ 
+ func SaveEventsInBatches(server models.Server, events []models.DamageEvent, newTimestamp time.Time, eventType string) {
+@@ -66,7 +71,12 @@ func SaveEventsInBatches(server models.Server, events []models.DamageEvent, newT
+ 	log.Printf("SUCCESS: Wrote %d new %s events for server %s in %d batches.", totalEvents, eventType, server.ID, batchesCreated)
+ 	if eventType == "damage" {
+ 		database.DB.Model(&server).Update("last_processed_damage_timestamp", newTimestamp)
+-	} else if eventType == "kill" {
++	} else if eventType == "kill" || eventType == "rjssupport-kill" {
++		// "rjssupport-kill" partage le curseur des kills : sans ce cas, le timestamp
++		// ne serait jamais avance et chaque cycle reinsererait tout le fichier.
++		// Les deux generations du mod ne tournent jamais ensemble (l'une ecrit
++		// RJS/events/*.log, l'autre RJSSupport/events/*.json), donc le partage est sans
++		// risque ; si un jour elles cohabitaient, il faudrait une colonne dediee.
+ 		database.DB.Model(&server).Update("last_processed_kill_timestamp", newTimestamp)
+ 	}
+ }

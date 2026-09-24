@@ -1,0 +1,26 @@
+SCR_AIWorld : "{3D0FE80570D5BFCC}Prefabs/AI/SCR_AIWorld_Anizay.et" {
+ coords 0 0 0
+}
+JWK_FactionManager JWK_FactionManager1 : "{64B2F8D8059C822F}Prefabs/GameMode/JWK_FactionManager.et" {
+ coords 0 0 0
+ Factions {
+  SCR_Faction "{6FFEC0DEDA000503}" : "{6FFEC0DEDA000100}Configs/Factions/FIA_DESERT.conf" {
+   m_bIsPlayable 0
+  }
+ }
+}
+JWK_GameMode FFRX_Anizay1 : "{6FFEC0DEDA000502}Prefabs/GameMode/Scenario/FFRX_Anizay.et" {
+ coords 0 0 0
+}
+RadioManagerEntity : "{B8E09FAB91C4ECCD}Prefabs/Systems/Radio/RadioManager.et" {
+ coords 0 0 0
+}
+ScriptedChatEntity : "{F69BC912AC8236F9}Prefabs/MP/ScriptedChatEntity.et" {
+ coords 0 0 0
+}
+JWK_WorldEntity FFRX_World_Anizay1 : "{6FFEC0DEDA000501}Prefabs/World/Terrains/JWK_World_FFRX_Anizay.et" {
+ coords 0 0 0
+}
+SCR_LoadoutManager : "{AA4E7419A1FF65B0}Prefabs/MP/Managers/Loadouts/LoadoutManager_Base.et" {
+ coords 0 0 0
+}

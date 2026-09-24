@@ -1,0 +1,22 @@
+Vehicle : "{94D124935783BA00}Prefabs/Vehicles/Land_Vehicles/Wheeled_Vehicles/VBL/VBL_Armed_MAG58_CE.et" {
+ ID "69EF4D4E689C7599"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE000000D1}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE000000D2}" {
+    m_iVehicleType CAR
+    m_iParkingType CAR
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType LIGHT_ARMED
+    m_iArmorType LIGHT_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+  SCR_EditableVehicleComponent "{50DEB7C26B5EB312}" {
+   m_UIInfo SCR_EditableVehicleUIInfo "{5298E609432D192D}" {
+    Name "VBL - MAG58"
+   }
+  }
+ }
+}

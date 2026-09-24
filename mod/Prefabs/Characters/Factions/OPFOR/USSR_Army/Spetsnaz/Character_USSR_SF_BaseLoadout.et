@@ -1,0 +1,15 @@
+SCR_ChimeraCharacter : "{3ECA3A935BC069B9}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_BaseLoadout.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{844C74F72DC76358}Prefabs/Characters/HeadGear/Helmet_6B47/Helmet_6B47_Covered_Opened_EMR.et"
+    }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab "{F8C583E4B4481677}Prefabs/Characters/Vests/Vest_6B45/TF_Vest_6B45_EMR.et"
+    }
+   }
+  }
+ }
+}

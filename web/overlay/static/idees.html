@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC — Idées</title>
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        body { padding: 2rem; }
+        .idea{background:var(--panel);border:1px solid var(--line);padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;cursor:pointer;transition:border-color .15s}
+        .idea:hover{border-color:var(--line-strong)}
+        .vote{flex:0 0 58px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--line);background:rgba(6,11,16,.7);padding:6px 0;cursor:pointer;user-select:none}
+        .vote.on{border-color:var(--blue);color:var(--blue)}
+        .vote .n{font-family:"Oswald";font-size:1.3rem;line-height:1}
+        .vote .c{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+        .idea .ttl{font-family:"Oswald";font-size:1.05rem;color:var(--hi)}
+        .idea .meta{font-size:.72rem;color:var(--dim)}
+        .pill{font-family:"Oswald";text-transform:uppercase;letter-spacing:.06em;font-size:.64rem;padding:2px 8px;border:1px solid var(--line)}
+        .st-open{color:var(--blue);border-color:var(--blue)}
+        .st-planned{color:var(--info,#39c2d1);border-color:var(--info,#39c2d1)}
+        .st-in_progress{color:#f0b132;border-color:#f0b132}
+        .st-done{color:var(--green);border-color:var(--green)}
+        .st-declined{color:var(--dim)}
+        .cat{font-size:.64rem;color:var(--dim);border:1px solid var(--line);padding:1px 7px}
+        .cmt{border-left:2px solid var(--line);padding:6px 0 6px 12px;margin-bottom:8px}
+        .cmt .who{font-family:"Oswald";font-size:.78rem;color:var(--hi)}
+        .cmt .when{font-size:.66rem;color:var(--dim)}
+    </style>
+</head>
+<body>
+<div class="tricolore"></div>
+<div class="container" style="max-width:960px">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h1 class="mb-0"><a href="/" class="d-flex align-items-center gap-3" style="color:inherit;text-decoration:none" title="Retour a l'accueil"><span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>Idées</a></h1>
+        <div class="d-flex gap-2">
+            <a href="/design" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-text me-1"></i>Doc de design</a>
+            <a href="/" class="btn btn-secondary btn-sm">Accueil</a>
+        </div>
+    </div>
+
+    <div class="dossier bracket p-3 mb-3 d-flex flex-wrap gap-2 align-items-center">
+        <select id="f-status" class="form-select form-select-sm" style="width:auto">
+            <option value="">Tous statuts</option>
+            <option value="open">Ouvertes</option>
+            <option value="planned">Prévues</option>
+            <option value="in_progress">En cours</option>
+            <option value="done">Faites</option>
+            <option value="declined">Écartées</option>
+        </select>
+        <select id="f-cat" class="form-select form-select-sm" style="width:auto"><option value="">Toutes catégories</option></select>
+        <select id="f-sort" class="form-select form-select-sm" style="width:auto">
+            <option value="votes">Plus votées</option>
+            <option value="new">Plus récentes</option>
+        </select>
+        <button class="btn btn-warning btn-sm ms-auto" id="btn-new"><i class="bi bi-plus-lg me-1"></i>Proposer une idée</button>
+    </div>
+
+    <div id="list"><div class="text-center text-muted p-5"><div class="spinner-border"></div></div></div>
+</div>
+
+<!-- Modal création -->
+<div class="modal fade" id="newModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Proposer une idée</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+        <div class="mb-2"><label class="form-label small">Titre</label><input id="n-title" class="form-control" maxlength="180" placeholder="Résume l'idée en une phrase"></div>
+        <div class="mb-2"><label class="form-label small">Catégorie</label><select id="n-cat" class="form-select"></select></div>
+        <div class="mb-2"><label class="form-label small">Description</label><textarea id="n-body" class="form-control" rows="4" placeholder="Détaille (facultatif)"></textarea></div>
+        <div id="n-msg" class="small text-danger"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button><button class="btn btn-warning" id="n-submit">Publier</button></div>
+</div></div></div>
+
+<!-- Modal détail -->
+<div class="modal fade" id="detModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title" id="d-title">Idée</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="d-body"></div>
+</div></div></div>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const API = '/api/v1';
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const fdate = ts => ts ? new Date(ts).toLocaleString('fr-FR') : '—';
+    const CATS = ["Structure de campagne","Renseignement","Économie & Logistique","Civils & population","Spawn & onboarding","Air / anti-air / drones","IA & renforts","Véhicules & matériel","État-major & commandement","Autre"];
+    const STATUS = {open:'Ouverte',planned:'Prévue',in_progress:'En cours',done:'Faite',declined:'Écartée'};
+    let ME = null;
+
+    // remplir les selects de catégories
+    const fcat = document.getElementById('f-cat'), ncat = document.getElementById('n-cat');
+    CATS.forEach(c => { fcat.insertAdjacentHTML('beforeend', `<option value="${esc(c)}">${esc(c)}</option>`); ncat.insertAdjacentHTML('beforeend', `<option value="${esc(c)}">${esc(c)}</option>`); });
+
+    async function api(path, opts) {
+        const r = await fetch(API + path, opts);
+        if (r.status === 401) { window.location.href = '/auth/discord/login'; throw new Error('auth'); }
+        return r;
+    }
+
+    function statusPill(s){ return `<span class="pill st-${esc(s)}">${esc(STATUS[s]||s)}</span>`; }
+
+    function ideaCard(it){
+        return `<div class="idea" data-id="${it.id}">
+            <div class="vote ${it.hasVoted?'on':''}" data-vote="${it.id}">
+                <i class="bi bi-caret-up-fill"></i><span class="n">${it.voteCount||0}</span><span class="c">votes</span>
+            </div>
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div class="ttl">${esc(it.title)}</div>
+                    ${statusPill(it.status)}
+                </div>
+                <div class="meta mt-1">${it.category?`<span class="cat">${esc(it.category)}</span> · `:''}par ${esc(it.authorName||'?')} · ${fdate(it.createdAt)}</div>
+            </div>
+        </div>`;
+    }
+
+    async function loadIdeas(){
+        const p = new URLSearchParams();
+        const st = document.getElementById('f-status').value, ct = document.getElementById('f-cat').value, so = document.getElementById('f-sort').value;
+        if(st) p.set('status',st); if(ct) p.set('category',ct); if(so) p.set('sort',so);
+        const list = document.getElementById('list');
+        try {
+            const ideas = await (await api('/ideas?'+p.toString())).json();
+            if(!ideas.length){ list.innerHTML = `<div class="dossier bracket p-5 text-center text-muted"><i class="bi bi-lightbulb fs-1 d-block mb-2"></i>Aucune idée pour l'instant. Sois le premier à en proposer une.</div>`; return; }
+            list.innerHTML = ideas.map(ideaCard).join('');
+        } catch(e){ if(e.message!=='auth') list.innerHTML = `<div class="alert alert-danger">Erreur : ${esc(e.message)}</div>`; }
+    }
+
+    async function toggleVote(id, el){
+        try {
+            const d = await (await api(`/ideas/${id}/vote`,{method:'POST'})).json();
+            el.classList.toggle('on', d.hasVoted);
+            el.querySelector('.n').textContent = d.voteCount;
+        } catch(e){}
+    }
+
+    async function openDetail(id){
+        const d = await (await api(`/ideas/${id}`)).json();
+        const it = d.idea, cs = d.comments||[];
+        document.getElementById('d-title').textContent = it.title;
+        const isAdmin = ME && ME.account_type === 'admin';
+        const canDel = isAdmin || (ME && String(ME.id) === String(it.authorId));
+        const adminCtl = isAdmin ? `<div class="mb-3"><label class="form-label small text-muted">Statut (admin)</label>
+            <select id="d-status" class="form-select form-select-sm" style="max-width:220px">
+            ${Object.keys(STATUS).map(s=>`<option value="${s}" ${s===it.status?'selected':''}>${STATUS[s]}</option>`).join('')}</select></div>` : '';
+        document.getElementById('d-body').innerHTML = `
+            <div class="d-flex gap-3 mb-3">
+                <div class="vote ${it.hasVoted?'on':''}" data-vote="${it.id}"><i class="bi bi-caret-up-fill"></i><span class="n">${it.voteCount||0}</span><span class="c">votes</span></div>
+                <div><div class="mb-1">${statusPill(it.status)} ${it.category?`<span class="cat">${esc(it.category)}</span>`:''}</div>
+                <div class="meta small text-muted">par ${esc(it.authorName||'?')} · ${fdate(it.createdAt)}</div></div>
+            </div>
+            ${it.body?`<p style="white-space:pre-wrap">${esc(it.body)}</p>`:'<p class="text-muted fst-italic">Pas de description.</p>'}
+            ${adminCtl}
+            ${canDel?`<button class="btn btn-outline-danger btn-sm mb-3" id="d-del"><i class="bi bi-trash me-1"></i>Supprimer l'idée</button>`:''}
+            <hr>
+            <h6 class="text-muted"><i class="bi bi-chat-left-text me-1"></i>Commentaires (${cs.length})</h6>
+            <div id="d-comments">${cs.map(commentHtml).join('') || '<div class="text-muted small">Aucun commentaire.</div>'}</div>
+            <div class="input-group input-group-sm mt-3"><input id="d-cmt" class="form-control" placeholder="Ajouter un commentaire…"><button class="btn btn-primary" id="d-cmt-send">Envoyer</button></div>
+            <div id="d-cmt-msg" class="small text-danger mt-1"></div>`;
+
+        document.querySelector('#d-body .vote').addEventListener('click', function(){ toggleVote(it.id, this); });
+        if(isAdmin) document.getElementById('d-status').addEventListener('change', async function(){
+            await api(`/ideas/${it.id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:this.value})}); loadIdeas();
+        });
+        if(canDel) document.getElementById('d-del').addEventListener('click', async ()=>{
+            if(!confirm('Supprimer cette idée ?')) return;
+            await api(`/ideas/${it.id}`,{method:'DELETE'}); bootstrap.Modal.getInstance(document.getElementById('detModal')).hide(); loadIdeas();
+        });
+        document.getElementById('d-cmt-send').addEventListener('click', ()=>sendComment(it.id));
+        document.getElementById('d-cmt').addEventListener('keydown', e=>{ if(e.key==='Enter') sendComment(it.id); });
+        new bootstrap.Modal(document.getElementById('detModal')).show();
+    }
+
+    function commentHtml(cm){
+        const canDel = ME && (ME.account_type==='admin' || String(ME.id)===String(cm.authorId));
+        return `<div class="cmt" data-cid="${cm.id}"><div class="d-flex justify-content-between"><span class="who">${esc(cm.authorName||'?')}</span><span class="when">${fdate(cm.createdAt)} ${canDel?`<i class="bi bi-trash text-danger ms-2" style="cursor:pointer" data-delc="${cm.id}"></i>`:''}</span></div><div style="white-space:pre-wrap">${esc(cm.body)}</div></div>`;
+    }
+
+    async function sendComment(ideaId){
+        const inp = document.getElementById('d-cmt'), msg = document.getElementById('d-cmt-msg'); msg.textContent='';
+        const body = inp.value.trim(); if(!body) return;
+        const r = await api(`/ideas/${ideaId}/comments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({body})});
+        if(!r.ok){ msg.textContent = (await r.json()).error || 'Erreur'; return; }
+        openDetail(ideaId); // recharge
+    }
+
+    async function submitIdea(){
+        const msg = document.getElementById('n-msg'); msg.textContent='';
+        const title = document.getElementById('n-title').value.trim();
+        if(!title){ msg.textContent='Titre requis.'; return; }
+        const body = {title, category: document.getElementById('n-cat').value, body: document.getElementById('n-body').value.trim()};
+        const r = await api('/ideas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+        if(!r.ok){ msg.textContent = (await r.json()).error || 'Erreur'; return; }
+        bootstrap.Modal.getInstance(document.getElementById('newModal')).hide();
+        document.getElementById('n-title').value=''; document.getElementById('n-body').value='';
+        loadIdeas();
+    }
+
+    // délégation de clics sur la liste
+    document.getElementById('list').addEventListener('click', e => {
+        const v = e.target.closest('[data-vote]');
+        if(v){ e.stopPropagation(); toggleVote(v.dataset.vote, v); return; }
+        const card = e.target.closest('.idea'); if(card) openDetail(card.dataset.id);
+    });
+    // suppression de commentaire (délégation dans le modal détail)
+    document.getElementById('d-body').addEventListener('click', async e => {
+        const d = e.target.closest('[data-delc]'); if(!d) return;
+        if(!confirm('Supprimer ce commentaire ?')) return;
+        await api(`/comments/${d.dataset.delc}`,{method:'DELETE'});
+        d.closest('.cmt').remove();
+    });
+
+    ['f-status','f-cat','f-sort'].forEach(id=>document.getElementById(id).addEventListener('change', loadIdeas));
+    document.getElementById('btn-new').addEventListener('click', ()=> new bootstrap.Modal(document.getElementById('newModal')).show());
+    document.getElementById('n-submit').addEventListener('click', submitIdea);
+
+    async function init(){
+        try { const me = await fetch(API+'/users/me'); if(!me.ok){ window.location.href='/auth/discord/login'; return; } ME = await me.json(); }
+        catch(e){ window.location.href='/auth/discord/login'; return; }
+        loadIdeas();
+    }
+    init();
+});
+</script>
+</body>
+</html>

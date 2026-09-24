@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{F9854D22C717EA01}Configs/Conversations/AmbientCivilian/Talk_AmbientCivilian.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass PS5 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,18 @@
+SCR_ChimeraCharacter : "{DCB41B3746FDD1BE}Prefabs/Characters/Factions/OPFOR/USSR_Army/Character_USSR_Rifleman.et" {
+ ID "200D264F0EEA1A28"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{844C74F72DC76358}Prefabs/Characters/HeadGear/Helmet_6B47/Helmet_6B47_Covered_Opened_EMR.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{5E3E5EDD75CFC797}Prefabs/Characters/Uniforms/VKPO_Jacket/TF_Jacket_VKPO_Base.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{F5616C24F3B0DAD0}Prefabs/Characters/Uniforms/VKPO_pants/TF_Pants_VKPO.et"
+    }
+   }
+  }
+ }
+}

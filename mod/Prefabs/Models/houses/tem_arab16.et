@@ -1,0 +1,724 @@
+SCR_DestructibleBuildingEntity : "{A43A100E3C377DB2}Prefabs/Structures/Core/Building_Base.et" {
+ ID "630A4CC4BA01BEC0"
+ components {
+  MeshObject "{506EDA9D46FC6C06}" {
+   Object "{FC5B2E24AE3BE240}Assets/tem_source/houses/tem_arab16.xob"
+   Materials {
+    MaterialAssignClass "{64D2656CEB02D362}" {
+     SourceMaterial "tem_Stone_wall1"
+     AssignedMaterial "{D06398A36A3B0E77}Assets/tem_source/houses/data/tem_Stone_wall1_a16.emat"
+    }
+   }
+   LODFactors {
+    20 10 5 0.5 0.5
+   }
+  }
+  NavmeshCustomLinkComponent "{631C83941792590A}" {
+   LinkType NavmeshJumpLink "{631C83941428CBDF}" {
+    "Navmesh setting presets" {
+     NavmeshCustomLinkSetting "{631C83942AE8FF2C}" {
+      ProjectPresets {
+       NavmeshCustomLinkPreset "{6A20422AF044C1FF}" {
+        ProjectName "Soldiers"
+        AreaType "Walkable"
+       }
+      }
+      BeginPoint -4.987 0.793 -2.029
+      EndPoint -4.315 4.16 3.52
+     }
+    }
+   }
+  }
+  SCR_DestructibleBuildingComponent "{632E452D4660482E}" {
+   "Additional hit zones" {
+    SCR_HitZone Default {
+     HZDefault 1
+     MaxHealth 50000
+     DamageReduction 100
+     DamageThreshold 800
+     "Melee multiplier" 0
+     "Kinetic multiplier" 0.5
+     "Fragmentation multiplier" 0.1
+     "Explosive multiplier" 10
+    }
+   }
+   m_aEffects {
+    SCR_TimedParticle Particle_01_dust_start {
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{632E452D85301294}" {
+      m_Particle "{B0D882F853DE2783}Particles/Enviroment/Building_Explosion_Smoke.ptc"
+      m_bAtCenter 0
+      m_bDirectional 0
+     }
+     m_fParticlesMultiplier 0.2
+    }
+    SCR_TimedSound Sound_Bricks_01_Start {
+     m_fSpawnTime 0.001
+     m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{5CAED06EA03F5DB5}" {
+      m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+      m_sSoundEventName "SOUND_BUILDING_DESTRUCTION"
+      m_eFlags 9
+     }
+    }
+    SCR_TimedSound Sound_Bricks_01_End {
+     m_fSpawnTime 0.5
+     m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{5CAED06EA03F5DB1}" {
+      m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+      m_sSoundEventName "SOUND_BUILDING_DESTRUCTION_END"
+      m_eFlags 9
+     }
+    }
+    SCR_TimedParticle Particle_Bricks_01_Start {
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{632E452C1A5FFF95}" {
+      m_Particle "{6D89EA548ABDDF25}Particles/Enviroment/Building_Explosion_Debris_Brick.ptc"
+      m_bAtCenter 0
+      m_bDirectional 0
+     }
+    }
+    SCR_TimedPrefab Prefab_Ruins_01 {
+     m_sRuinsPrefab "{460BCEC42B36C18B}Prefabs/Models/houses/ruins/tem_house_c_12_DST.et"
+    }
+    SCR_TimedSound Sounds_Bricks_01_PreStart {
+     m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{6152D9E67B9267D6}" {
+      m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+      m_sSoundEventName "SOUND_BUILDING_DESTRUCTION_PRESTART"
+      m_eFlags 9
+     }
+    }
+    SCR_TimedParticle Particle_Dust_01_Collapse {
+     m_fSpawnTime 0.001
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{632E452CF68E961E}" {
+      m_Particle "{B0D882F853DE2783}Particles/Enviroment/Building_Explosion_Smoke.ptc"
+      m_bDirectional 0
+     }
+     m_fParticlesMultiplier 0.45
+    }
+    SCR_TimedParticle Particle_Brick_01_Collapse {
+     m_fSpawnTime 0.001
+     m_bSnapToTerrain 1
+     m_Particle SCR_ParticleSpawnable "{5DE84D31F1FA3A5C}" {
+      m_Particle "{6D89EA548ABDDF25}Particles/Enviroment/Building_Explosion_Debris_Brick.ptc"
+      m_bAtCenter 0
+      m_bDirectional 0
+     }
+     m_fParticlesMultiplier 2
+    }
+   }
+   m_aInteriorQueryBoundingBoxes {
+    SCR_InteriorBoundingBox "{651668597541F6DD}" {
+     m_vCenter PointInfo "{651668590B063059}" {
+      Offset 0 2 0
+     }
+     m_vScale 25 30 25
+    }
+   }
+   m_fDelay 3
+   m_fSinkingSpeed 0.15
+   m_fSinkingSpeedGradualMultiplier 500
+   m_fRotationSpeed 5
+   m_fRotationTime 50
+   m_AudioSourceConfiguration SCR_AudioSourceConfiguration "{632E453342C6790A}" {
+    m_sSoundProject "{951A2351637B9445}Sounds/Destruction/Buildings/Destruction_Buildings_Brick_Generic.acp"
+    m_sSoundEventName "SOUND_BUILDING_DESTRUCTION_BOUNCE"
+    m_eFlags 9
+   }
+   m_CameraShakeCurve {
+    0 1 0.071 0.245 0.196 0.039 1 0
+   }
+   m_eAllowedRotations 5
+  }
+ 
+  JWK_PopulationComponent "{68DB0E564F192BDC}" {
+   m_iCapacity 4
+  }
+  JWK_SpawnPointsContainerComponent "{68DB0E564D9267E7}" {
+  }
+ }
+ Flags 0x80403 0
+ coords 3861.244 0 7327.23
+ {
+  $grp GenericEntity : "{026353DC9E65B538}Prefabs/Models/props/tem_carbet2f.et" {
+   {
+    ID "633AC6BF65D7C41B"
+    coords -4.097 3.993 -1.391
+    angles 0 88.794 0
+   }
+   {
+    ID "633AC6BF65D7C420"
+    coords -4.146 0.299 -3.071
+    angles 0 88.54 0
+   }
+   {
+    ID "633AC6BF65D7C4C3"
+    coords -1.491 0.299 2.416
+    angles 0 -2.853 0
+   }
+  }
+  GenericEntity : "{039684B010E892B9}Prefabs/Models/props/tem_pillow3.et" {
+   ID "633AC6BF65D7CB65"
+   coords 4.684 0.792 2.647
+   angles 0 12.022 0
+  }
+  GenericEntity : "{0F9504DA06D965F0}Prefabs/Structures/BuildingParts/Windows/Win_GlassBlock_01/Win_GlassBlock_01_125x150.et" {
+   ID "633A4E70BA03DE73"
+   coords -6.135 2.121 1.875
+   angles 0 89.921 0
+  }
+  $grp GenericEntity : "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et" {
+   {
+    ID "633A4E70BA03DDA5"
+    coords 5.027 1.052 4.602
+    angles 0 -179.82 0
+    scale 1.48
+   }
+   {
+    ID "633A4E70BA03DDB2"
+    coords -4.409 1.299 4.376
+    angles 0 -41.24 0
+    scale 1.48
+   }
+   {
+    ID "633A4E70BA03DDBF"
+    coords -3.494 1.299 4.111
+    angles 0 -179.82 0
+    scale 1.48
+   }
+   {
+    ID "633A4E70BA03DE48"
+    coords -0.975 0.299 0.277
+    angles 0 121.973 0
+    scale 2.11
+   }
+   {
+    ID "633AC6BF65D7CB95"
+    coords -2.536 0.299 -3.016
+    angles 0 49.433 0
+    scale 2.11
+   }
+  }
+  $grp GenericEntity : "{1C531149AF99ACD1}Prefabs/Props/Furniture/TableDining_01.et" {
+   {
+    ID "633A4E70BA03DD9E"
+    coords 4.096 3.993 3.513
+    angles 0 -78.58 0
+    scale 0.67
+   }
+   {
+    ID "633AC6BF65D7CBA6"
+    coords -4.115 0.304 -4.124
+    angles 0 -140.872 0
+    scale 0.67
+   }
+  }
+  GenericEntity : "{23EDC2B8CDEE124F}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et" {
+   ID "633A4E70BA03DD92"
+   coords 5.157 0.299 -0.186
+   angles 0 -0.236 0
+   scale 0.98
+  }
+  GenericEntity : "{29BA0E995E24468D}Prefabs/Props/Furniture/PlantRoom_03.et" {
+   ID "633AC6BF65D7C56D"
+   coords 4.185 4.596 3.483
+  }
+  GenericEntity : "{3013E3B09ED396A6}Prefabs/Models/props/tem_SM_Rug_Hanging_03.et" {
+   ID "6446B128C227F4D8"
+   coords 1.281 4.338 4.747
+   angles 0 -89.828 0
+  }
+  GenericEntity : "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et" {
+   ID "633A4E70BA03DD86"
+   coords -0.732 1.159 4.31
+   angles 0 165.847 0
+  }
+  $grp GenericEntity : "{397B34254E55F7B6}Prefabs/Props/Decorations/Flowerpots/FlowerpotPelargonia_01_white.et" {
+   {
+    ID "633A4E70BA03DD20"
+    coords -0.46 3.994 -2.841
+    angles 0 -1.044 0
+   }
+   {
+    ID "633A4E70BA03DD29"
+    coords -2.672 3.993 -4.702
+    angles 0 -1.044 0
+   }
+   {
+    ID "633A4E70BA03DD36"
+    coords -3.87 3.993 -4.724
+    angles 0 -1.044 0
+   }
+   {
+    ID "633A4E70BA03DD3F"
+    coords -5.098 3.993 -4.747
+    angles 0 -1.044 0
+   }
+   {
+    ID "633A4E70BA03DDC5"
+    coords -6.107 3.993 -3.979
+    angles 0 90.615 0
+   }
+   {
+    ID "633A4E70BA03DDD2"
+    coords 5.443 3.993 -2.123
+    angles 0 90.615 0
+   }
+   {
+    ID "633A4E70BA03DDDB"
+    coords 5.457 3.993 -0.885
+    angles 0 90.615 0
+   }
+   {
+    ID "633A4E70BA03DDE1"
+    coords 3.39 3.994 -2.77
+    angles 0 -1.044 0
+   }
+   {
+    ID "633A4E70BA03DDEF"
+    coords 2.131 3.994 -2.793
+    angles 0 -1.044 0
+   }
+   {
+    ID "633A4E70BA03DDFB"
+    coords 0.85 3.994 -2.816
+    angles 0 -1.044 0
+   }
+  }
+  $grp GenericEntity : "{3F9C5D8889FB5EC2}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_EXT_COV_M1_brown.et" {
+   {
+    ID "633A4E70BA03DCBB"
+    coords 5.596 0.282 -1.43
+    angles 0 -89.817 0
+   }
+   {
+    ID "633A4E70BA03DD0A"
+    coords 0.012 0.299 -2.772
+   }
+   {
+    ID "633A4E70BA03DD4F"
+    coords -2.039 3.993 -1.356
+    angles 0 -89.998 0
+   }
+   {
+    ID "633A4E70BA03DD60"
+    coords -4.072 3.993 -2.788
+   }
+   {
+    ID "633A4E70BA03DD77"
+    coords 3.477 4.081 -0.129
+   }
+  }
+  GenericEntity : "{5055DAFC2E978867}Prefabs/Models/props/tem_woodcrate_2.et" {
+   ID "633AC6BF65D7CABD"
+   coords -5.128 1.209 3.18
+   angles 0 -25.114 0
+  }
+  GenericEntity : "{646C07506B8170F8}Prefabs/Models/props/tem_Porcelain3.et" {
+   ID "633AC6BF65D7CB3A"
+   coords -0.13 1.159 4.402
+   angles 0 80.506 0
+  }
+  $grp GenericEntity : "{6C30F54BB3E65FCE}Prefabs/Models/walls/tem_window_wood1.et" {
+   {
+    ID "633A4E70BCA9A54C"
+    coords -3.448 3.993 1.73
+    angles 0 -89.759 0
+    scale 0.303
+   }
+   {
+    ID "633A4E70BCA9A559"
+    coords -3.453 3.993 0.516
+    angles 0 -89.759 0
+    scale 0.303
+   }
+   {
+    ID "633A4E70BCA9A564"
+    coords -4.085 3.993 -0.15
+    angles 0 -179.764 0
+    scale 0.303
+   }
+   {
+    ID "633A4E70BCA9A571"
+    coords -5.292 3.993 -0.145
+    angles 0 -179.764 0
+    scale 0.303
+   }
+  }
+  GenericEntity : "{728DD36004461456}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_B.et" {
+   ID "633A4E70BCA9A4BC"
+   coords -1.269 0.299 4.704
+   angles 0 -180 0
+   scale 0.86
+  }
+  GenericEntity : "{76E3962626F4B633}Prefabs/Props/Furniture/CoatRack_02.et" {
+   ID "633A4E70BCA9A4B1"
+   coords 1.893 0.822 -2.625
+  }
+  GenericEntity : "{7DE360627B70E191}Prefabs/Models/props/tem_metalplate2.et" {
+   ID "633AC6BF65D7CB4E"
+   coords -5.955 2.883 -1.595
+   angles 0 0 90.103
+   scale 1.99
+  }
+  $grp GenericEntity : "{909DF42FAE53A015}Prefabs/Structures/BuildingParts/Windows/Glass_198x190/Glass_198x190.et" {
+   {
+    ID "633AADEB304B0D0B"
+    coords 5.455 2.022 1.237
+    angles 0 -90.14 0
+   }
+   {
+    ID "633AADEB304B0D15"
+    coords 3.57 1.993 -2.821
+   }
+   {
+    ID "633AADEB304B0D21"
+    coords -4.092 2.205 -4.776
+   }
+   {
+    ID "633AADEB304B0D32"
+    coords 5.502 5.584 1.331
+    angles 0 89.849 0
+   }
+   {
+    ID "633AADEB304B0D3E"
+    coords 5.496 5.584 3.625
+    angles 0 89.849 0
+   }
+   {
+    ID "633AADEB304B0D7E"
+    coords 0.748 1.912 4.993
+   }
+   {
+    ID "633AADEB304B0DCD"
+    coords 3.525 5.815 4.958
+    angles 0 -0.137 0
+   }
+   {
+    ID "633AADEB304B0DEA"
+    coords -4.094 5.815 4.958
+    angles 0 -0.137 0
+   }
+  }
+  $grp GenericEntity : "{910424AC5CABE800}Prefabs/Props/Garbage/Bins/BinInterior_01_red.et" {
+   {
+    ID "633AC6BF65D7C556"
+    coords -1.768 3.993 0.538
+   }
+   {
+    ID "633AC6BF65D7CAB4"
+    coords 1.604 0.299 4.397
+    angles 0 -4.163 0
+   }
+  }
+  GenericEntity : "{987F2C9B779576FA}Prefabs/Models/props/tem_metalplate3.et" {
+   ID "633AC6BF65D7CB58"
+   coords -5.969 2.088 -3.366
+   angles 0 0 90.018
+   scale 2.7
+  }
+  $grp GenericEntity : "{9B7DEA45838284A8}Prefabs/Models/props/tem_carbet1f.et" {
+   {
+    ID "633AC6BF65D7C429"
+    coords -0.016 0.299 -1.396
+    angles 0 89.51 0
+   }
+   {
+    ID "633AC6BF65D7C437"
+    coords 3.052 0.299 -1.369
+    angles 0 89.51 0
+   }
+   {
+    ID "633AC6BF65D7C4C9"
+    coords -3.945 0.299 2.336
+   }
+   {
+    ID "633AC6BF65D7C4F2"
+    coords 3.612 3.993 2.566
+   }
+  }
+  GenericEntity : "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et" {
+   ID "633A4E714A87C324"
+   coords 0.032 3.993 0.135
+   angles 0 0.199 0
+  }
+  GenericEntity : "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et" {
+   ID "633A4E714A87C309"
+   coords 0.427 0.299 0.267
+   angles 0 0.945 0
+  }
+  GenericEntity : "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et" {
+   ID "633A4E714A87C37C"
+   coords -4.776 0.299 4.712
+   angles 0 -179.82 0
+  }
+  $grp GenericEntity : "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et" {
+   {
+    ID "633AC6BF65D7CA8B"
+    coords -5.871 5.375 2.483
+    angles 0 89.978 0
+   }
+   {
+    ID "633AC6BF65D7CA97"
+    coords -5.872 6.117 3.907
+    angles 0 89.978 0
+   }
+   {
+    ID "633AC6BF65D7CAFD"
+    coords -5.871 6.133 2.483
+    angles 0 89.978 0
+   }
+  }
+  $grp GenericEntity : "{B9DB9BA92EF28EE3}Prefabs/Models/props/tem_SM_Rug_Hanging_01.et" {
+   {
+    ID "6446B128C227F493"
+    coords 5.234 1.023 3.098
+   }
+   {
+    ID "6446B128C227F4CF"
+    coords -5.951 4.212 1.015
+   }
+  }
+  $grp GenericEntity : "{BA388E12A76B90E9}Prefabs/Models/props/tem_carpet3.et" {
+   {
+    ID "633AC6BF65D7C4D7"
+    coords 2.645 0.299 2.526
+    angles 0 88.41 0
+    scale 1.4
+   }
+   {
+    ID "633AC6BF65D7C4E3"
+    coords -0.163 3.993 2.691
+    angles 0 88.012 0
+    scale 1.4
+   }
+  }
+  $grp GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   {
+    ID "633A4E714A87C35E"
+    coords 4.884 0.299 -0.41
+    angles 0 77.616 0
+    scale 0.87
+   }
+   {
+    ID "633A4E714A87C372"
+    coords -5.334 0.299 2.661
+    scale 0.87
+   }
+  }
+  GenericEntity : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+   ID "633AC6BF65D7C406"
+   coords -5.653 3.993 -0.8
+  }
+  $grp GenericEntity : "{C960BC8F653630AC}Prefabs/Models/props/tem_ceilinglight1.et" {
+   {
+    ID "633AC6BF65D7CA53"
+    coords -0.607 3.76 2.255
+   }
+   {
+    ID "633AC6BF65D7CA5E"
+    coords -3.809 3.821 -3.249
+   }
+   {
+    ID "633AC6BF65D7CA6F"
+    coords -4.428 7.448 -0.958
+   }
+   {
+    ID "633AC6BF65D7CA7C"
+    coords 1.239 7.462 2.275
+   }
+  }
+  $grp GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
+   {
+    ID "633A4E714A87C340"
+    coords 4.717 3.993 2.749
+    angles 0 -45.211 0
+   }
+   {
+    ID "633A4E714A87C34F"
+    coords 4.784 3.993 4.049
+    angles 0 -132.495 0
+   }
+   {
+    ID "633AC6BF65D7CBB2"
+    coords -3.215 0.299 -4.166
+    angles 0 -62.614 0
+   }
+   {
+    ID "633AC6BF65D7CBB8"
+    coords -5.104 0.304 -4.129
+    angles 0 68.898 0
+   }
+  }
+  $grp GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   {
+    ID "633AC6BF65D7C484"
+    coords 0.758 3.993 3.697
+    angles 0 21.26 0
+   }
+   {
+    ID "633AC6BF65D7C495"
+    coords -0.236 3.993 3.768
+    angles 0 -9.736 0
+   }
+   {
+    ID "633AC6BF65D7C543"
+    coords -0.937 3.993 4.294
+    angles 0 102.802 0
+   }
+  }
+  $grp GenericEntity : "{D21DAFB24F46D64C}Prefabs/Props/Furniture/Nightstand_02.et" {
+   {
+    ID "633A4E714A87C2B2"
+    coords 5.086 0.299 4.463
+    angles 0 -89.847 0
+   }
+   {
+    ID "633A4E714A87C2BB"
+    coords 5.108 0.299 1.639
+    angles 0 -89.847 0
+   }
+  }
+  GenericEntity : "{D58FAF49923601CD}Prefabs/Models/props/tem_SM_Rug_Hanging_02.et" {
+   ID "6446B128C227F4EA"
+   coords -0.909 4.415 4.749
+   angles 0 90.272 0
+  }
+  $grp GenericEntity : "{DB56577F30DE9129}Prefabs/Props/Furniture/Table_02.et" {
+   {
+    ID "633A4E714A87C2A4"
+    coords -5.361 0.302 3.053
+    angles 0 -90.033 0
+   }
+   {
+    ID "633AC6BF65D7C4A7"
+    coords 0.786 3.993 4.091
+    angles 0 -92.195 0
+   }
+   {
+    ID "633AC6BF65D7C4B0"
+    coords -0.283 3.993 4.088
+    angles 0 -90.222 0
+   }
+  }
+  GenericEntity : "{E60AC8491C0D05D2}Prefabs/Models/props/tem_pillow2.et" {
+   ID "633AC6BF65D7CB76"
+   coords 4.685 0.792 3.537
+  }
+  GenericEntity : "{E639E7FAF33DC166}Prefabs/Props/Furniture/BedDouble_02.et" {
+   ID "633A4E714A87C289"
+   coords 3.993 0.299 3.093
+   angles 0 -90.187 0
+  }
+  GenericEntity : "{E66C895D628B01A2}Prefabs/Props/Furniture/Kitchen_01_base.et" {
+   ID "633A4E714A87C282"
+   coords 2.27 3.994 0.097
+   angles 0 -0.201 0
+  }
+  $grp GenericEntity : "{EF5807C42F3ECC7B}Prefabs/Props/Furniture/CurtainsWindow_01/CurtainsWindow_01_V2_medium_folded_V3.et" {
+   {
+    ID "633A4E714A87C1AB"
+    coords 0.782 1.731 4.66
+    angles 0 -179.489 0
+   }
+   {
+    ID "633A4E714A87C1B8"
+    coords -4.105 1.972 -4.495
+    angles 0 -0.344 0
+   }
+   {
+    ID "633A4E714A87C200"
+    coords 5.179 5.331 3.641
+    angles 0 -90.324 0
+   }
+   {
+    ID "633A4E714A87C23E"
+    coords 3.527 5.636 4.665
+    angles 0 179.738 0
+   }
+   {
+    ID "633A4E714A87C249"
+    coords 3.517 1.972 -2.508
+    angles 0 -0.344 0
+   }
+   {
+    ID "633A4E714A87C263"
+    coords 5.195 1.731 1.225
+    angles 0 -90.324 0
+   }
+   {
+    ID "633A4E714A87C273"
+    coords 5.194 5.331 1.225
+    angles 0 -90.324 0
+   }
+   {
+    ID "633A4E714A87C2CC"
+    coords -4.091 5.636 4.63
+    angles 0 179.738 0
+   }
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "633AC6BF65D7C444"
+   coords -5.592 3.993 -2.226
+   angles 0 -131.446 0
+  }
+  $grp GenericEntity : "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et" {
+   {
+    ID "633A4E714A87C137"
+    coords -2.817 0.288 4.716
+    angles 0 -179.82 0
+    scale 0.98
+   }
+   {
+    ID "633A4E714A87C13C"
+    coords 2.957 0.299 -0.217
+    angles 0 -0.236 0
+    scale 0.98
+   }
+   {
+    ID "633A4E714A87C1C5"
+    coords 4.422 0.299 -0.211
+    angles 0 -0.236 0
+    scale 0.98
+   }
+  }
+  GenericEntity : "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et" {
+   ID "633A4E714A87C129"
+   coords -0.668 3.993 0.174
+   angles 0 -91.078 0
+  }
+ }
+ {
+  $grp JWK_CharacterSpawnPointEntity : "{0CCEA8E397DEAE44}Prefabs/World/JWK_CharacterSpawnPoint.et" {
+   {
+    ID "68DB0E41C8393592"
+    coords -1.231 4.303 1.886
+   }
+   {
+    ID "68DB0E41C83935C0"
+    coords 3.154 0.887 1.643
+   }
+   {
+    ID "68DB0E41C83935CA"
+    coords -0.905 4.768 1.321
+   }
+   {
+    ID "68DB0E41C83935D3"
+    coords -3.288 0.332 2.537
+   }
+   {
+    ID "68DB0E41C83935D8"
+    coords -1.818 0.334 2.014
+   }
+  }
+  GenericEntity : "{CBBCD1602FF8677E}Prefabs/Controllers/Loadtime/ParkingSpot/JWK_AmbientParkingSpot.et" {
+   ID "68DB0E74B6C2064B"
+   components {
+    JWK_AmbientParkingSpotComponent "{66FAC9AD1E052C0E}" {
+     m_fSpawnChanceOverride 0.2
+    }
+   }
+   coords 2.658 0 -5.927
+   angles 0 90 0
+  }
+ }
+}

@@ -1,0 +1,14 @@
+$grp JWK_FuelStationEntity : "{5F0EF636CDF91862}Prefabs/Controllers/Loadtime/JWK_FuelStationController.et" {
+ {
+  coords 3719.098 138.205 6903.966
+ }
+ {
+  coords 4148.731 144.259 8039.016
+ }
+ {
+  coords 3609.976 168.938 2909.089
+ }
+ {
+  coords 3439.871 153.781 4432.125
+ }
+}

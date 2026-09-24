@@ -1,0 +1,81 @@
+// FF - REMIXED - PVE -- lunettes FPV.
+//
+// CE QU'ON VEUT CHANGER, ET RIEN D'AUTRE : l'original les range dans
+// LoadoutHeadCoverArea, c'est-a-dire le meme emplacement que le casque -- porter les
+// lunettes faisait donc sauter le casque. On les bascule dans LoadoutGooglesArea, ce
+// qui permet casque + lunettes ensemble (cf. memoire fpv-goggles-eyewear-slot ; le slot
+// est ajoute aux persos par notre override de Character_Base).
+//
+// SHADOW-OVERRIDE du prefab de RealisticCombatDrones (meme GUID {8951045BFE8BC8E4}) :
+// ce fichier REMPLACE l'original. Tout composant non re-declare ici est PERDU -- notre
+// version ne gardait que BaseLoadoutClothComponent, ce qui faisait disparaitre le modele
+// 3D (MeshObject + WornModel/ItemModel), le composant qui affiche le flux drone
+// (SAL_DroneGogglesComponent), l'item d'inventaire, les actions et le RplComponent.
+// Le contenu d'origine est donc repris INTEGRALEMENT, avec les MEMES GUIDs d'instance
+// (un GUID neuf serait ignore sans erreur, cf. memoire enfusion-override-instance-guid).
+// Seule difference volontaire avec l'original : AreaType ci-dessous.
+GameEntity : "{17F335BF60DD2550}Prefabs/Characters/Core/Headgear_Base.et" {
+ ID "5112706CD4157AC7"
+ components {
+  InventoryItemComponent "{5244E4431E28A759}" {
+   Attributes SCR_ItemAttributeCollection "{659F1EAD965D8094}" {
+    ItemDisplayName UIInfo "{659F1EAD965D8084}" {
+     Name "#Drone_Goggles"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes "{659F1EAD965D808A}" {
+     Weight 1
+     SizeSetupStrategy Volume
+     ItemVolume 300
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{659F1EAD965D80F0}" {
+      CameraOrbitAngles 0 0 0
+      CameraDistanceToItem 0.7
+      FOV 10
+     }
+    }
+   }
+  }
+  MeshObject "{5112706CD4157AE0}" {
+   Object "{A73C7751D0035A24}Assets/Drones/FPVGoggles/NewFPVGogglesItem.xob"
+  }
+  SAL_DroneGogglesComponent "{65E8F331AD7D38A5}" {
+  }
+  SCR_ItemOutfitFactionComponent "{659F1EAD965D80F8}" {
+   m_OutfitDataHolder SCR_OutfitFactionDataHolder "{659F1EAD965D80E1}" {
+    m_aOutfitFactionData {
+     SCR_OutfitFactionData "{659F1EAD965D80E4}" {
+      m_AffiliatedFactionKey "US"
+      m_iOutfitFactionValue 15
+     }
+    }
+   }
+  }
+  BaseLoadoutClothComponent "{5112706CD4157AF8}" {
+   // <-- LE SEUL CHANGEMENT : LoadoutGooglesArea au lieu de LoadoutHeadCoverArea.
+   AreaType LoadoutGooglesArea "{659F1EAD965D80EB}" {
+   }
+   WornModel "{42714431C70086CB}Assets/Drones/FPVGoggles/NewFPVGoggles.xob"
+   ItemModel "{A73C7751D0035A24}Assets/Drones/FPVGoggles/NewFPVGogglesItem.xob"
+  }
+  ActionsManagerComponent "{5112706CD4157AC9}" {
+   ActionContexts {
+    UserActionContext "{5112706CD4157AF3}" {
+     Position PointInfo "{5112706CD4157AF0}" {
+      Offset 0 0.1 0
+     }
+    }
+   }
+   additionalActions {
+    SAL_CaseEquipItemCloth "{52E6EC76F51E12DE}" {
+    }
+    SAL_CasePickUpItem "{52E6EC76F43FCD58}" {
+    }
+   }
+  }
+  RplComponent "{5244E440DAA03DB6}" {
+   "Parent Node From Parent Entity" 1
+  }
+ }
+ coords 0.594 1.202 -1.52
+}

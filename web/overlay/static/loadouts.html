@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC — Dotations</title>
+    <link href="/api/v1/cdn/map/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/api/v1/cdn/map/icons/bootstrap-icons.min.css">
+    <style>
+        body { padding: 2rem; }
+        .lo-data { max-height: 320px; overflow: auto; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+        .lo-data ul { list-style: none; margin: 0; padding-left: 16px; border-left: 1px solid var(--line); }
+        .lo-key { color: var(--cyan); }
+        .lo-val { color: var(--amber); }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+<div class="tricolore"></div>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><a href="/" class="d-flex align-items-center gap-3" style="color:inherit;text-decoration:none" title="Retour a l'accueil"><span class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#3d8bff" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2 L20 6 V12 C20 17 16.2 20.6 12 22 C7.8 20.6 4 17 4 12 V6 Z"/><path d="M12 7 V15 M8.4 11 H15.6" stroke="#39c2d1"/></svg></span>PC — Dotations</a></h1>
+        <div class="d-flex gap-2">
+            <a href="/admin.html" class="btn btn-secondary">Administration</a>
+            <a href="/static/whitelists.html" class="btn btn-outline-warning"><i class="bi bi-shield-lock"></i> Whitelists</a>
+            <button id="refresh-btn" class="btn btn-info"><i class="bi bi-arrow-clockwise"></i> Rafraîchir</button>
+        </div>
+    </div>
+    <div id="auth-status"></div>
+
+    <!-- Section MES TENUES : visible par tout joueur connecté + lié en jeu (#link) -->
+    <div id="mine-section" class="d-none">
+        <div class="card mb-4 bracket">
+            <div class="card-header"><i class="bi bi-person-badge me-2"></i>Mes tenues perso <span id="mine-count" class="badge text-bg-secondary ms-2">0</span></div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">Enregistre tes tenues <strong>en jeu</strong> à l'arsenal (action « Enregistrer ma tenue »). Elles apparaissent ici — tu peux les <strong>renommer</strong> et les supprimer. Max 5 (la plus ancienne saute au-delà).</p>
+                <div id="mine-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section ADMIN : gestion des dotations de faction (réservé admin) -->
+    <div id="content" class="d-none">
+        <p class="small text-muted">Dotations de faction, capturées <strong>en jeu</strong> (<code>#loadout publish &lt;nom&gt;</code>). Renommer, classer par <strong>spécialité</strong>, supprimer. Le contenu (<code>data</code>) est en lecture seule.</p>
+        <datalist id="specialties"></datalist>
+        <div id="loadouts-container"></div>
+    </div>
+</div>
+
+<script src="/api/v1/cdn/map/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const API = '/api/v1';
+        const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const fetchJSON = async (ep, opt) => {
+            const res = await fetch(`${API}/${ep}`, opt);
+            if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || ('HTTP ' + res.status)); }
+            return res.status === 204 ? null : res.json();
+        };
+
+        // Rendu récursif d'un JSON opaque en arbre lisible.
+        function renderTree(v) {
+            if (v === null) return '<span class="text-muted">null</span>';
+            if (Array.isArray(v)) {
+                if (!v.length) return '<span class="text-muted">[]</span>';
+                return '<ul>' + v.map((x, i) => `<li><span class="lo-key">${i}</span> : ${renderTree(x)}</li>`).join('') + '</ul>';
+            }
+            if (typeof v === 'object') {
+                const keys = Object.keys(v);
+                if (!keys.length) return '<span class="text-muted">{}</span>';
+                return '<ul>' + keys.map(k => `<li><span class="lo-key">${esc(k)}</span> : ${renderTree(v[k])}</li>`).join('') + '</ul>';
+            }
+            return `<span class="lo-val">${esc(String(v))}</span>`;
+        }
+
+        function render(loadouts) {
+            const box = document.getElementById('loadouts-container');
+            box.innerHTML = '';
+            if (!loadouts.length) { box.innerHTML = '<div class="card"><div class="card-body text-center text-muted p-4">Aucune dotation pour le moment. Publie-en une en jeu avec <code>#loadout publish &lt;nom&gt;</code>.</div></div>'; return; }
+
+            // datalist des spécialités existantes
+            const specs = [...new Set(loadouts.map(l => l.specialty).filter(Boolean))].sort();
+            document.getElementById('specialties').innerHTML = specs.map(s => `<option value="${esc(s)}">`).join('');
+
+            // groupe faction -> spécialité
+            const byFaction = {};
+            loadouts.forEach(l => {
+                const f = l.faction || '(sans faction)';
+                const s = l.specialty || 'Non classé';
+                (byFaction[f] = byFaction[f] || {});
+                (byFaction[f][s] = byFaction[f][s] || []).push(l);
+            });
+
+            Object.keys(byFaction).sort().forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'card mb-4 bracket';
+                let html = `<div class="card-header"><i class="bi bi-flag-fill me-2"></i>${esc(f)} <span class="badge text-bg-secondary ms-2">${Object.values(byFaction[f]).reduce((n, a) => n + a.length, 0)}</span></div><div class="card-body">`;
+                Object.keys(byFaction[f]).sort().forEach(s => {
+                    html += `<h6 class="mt-2 mb-2"><i class="bi bi-bookmark-fill me-1 text-info"></i>${esc(s)}</h6>`;
+                    byFaction[f][s].forEach(l => {
+                        let tree;
+                        try { tree = renderTree(JSON.parse(l.data || 'null')); }
+                        catch (_) { tree = `<pre class="text-muted">${esc((l.data || '').slice(0, 4000))}</pre>`; }
+                        const date = l.updated_at ? new Date(l.updated_at).toLocaleString('fr-FR') : '';
+                        html += `
+                        <div class="list-group-item mb-2">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div><strong>${esc(l.name)}</strong> <small class="text-muted ms-2">maj ${esc(date)}</small></div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="input-group input-group-sm" style="width:220px">
+                                        <span class="input-group-text">Spécialité</span>
+                                        <input type="text" list="specialties" class="form-control form-control-sm lo-spec" value="${esc(l.specialty)}" data-id="${l.id}" placeholder="Non classé">
+                                        <button class="btn btn-sm btn-info lo-spec-save" data-id="${l.id}" title="Enregistrer la spécialité"><i class="bi bi-check-lg"></i></button>
+                                    </div>
+                                    <button class="btn btn-sm btn-secondary lo-rename" data-id="${l.id}" data-name="${esc(l.name)}"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-danger lo-del" data-id="${l.id}" data-name="${esc(l.name)}"><i class="bi bi-trash"></i></button>
+                                    <button class="btn btn-sm btn-outline-light lo-toggle" data-bs-toggle="collapse" data-bs-target="#lo-${l.id}"><i class="bi bi-list-nested"></i> Contenu</button>
+                                </div>
+                            </div>
+                            <div class="collapse mt-2" id="lo-${l.id}"><div class="lo-data card card-body">${tree}</div></div>
+                        </div>`;
+                    });
+                });
+                html += '</div>';
+                card.innerHTML = html;
+                box.appendChild(card);
+            });
+
+            attachActions();
+        }
+
+        function attachActions() {
+            document.querySelectorAll('.lo-spec-save').forEach(b => b.addEventListener('click', async e => {
+                const id = e.currentTarget.dataset.id;
+                const val = document.querySelector(`.lo-spec[data-id="${id}"]`).value.trim();
+                try { await fetchJSON(`admin/loadouts/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ specialty: val }) }); load(); }
+                catch (err) { alert('Erreur : ' + err.message); }
+            }));
+            document.querySelectorAll('.lo-rename').forEach(b => b.addEventListener('click', async e => {
+                const id = e.currentTarget.dataset.id;
+                const cur = e.currentTarget.dataset.name;
+                const name = prompt('Nouveau nom de la dotation :', cur);
+                if (!name || name === cur) return;
+                try { await fetchJSON(`admin/loadouts/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) }); load(); }
+                catch (err) { alert('Erreur : ' + err.message); }
+            }));
+            document.querySelectorAll('.lo-del').forEach(b => b.addEventListener('click', async e => {
+                const id = e.currentTarget.dataset.id;
+                if (!confirm(`Supprimer la dotation « ${e.currentTarget.dataset.name} » ?`)) return;
+                try { await fetchJSON(`admin/loadouts/${id}`, { method: 'DELETE' }); load(); }
+                catch (err) { alert('Erreur : ' + err.message); }
+            }));
+        }
+
+        async function load() {
+            try {
+                const d = await fetchJSON('admin/loadouts');
+                render(d.loadouts || []);
+            } catch (err) {
+                document.getElementById('loadouts-container').innerHTML = `<div class="alert alert-danger">Erreur de chargement : ${esc(err.message)}</div>`;
+            }
+        }
+
+        // ---- MES TENUES (perso) : tout joueur connecté + lié ----
+        function renderMine(data) {
+            const box = document.getElementById('mine-container');
+            document.getElementById('mine-count').textContent = (data.loadouts || []).length;
+            if (!data.linked) {
+                box.innerHTML = `<div class="alert alert-warning mb-0">Ton compte Discord n'est pas encore lié à ton perso en jeu. En jeu, génère un code puis tape <code>#link &lt;code&gt;</code>. <a href="/dashboard.html" class="alert-link">Générer un code</a>.</div>`;
+                return;
+            }
+            const los = data.loadouts || [];
+            if (!los.length) { box.innerHTML = '<div class="text-muted">Aucune tenue perso. Enregistre-en une en jeu à l\'arsenal.</div>'; return; }
+            box.innerHTML = los.map(l => {
+                let tree;
+                try { tree = renderTree(JSON.parse(l.data || 'null')); } catch (_) { tree = '<span class="text-muted">—</span>'; }
+                const date = l.updated_at ? new Date(l.updated_at).toLocaleString('fr-FR') : '';
+                return `
+                <div class="list-group-item mb-2">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div><strong>${esc(l.name)}</strong> <small class="text-muted ms-2">maj ${esc(date)}</small></div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-secondary mine-rename" data-id="${l.id}" data-name="${esc(l.name)}"><i class="bi bi-pencil"></i> Renommer</button>
+                            <button class="btn btn-sm btn-danger mine-del" data-id="${l.id}" data-name="${esc(l.name)}"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            document.querySelectorAll('.mine-rename').forEach(b => b.addEventListener('click', async e => {
+                const id = e.currentTarget.dataset.id, cur = e.currentTarget.dataset.name;
+                const name = prompt('Nouveau nom de ta tenue :', cur);
+                if (!name || name === cur) return;
+                try { await fetchJSON(`user/loadouts/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) }); loadMine(); }
+                catch (err) { alert('Erreur : ' + err.message); }
+            }));
+            document.querySelectorAll('.mine-del').forEach(b => b.addEventListener('click', async e => {
+                const id = e.currentTarget.dataset.id;
+                if (!confirm(`Supprimer « ${e.currentTarget.dataset.name} » ?`)) return;
+                try { await fetchJSON(`user/loadouts/${id}`, { method: 'DELETE' }); loadMine(); }
+                catch (err) { alert('Erreur : ' + err.message); }
+            }));
+        }
+
+        async function loadMine() {
+            try { renderMine(await fetchJSON('user/loadouts/mine')); }
+            catch (err) { document.getElementById('mine-container').innerHTML = `<div class="alert alert-danger">Erreur : ${esc(err.message)}</div>`; }
+        }
+
+        async function init() {
+            // Page ADMIN (gestion des dotations de faction). Les tenues PERSO sont dans "Mon Soldat".
+            try {
+                const me = await fetchJSON('users/me');
+                if (!me || me.account_type !== 'admin') throw new Error('Accès réservé aux administrateurs.');
+                document.getElementById('content').classList.remove('d-none');
+                document.getElementById('refresh-btn').addEventListener('click', load);
+                load();
+            } catch (err) {
+                document.getElementById('auth-status').innerHTML = `<div class="alert alert-danger text-center"><h3>Accès refusé</h3><p>${esc(err.message)}</p><a href="/auth/discord/login" class="btn btn-primary">Connexion admin</a></div>`;
+            }
+        }
+        init();
+    });
+</script>
+</body>
+</html>

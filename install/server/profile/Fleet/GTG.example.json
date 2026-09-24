@@ -1,0 +1,14 @@
+{
+  "url": "https://<YOUR-SITE>/api/v1/positions",
+  "markersUrl": "https://<YOUR-SITE>/api/v1/markers",
+  "drawingsUrl": "https://<YOUR-SITE>/api/v1/drawings",
+  "commandsUrl": "https://<YOUR-SITE>/api/v1/commands",
+  "squadsUrl": "https://<YOUR-SITE>/api/v1/squads",
+  "ranksUrl": "https://<YOUR-SITE>/api/v1/ranks",
+  "coverageUrl": "https://<YOUR-SITE>/api/v1/coverage",
+  "loadoutsUrl": "https://<YOUR-SITE>/api/v1/loadouts",
+  "objectivesUrl": "https://<YOUR-SITE>/api/v1/objectives",
+  "leaveUrl": "https://<YOUR-SITE>/api/v1/leave",
+  "apiKey": "<WEBSITE API KEY - CHANGE ME>",
+  "intervalSec": 5
+}

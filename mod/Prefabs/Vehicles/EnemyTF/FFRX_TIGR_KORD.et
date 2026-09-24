@@ -1,0 +1,18 @@
+Vehicle : "{7A16FB788DAD3992}Prefabs/Vehicles/Wheeled/TIGR/KORD/GAZ_TIGR_v2_KORD_Green.et" {
+ ID "69EEC444E25B8727"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000041}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000042}" {
+    m_iVehicleType CAR
+    m_iParkingType CAR
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType MEDIUM_ARMED
+    m_iArmorType LIGHT_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+ coords 151.58 1 137.915
+}

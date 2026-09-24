@@ -1,0 +1,130 @@
+$grp JWK_CheckpointEntity : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ JWK_CheckpointController_68E1020DAFB3 {
+  coords 7870.548 146.867 2926.698
+  m_iRange 40
+  {
+   SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    coords -1.807 -8.576 28.505
+    angles 0 -173.662 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.123 0
+      angles 6.423 0 -8.904
+     }
+    }
+   }
+   SCR_SiteSlotEntity : "{F73BB819723B9490}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareSmall.et" {
+    coords 13.106 -7.053 10.537
+    angles 0 -160.319 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.022 0
+      angles 3.702 0 -10.002
+     }
+    }
+   }
+  }
+ }
+ JWK_CheckpointController_68E1020DAFB4 {
+  coords 8012.892 160.79 3136.788
+  m_iRange 40
+  {
+   SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+    coords -6.2 2.08 14.747
+    angles 0 20.631 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.011 0
+      angles -6.378 0 -2.571
+     }
+    }
+   }
+  }
+ }
+}
+JWK_TownEntity JWK_TownController_68E1020CF9E1B262 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Mian"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 7909.498 145.678 3006.665
+ m_iTownRange 200
+ {
+  PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+   components {
+    JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+     m_aTags {
+      BATTLE_AREA
+     }
+     m_bApplyFactionToParkingSpots 0
+    }
+   }
+   coords -1.513 -0.062 -0.4
+   Points {
+    ShapePoint "{68E1020F31F692AD}" {
+     Position 204.143 33.909 106.116
+    }
+    ShapePoint "{68E1020F31957DF8}" {
+     Position 189.629 32.281 33.039
+    }
+    ShapePoint "{68E1020F3057F63D}" {
+     Position 117.223 13.039 -15.1
+    }
+    ShapePoint "{68E1020F301EB4F3}" {
+     Position 52.552 -0.862 -49.164
+    }
+    ShapePoint "{68E1020F30C6B46C}" {
+     Position 10.636 -5.205 -67.947
+    }
+    ShapePoint "{68E1020F2F6C8D38}" {
+     Position -14.595 -2.422 -83.293
+    }
+    ShapePoint "{68E1020F2E61B58E}" {
+     Position -68.347 -17.26 -74.524
+    }
+    ShapePoint "{68E1020F2E1F648F}" {
+     Position -89.067 -17.015 -54.868
+    }
+    ShapePoint "{68E1020F2ECDA131}" {
+     Position -100.348 -11.227 -36.259
+    }
+    ShapePoint "{68E1020F2E8C631D}" {
+     Position -103.846 -5.526 -6.702
+    }
+    ShapePoint "{68E1020F2D4B858E}" {
+     Position -93.086 -1.578 17.402
+    }
+    ShapePoint "{68E1020F2D9BE880}" {
+     Position -45.242 11.339 64.287
+    }
+    ShapePoint "{68E1020F2C80367D}" {
+     Position 16.143 21.279 133.945
+    }
+    ShapePoint "{68E1020F2B261B76}" {
+     Position 116.525 17.946 154.873
+    }
+    ShapePoint "{68E1020F2BD26B11}" {
+     Position 170.336 33.63 181.338
+    }
+   }
+  }
+ }
+}
+SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+ coords 7999.071 160.436 3134.019
+ angles 0 23.855 0
+ {
+  StaticModelEntity {
+   ID "62A693F2AC4FB612"
+   coords 0 0.341 0
+   angles -2.186 0 -0.23
+  }
+ }
+}

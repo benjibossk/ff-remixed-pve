@@ -1,0 +1,18 @@
+Vehicle : "{6B7CD408BDFB94F5}Prefabs/Vehicles/Wheeled/TIGR/PKP/GAZ_TIGR_v2_PKM_Green.et" {
+ ID "69EEC444E0965B70"
+ components {
+  JWK_VehicleAttributesComponent "{6FFEC0DE00000031}" {
+   m_Attributes JWK_VehicleAttributes "{6FFEC0DE00000032}" {
+    m_iVehicleType CAR
+    m_iParkingType CAR
+    m_iParkingDomain LAND
+    m_iCrewType GENERIC
+    m_iRepairStationType LAND
+    m_iArmamentType LIGHT_ARMED
+    m_iArmorType LIGHT_ARMOR
+    m_iSpecialType UNDEFINED
+   }
+  }
+ }
+ coords 148.632 1 137.761
+}

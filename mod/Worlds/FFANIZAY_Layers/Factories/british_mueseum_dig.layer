@@ -1,0 +1,125 @@
+GenericEntity Factory_ResourceStorage_68DF02381997C4A1 : "{34EE59A28125F95F}Prefabs/Compositions/Factory_ResourceStorage.et" {
+ coords 409.495 188.688 1560.433
+ {
+  GenericEntity Factory_Storage_68DF02381997C35E {
+   ID "64D5310E6D3945D6"
+  }
+ }
+}
+JWK_CheckpointEntity masterCheckpoint49 : "{45DDC606D9A685AE}Prefabs/Controllers/Loadtime/JWK_CheckpointController.et" {
+ coords 439.07 189 1567.736
+ angles 0 2.014 0
+ m_iRange 50
+ m_fSpawnChance 1
+ {
+  $grp SCR_SiteSlotEntity : "{AAEC5B2584D74E4C}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareLarge.et" {
+   {
+    coords -16.284 -0.622 -24.626
+    angles 0 9.386 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.336 0
+      angles 0.219 0 0
+     }
+    }
+   }
+   {
+    coords 15.266 0.176 -22.749
+    angles 0 -14.32 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -0.161 0
+      angles 2.686 0 0
+     }
+    }
+   }
+  }
+  $grp SCR_SiteSlotEntity : "{DC5D6161EF4471C6}Prefabs/World/Slots/Checkpoint/JWK_CheckpointSlotSquareMedium.et" {
+   {
+    coords -11.931 -1.259 -10.889
+    angles 0 18.199 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 0.947 0
+     }
+    }
+   }
+   {
+    coords 10.83 0.69 -8.781
+    angles 0 -17.478 0
+    {
+     StaticModelEntity {
+      ID "62A693F2AC4FB612"
+      coords 0 -1.003 0
+     }
+    }
+   }
+  }
+ }
+}
+JWK_FactoryEntity JWK_FactoryController_68DF0239EFDD7A71 : "{644F3F0AD98280B4}Prefabs/Controllers/Loadtime/JWK_FactoryController.et" {
+ components {
+  JWK_AIGarrisonComponent "{659EFEC227B5CEDE}" {
+   m_iPatrolRange 60
+  }
+  JWK_NamedLocationComponent "{64E512EE3D735264}" {
+   m_sName "British Survey"
+  }
+ }
+ coords 413.354 188.688 1560.644
+ m_iFactoryRange 60
+}
+PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+ components {
+  JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+   m_aTags {
+    POI_AREA
+    BATTLE_AREA
+    PLAYER_CONSTRUCTION
+    BLOCK_TRAFFIC
+   }
+  }
+ }
+ coords 413.591 188.687 1559.62
+ Points {
+  ShapePoint "{68DF0239E69D6FF8}" {
+   Position 31.85 -2.444 48.724
+  }
+  ShapePoint "{68DF0239E53F8DE0}" {
+   Position 62.82 -2.526 23.499
+  }
+  ShapePoint "{68DF0239E5EF2B1C}" {
+   Position 73.105 -0.102 0.714
+  }
+  ShapePoint "{68DF0239E5A70237}" {
+   Position 70.983 0.009 -25.171
+  }
+  ShapePoint "{68DF0239E4655355}" {
+   Position 60.824 0.52 -48.114
+  }
+  ShapePoint "{68DF0239E4395717}" {
+   Position 35.787 -1.169 -55.323
+  }
+  ShapePoint "{68DF0239E4EAEC1F}" {
+   Position -26.265 0 -56.774
+  }
+  ShapePoint "{68DF0239E4B6805E}" {
+   Position -61.22 0.001 -55.859
+  }
+  ShapePoint "{68DF0239E4869663}" {
+   Position -75.374 -4.174 -21.161
+  }
+  ShapePoint "{68DF0239E346E3DC}" {
+   Position -67.742 -1.965 17.17
+  }
+  ShapePoint "{68DF0239E31CCD24}" {
+   Position -54.981 0.21 38.627
+  }
+  ShapePoint "{68DF0239E3864CE9}" {
+   Position -5.044 -1.033 46.728
+  }
+ }
+}

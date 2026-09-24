@@ -1,0 +1,44 @@
+SCR_ChimeraCharacter : "{F95AEA26749B12EC}Prefabs/Characters/Factions/IND/MEI/Character_MEI_Rifleman1.et" {
+ ID "6A3A80C13B41F002"
+ components {
+  NOVA_Drons "{6FFEC0DEDA000213}" {
+   m_eOperatorType RECON
+   m_sDronePrefab "{55C5BEE65087F7CD}Prefabs/Drones/DJIBase/DJIRGD5Dropper.et"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    Name "Drone Operator Mavic"
+    IconSetName "EditableEntity_Character_Engineer"
+    m_aAuthoredLabels + {
+     ROLE_RIFLEMAN
+    }
+    m_aAutoLabels {
+     SIZE_M
+    }
+   }
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFB7}" {
+   WeaponTemplate ""
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFDC}" {
+   WeaponTemplate "{E2434ED1318D8476}Prefabs/Characters/Items/DroneController.et"
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Back {
+     Prefab "{41A9C55B61F375F0}Prefabs/Items/Equipment/Backpacks/Backpack_Kolobok.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{6FFEC0DEDA000214}" {
+     TargetStorage "Back/Backpack_Kolobok.et"
+     PrefabsToSpawn {
+      "{55C5BEE65087F7CD}Prefabs/Drones/DJIBase/DJIRGD5Dropper.et"
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,74 @@
+diff --git a/api/handlers/server_api_map.go b/api/handlers/server_api_map.go
+index 6c0b5aa..06d05fd 100644
+--- a/api/handlers/server_api_map.go
++++ b/api/handlers/server_api_map.go
+@@ -11,6 +11,24 @@ import (
+ 	"gorm.io/gorm"
+ )
+ 
++// GetServerCurrentMapHandler (public) : carte actuelle du serveur, lue frais en base (no-store).
++// Sert au frontend pour basculer automatiquement quand le jeu change de terrain.
++func GetServerCurrentMapHandler(c *gin.Context) {
++	serverID, err := uuid.Parse(c.Param("id"))
++	if err != nil {
++		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid server ID"})
++		return
++	}
++	var server models.Server
++	if err := database.DB.Preload("MapConfig").First(&server, "id = ?", serverID).Error; err != nil {
++		c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
++		return
++	}
++	server.MapConfig.TilesURL = rewriteTilesURL(server.MapConfig.TilesURL)
++	c.Header("Cache-Control", "no-store")
++	c.JSON(http.StatusOK, server.MapConfig)
++}
++
+ // APIGetCurrentMapHandler returns the current map configuration of the server.
+ func APIGetCurrentMapHandler(c *gin.Context) {
+ 	serverID_iface, _ := c.Get("server_id")
+@@ -32,19 +50,30 @@ func APISetCurrentMapHandler(c *gin.Context) {
+ 	serverID_iface, _ := c.Get("server_id")
+ 	serverID := serverID_iface.(uuid.UUID)
+ 
++	// Accepte map_id (numéro DB) OU map_name (nom de carte, ex. "Arland") — Fleet connaît le
++	// terrain par son nom, pas l'id DB. Le jeu peut ainsi basculer la carte au bon scénario.
+ 	var req struct {
+-		MapID uint `json:"map_id" binding:"required"`
++		MapID   uint   `json:"map_id"`
++		MapName string `json:"map_name"`
+ 	}
+ 	if err := c.ShouldBindJSON(&req); err != nil {
+-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request: map_id (number) is required"})
++		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request: map_id or map_name required"})
+ 		return
+ 	}
+ 
+-	// Validation: Check if the map ID even exists.
+ 	var mapConfig models.MapConfig
+-	if err := database.DB.First(&mapConfig, req.MapID).Error; err != nil {
++	var err error
++	if req.MapID != 0 {
++		err = database.DB.First(&mapConfig, req.MapID).Error
++	} else if req.MapName != "" {
++		err = database.DB.Where("LOWER(name) = LOWER(?)", req.MapName).First(&mapConfig).Error
++	} else {
++		c.JSON(http.StatusBadRequest, gin.H{"error": "map_id or map_name required"})
++		return
++	}
++	if err != nil {
+ 		if errors.Is(err, gorm.ErrRecordNotFound) {
+-			c.JSON(http.StatusBadRequest, gin.H{"error": "Map with the specified map_id does not exist."})
++			c.JSON(http.StatusBadRequest, gin.H{"error": "Map not found (check map_id / map_name)."})
+ 			return
+ 		}
+ 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error while checking map."})
+@@ -52,7 +81,7 @@ func APISetCurrentMapHandler(c *gin.Context) {
+ 	}
+ 
+ 	// Update the server
+-	result := database.DB.Model(&models.Server{}).Where("id = ?", serverID).Update("map_config_id", req.MapID)
++	result := database.DB.Model(&models.Server{}).Where("id = ?", serverID).Update("map_config_id", mapConfig.ID)
+ 	if result.Error != nil {
+ 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update server map"})
+ 		return

@@ -1,0 +1,24 @@
+Vehicle {
+ ID "BBCBA43A9778AE21"
+ components {
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Jammer {
+     Offset 0 1 -1
+     Angles 0 0 0
+     MergePhysics 1
+     Enabled 0
+     Prefab ""
+    }
+   }
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions {
+    FFRX_JammerInstallAction "{6FFB10C0A0B10001}" {
+    }
+    FFRX_JammerUninstallAction "{6FFB10C0A0B10002}" {
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,90 @@
+JWK_TownEntity JWK_TownController_68E1272E76B07175 : "{64B2F8D8059C97CC}Prefabs/Controllers/Loadtime/JWK_TownController.et" {
+ components {
+  JWK_NamedLocationComponent "{65C35A2F385D762F}" {
+   m_sName "Makan Al Jamal"
+  }
+  JWK_TownCiviliansControllerComponent "{6296F54A892986E3}" {
+   m_fPopulationSpawnFactor 0.4
+  }
+ }
+ coords 3498.796 157.313 4550.079
+ m_iTownRange 200
+ {
+  PolylineShapeEntity : "{90B1B9EF2FCD1016}Prefabs/World/JWK_PolylineWorldZone.et" {
+   components {
+    JWK_WorldZoneComponent "{64B512D3082EC63A}" {
+     m_aTags {
+      BATTLE_AREA
+     }
+     m_bApplyFactionToParkingSpots 0
+    }
+   }
+   coords 0 0 0
+   Points {
+    ShapePoint "{68E1272ED8A90145}" {
+     Position -108.354 -12.722 -171.362
+    }
+    ShapePoint "{68E1272ED750C659}" {
+     Position -158.685 -7.299 -95.94
+    }
+    ShapePoint "{68E1272ED71BFA9D}" {
+     Position -162.574 -4.786 -18.377
+    }
+    ShapePoint "{68E1272ED7E0B7F1}" {
+     Position -161.839 -8.016 49.169
+    }
+    ShapePoint "{68E1272ED7B670E3}" {
+     Position -134.183 -5.656 98.727
+    }
+    ShapePoint "{68E1272ED79EAF7C}" {
+     Position -66.321 -5.575 155.511
+    }
+    ShapePoint "{68E1272ED662612F}" {
+     Position -33.786 -0.981 167.5
+    }
+    ShapePoint "{68E1272ED647FC53}" {
+     Position 7.325 -2.516 167.266
+    }
+    ShapePoint "{68E1272ED620A59A}" {
+     Position 45.196 -3.143 144.641
+    }
+    ShapePoint "{68E1272ED609D66A}" {
+     Position 72.44 -3.149 118.891
+    }
+    ShapePoint "{68E1272ED6C2C03A}" {
+     Position 117.303 1.739 56.145
+    }
+    ShapePoint "{68E1272ED694905E}" {
+     Position 172.14 4.667 25.136
+    }
+    ShapePoint "{68E1272ED54755AA}" {
+     Position 214.148 8.275 -11.922
+    }
+    ShapePoint "{68E1272ED525FD98}" {
+     Position 217.875 11.789 -22.691
+    }
+    ShapePoint "{68E1272ED5EA6BBA}" {
+     Position 186.131 6.215 -63.236
+    }
+    ShapePoint "{68E1272ED5CCB14F}" {
+     Position 152.555 4.899 -70.903
+    }
+    ShapePoint "{68E1272ED59F4470}" {
+     Position 124.357 3.68 -89.169
+    }
+    ShapePoint "{68E1272ED47A6E50}" {
+     Position 119.446 6.022 -110.557
+    }
+    ShapePoint "{68E1272ED423297C}" {
+     Position 102.308 0.87 -174.228
+    }
+    ShapePoint "{68E1272ED4E8BF67}" {
+     Position 9.261 -1.754 -202.662
+    }
+    ShapePoint "{68E1272ED4B2E9A4}" {
+     Position -45.548 -6.858 -200.159
+    }
+   }
+  }
+ }
+}

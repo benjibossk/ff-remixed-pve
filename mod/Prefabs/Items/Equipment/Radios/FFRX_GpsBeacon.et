@@ -1,0 +1,27 @@
+GenericEntity : "{1602B2595AC224FB}Prefabs/Drones/FPVBase/FPVBattery.et" {
+ ID "6FFEC0DEBEAC1000"
+ components {
+  FFRX_BeaconComponent "{6FFEC0DEBEAC0001}" {
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Balise GPS"
+     Description "Transmet sa position a l'escouade tant qu'elle est allumee. Deux heures d'autonomie a pleine charge. Se recharge avec une batterie de drone."
+    }
+   }
+  }
+  SCR_UniversalInventoryStorageComponent "{6FFEC0DEBEAC0004}" {
+   Attributes SCR_ItemAttributeCollection "{6FFEC0DEBEAC0005}" {
+   }
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    FFRX_BeaconToggle "{6FFEC0DEBEAC0002}" {
+    }
+    FFRX_BeaconRecharge "{6FFEC0DEBEAC0003}" {
+    }
+   }
+  }
+ }
+}

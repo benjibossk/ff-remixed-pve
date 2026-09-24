@@ -1,0 +1,19 @@
+Vehicle : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
+ ID "BBCBA43A9778AE21"
+ components {
+  FFRX_JammerSpawnGate "{69EEC44118A517FB}" {
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Jammer {
+     Offset -0.0076 2.0675 0.6514
+     Angles 0 90 0
+     MergePhysics 1
+     Enabled 0
+     Prefab ""
+    }
+   }
+  }
+ }
+ coords 154.844 1 150.313
+}

@@ -1,0 +1,55 @@
+# GTG Live Map — configuration.
+#
+# Copy to config.yaml in the site directory, then fill in. It is mounted
+# read-only into the container, so a change needs a container restart, not a
+# rebuild. config.yaml is gitignored upstream — keep it that way: it holds your
+# Discord client secret, your session key and your AES key.
+#
+# Upstream ships its own config-example.yaml with the bare keys. This copy is the
+# same schema, annotated with what each value actually has to be.
+
+database:
+  host: "mariadb"                      # the compose service name, not localhost
+  port: 3306
+  user: "gtg"
+  password: "CHANGEME_db_password"     # must match MARIADB_PASSWORD in docker-compose.yaml
+  dbname: "gtglivemap"
+
+server:
+  port: 8080
+
+# Discord OAuth2 — the only way users log in.
+# Create an application at https://discord.com/developers/applications , then add
+# a redirect exactly equal to redirect_uri below (a trailing-slash mismatch is
+# rejected by Discord with an unhelpful error).
+discord:
+  client_id: "<YOUR DISCORD CLIENT ID>"
+  client_secret: "<YOUR DISCORD CLIENT SECRET>"
+  redirect_uri: "https://<your-domain>/auth/discord/callback"
+
+encryption:
+  # Encrypts stored server RCON passwords. Exactly 64 hex characters (32 bytes) —
+  # the app panics at startup otherwise. Generate with:  openssl rand -hex 32
+  # Changing it makes every stored password unreadable.
+  aes_key: "CHANGEME-64-hex-characters-exactly-see-comment-above-0000000000"
+
+session:
+  # Signs session cookies. Any long random string; changing it logs everyone out.
+  #   openssl rand -hex 32
+  secret: "CHANGEME-generate-a-long-random-string"
+
+redis:
+  addr: "redis:6379"
+  username: ""
+  password: ""
+  db: 0
+
+# ---------------------------------------------------------------------------
+# There is no admin list in this file. Accounts are created on first Discord
+# login with AccountType 'owner'. To promote yourself, log in once, then:
+#
+#   docker exec -it gtg-mariadb mariadb -ugtg -p<password> gtglivemap \
+#     -e "UPDATE users SET account_type='admin' WHERE username='<your name>';"
+#
+# Log out and back in for it to take effect.
+# ---------------------------------------------------------------------------

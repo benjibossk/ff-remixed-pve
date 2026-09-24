@@ -1,0 +1,31 @@
+$grp GenericEntity : "{51D31AB07AE3C1C7}Prefabs/Modded/Props/Commercial/CashierShop_01.et" {
+ {
+  coords 4826.46 145.077 8359.706
+  angles 0 0 0
+  {
+   GenericEntity : "{48559730CFFB2C39}Prefabs/Controllers/Loadtime/Shop/JWK_ShopController_CivMedical.et" {
+    coords -0.088 -0.595 -0.031
+   }
+  }
+ }
+ {
+  coords 4828.078 145.074 8357.753
+  angles 0 92.47 0
+  {
+   GenericEntity : "{633AEB9C0919AA21}Prefabs/Controllers/Loadtime/Shop/JWK_ShopController_CivGeneral.et" {
+    coords -0.078 -0.592 -0.261
+    angles 0 -92.47 0
+   }
+  }
+ }
+ {
+  coords 4824.157 145.077 8359.757
+  angles 0 -0.009 0
+  {
+   GenericEntity : "{C1D10DBE17A72917}Prefabs/Controllers/Loadtime/Shop/JWK_ShopController_CivClothing.et" {
+    coords 0.328 -0.594 0.05
+    angles 0 0.009 0
+   }
+  }
+ }
+}
