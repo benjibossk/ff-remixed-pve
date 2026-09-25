@@ -102,10 +102,32 @@ publishable exactly as it stands.
 
 ---
 
-## Publishing rule
+## Current status
 
-**Do not make the repository public while any ⬜ line covering extended code is unresolved.**
-A private repository already allows collaboration and backup.
+**This repository is public as of 2026-09-25**, with several ⬜ lines above still
+unresolved. That was a deliberate call by the author, not an oversight. What it means
+in practice:
 
-Plain dependencies — where we only use prefabs and touch no code — are far less committing.
-**Credit is due in every case** regardless, and is already in place in `CREDITS.md`.
+- **The requests above are still owed.** Going public first does not cancel them; it
+  makes sending them more urgent, not less.
+- **Credit is in place for everyone**, resolved or not — see `CREDITS.md`.
+- **Any author who objects gets their part removed, promptly and without argument.**
+  Open an issue or message the maintainer. That is the commitment attached to having
+  published early.
+
+### What is exposed, precisely
+
+Being accurate about this matters more than reassuring wording:
+
+| | |
+|---|---|
+| Third-party mods | **Not redistributed.** Workshop dependencies, downloaded by each host |
+| GTG Live Map source | **Not redistributed** as files — but `web/patches/*.patch` carry **context lines**, i.e. short literal excerpts of their source around each change |
+| Anizay / AMF prefab overrides | **Redistributed as modified content.** These are real derivative files, and the most committing item on this page after Freedom Fighters itself |
+| Freedom Fighters | 42 `modded class` plus 18 derived dialogue files — ✅ permission granted by Johnny Kerner |
+
+### If you fork this
+
+The permissions on this page were granted to **this** project and do not travel. In
+particular, Johnny Kerner's consent for the Freedom Fighters modifications covers
+Benji's work, not yours. Ask him yourself.
