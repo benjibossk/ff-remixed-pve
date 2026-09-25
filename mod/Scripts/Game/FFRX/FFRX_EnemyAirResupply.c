@@ -268,7 +268,10 @@ class FFRX_AirResupplyOp
 		{
 			float d = vector.Distance(m_Veh.GetOrigin(), m_TargetPos);
 			SDRC_EHeliState state = m_Comp.GetState();
-			bool onGround = (state == SDRC_EHeliState.LAND || state == SDRC_EHeliState.WAIT || state == SDRC_EHeliState.ON_GROUND);
+			// DarcChopper 1.0.28 a renomme LAND en LAND_VERTICAL. Le mod compile en meme
+			// temps que nous : un membre d'enum disparu fait echouer TOUT le module Game,
+			// pas seulement ce fichier -- et la premiere erreur masque toutes les autres.
+			bool onGround = (state == SDRC_EHeliState.LAND_VERTICAL || state == SDRC_EHeliState.WAIT || state == SDRC_EHeliState.ON_GROUND);
 			if (d < FFRX_EnemyAirResupply.DELIVER_RADIUS && onGround)
 			{
 				FFRX_EnemyAirResupply.DeliverSupplies(m_Target);
